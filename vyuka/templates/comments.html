@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-3"></div>
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black;">Titulek</th>
+                    <th style="border: 1px solid black;">Autor</th>
+                    <th style="border: 1px solid black;">Text</th>
+                    <th style="border: 1px solid black;">Datum vytvoření</th>
+                    <th style="border: 1px solid black;">Schváleno</th>
+                    <th style="border: 1px solid black;">Hodnocení</th>
+                    <th style="border: 1px solid black;">Obrázek</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in comments %}
+                <tr>
+                    <td style="border: 1px solid black;">{{ comment.material.title }}</td>
+                    <td style="border: 1px solid black;">{{ comment.author }}</td>
+                    <td style="border: 1px solid black;">{{ comment.text }}</td>
+                    <td style="border: 1px solid black;">{{ comment.created_date }}</td>
+                    <td style="border: 1px solid black;">{% if comment.approved %}Ano{% else %}Ne{% endif %}</td>
+                    <td style="border: 1px solid black;">{{ comment.rating }}</td>
+                    <td style="border: 1px solid black;">
+                        {% if comment.material.logo %}
+                        <img src="{{ comment.material.logo.url }}" alt="{{ comment.material.title }}" style="max-width: 50px; max-height: 50px;">
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr style="background-color: lightgrey;">
+                    <td colspan="7"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

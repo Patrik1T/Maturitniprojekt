@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for item in materials_by_predmet %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <h2 class="display-4 text-center text-primary">{{ item.predmet.name }}</h2>
+    </div>
+</div>
+<div class="row">
+    {% for material in item.materials %}
+    <div class="col-sm-6">
+        <div class="card mb-3">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    {% if material.logo %}
+                    <img src="{{ material.logo.url }}" class="card-img" alt="{{ material.title }}">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{{ material.get_absolute_url }}" class="text-info">{{ material.title }}</a></h5>
+                        <p class="card-text">{{ material.obsah }}</p>
+                        <p class="card-text">Datum vydání: {{ material.release_date }}</p>
+                        <p class="card-text">Doba trvání: {{ material.runtime }} hodin</p>
+                        <p class="card-text">Hodnocení: <span class="badge badge-dark">{{ material.rate }}</span></p>
+                        <p class="card-text">Předměty: {% for predmet in material.predmet.all %}<a href="#" class="btn btn-light">{{ predmet.name }}</a> {% endfor %}</p>
+                        <p class="card-text">Přílohy: {% for priloha in material.priloha_set.all %}<a href="{{ priloha.file.url }}" class="btn btn-light">{{ priloha.title }}</a> {% endfor %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}

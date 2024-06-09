@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-md bg-secondary navbar-dark mb-2">
+    <!-- Přepínací tlačítko pro mobilní zobrazení -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Hlavní menu -->
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <!-- Odkaz na úvodní stránku webu -->
+                <a class="nav-link active" href="{% url 'index' %}">Úvodní stránka</a>
+            </li>
+            <li class="nav-item">
+                <!-- Odkaz na stránku s výukovými materiály -->
+                <a class="nav-link" href="{% url 'vyukovematerialy' %}">Výukové materiály</a>
+            </li>
+            <li class="nav-item">
+                <!-- Odkaz na stránku s předměty -->
+                <a class="nav-link" href="{% url 'predmety' %}">Předměty</a>
+            </li>
+            <li class="nav-item">
+                <!-- Odkaz na stránku s komentáři -->
+                <a class="nav-link" href="{% url 'comments' %}">Komentáře</a>
+            </li>
+        </ul>
+    </div>
+</nav>
