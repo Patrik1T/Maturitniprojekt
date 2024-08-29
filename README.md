@@ -1,27 +1,27 @@
 # Aplikace Revas pro dělání testů
 ## Cíl projektu:
--Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ------nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě miniher.
+`Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě miniher.`
 
 ## Logo:
 
 
 ## Moje hlavní cíle, co aby fungovalo:
--Přihlášení/registrace uživatele
--Kompilace s moodlem
--Různý výběr testů
--Různé hodnocení otázky
--Ochrana před podvody
--Otázky v herním stylu
--Pokusy
--Časovač
--Rozvrh
--Nějaké vylepšené verze
--Košík
+- `Přihlášení/registrace uživatele`
+- `Kompilace s moodlem`
+- `Různý výběr testů`
+- `Různé hodnocení otázky`
+- `Ochrana před podvody`
+- `Otázky v herním stylu`
+- `Pokusy`
+- `Časovač`
+- `Rozvrh`
+- `Nějaké vylepšené verze`
+- `Košík`
 
 ## Co jsem používal:
-Psal jsem to v programovacím jazyku Django
-Používal jsem při tom P5H
-Design prvky jsem používal přes Photoshop
+- `Psal jsem to v programovacím jazyku Django`
+- `Používal jsem při tom P5H`
+- `Design prvky jsem používal přes Photoshop`
 
 ### Instalace
 1. Klonování repozitáře
