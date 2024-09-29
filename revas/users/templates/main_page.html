@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #f1f1f1;
+            text-align: center;
+        }
+        nav {
+            position: absolute;
+            top: 50px;
+            width: 100%;
+            height: 50px;
+            background-color: #e0e0e0;
+            text-align: center;
+        }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 100px;
+            width: 100%;
+        }
+        .tables {
+            width: 20%;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-table {
+            text-align: center;
+        }
+        .tables table, .main-table table {
+            border: 1px solid black;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .links {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Header</h1>
+</header>
+
+<nav>
+    <a href="#">Home</a> | <a href="#">Link1</a> | <a href="#">Link2</a> | <a href="#">Link3</a>
+</nav>
+
+<div class="content">
+    <div class="tables">
+        <table>
+            <tr><td>Table 1</td></tr>
+        </table>
+        <table>
+            <tr><td>Table 2</td></tr>
+        </table>
+        <table>
+            <tr><td>Table 3</td></tr>
+        </table>
+    </div>
+
+    <div class="main-table">
+        <table>
+            <tr><td>Main Table</td></tr>
+        </table>
+        <div class="links">
+            <a href="{% url 'page1' %}"><button>Page 1</button></a>
+            <a href="{% url 'page2' %}"><button>Page 2</button></a>
+            <a href="{% url 'page3' %}"><button>Page 3</button></a>
+            <a href="{% url 'page4' %}"><button>Page 4</button></a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
