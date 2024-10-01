@@ -1,5 +1,6 @@
 # Aplikace Revas pro dělání testů
 ## Cíl projektu:
+<<<<<<< HEAD
 `Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě menších her.`
 
 ## Logo:
@@ -80,6 +81,30 @@ mawoka-myblock/ClassQuiz: ClassQuiz is a quiz-application like Kahoot!, but open
 4.	###Moodle API a export testů:
 •	moosh: Moosh je nástroj pro správu Moodle z příkazové řádky, což by ti mohlo pomoci při exportu testů do Moodle. I když je více zaměřen na administraci Moodle, můžeš tento projekt využít jako základ pro práci s Moodle API.
 tmuras/moosh: Moosh (github.com)
+=======
+`Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě miniher.`
+
+## Logo:
+
+
+## Moje hlavní cíle, co aby fungovalo:
+- `Přihlášení/registrace uživatele`
+- `Kompilace s moodlem`
+- `Různý výběr testů`
+- `Různé hodnocení otázky`
+- `Ochrana před podvody`
+- `Otázky v herním stylu`
+- `Pokusy`
+- `Časovač`
+- `Rozvrh`
+- `Nějaké vylepšené verze`
+- `Košík`
+
+## Co jsem používal:
+- `Psal jsem to v programovacím jazyku Django`
+- `Používal jsem při tom P5H`
+- `Design prvky jsem používal přes Photoshop`
+>>>>>>> 625f871813198e570655180242969b058a56641e
 
 ### Instalace
 1. Klonování repozitáře
