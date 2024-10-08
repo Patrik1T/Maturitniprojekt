@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Login</title>
+    <style>
+        body {
+            background-color: green; /* Zelené pozadí */
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-end;
+            height: 100vh;
+            margin: 0;
+        }
+        table {
+            border: 3px solid black;
+            margin: 20px;
+            background-color: white;
+        }
+        input, button {
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+    <tr>
+        <td>Email:</td>
+        <td><input type="email" name="email"></td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td><input type="password" name="password"></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <a href="{% url 'page5' %}"><button>Submit</button></a> <!-- Odkaz na Page5 -->
+            <a href="{% url 'main_page' %}"><button>Back to Main Page</button></a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
