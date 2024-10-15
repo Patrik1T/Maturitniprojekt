@@ -6,84 +6,71 @@
     <title>Main Page</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-        }
-        header {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 50px;
-            background-color: #f1f1f1;
-            text-align: center;
-        }
-        nav {
-            position: absolute;
-            top: 50px;
-            width: 100%;
-            height: 50px;
-            background-color: #e0e0e0;
-            text-align: center;
-        }
-        .content {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 100px;
-            width: 100%;
-        }
-        .tables {
-            width: 20%;
-            display: flex;
             flex-direction: column;
+            background-image: url('images.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
-        .main-table {
-            text-align: center;
-        }
-        .tables table, .main-table table {
-            border: 1px solid black;
-            width: 100%;
+        h1 {
+            color: white;
             margin-bottom: 20px;
         }
-        .links {
+        .main-table {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50%;
+        }
+        table {
+            width: 100%;
+            border: 3px solid black;
             text-align: center;
+            background-color: white;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: grey;
+            border: 3px solid black;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Header</h1>
-</header>
+<h1>Revas</h1> <!-- Nadpis nad tabulkou -->
 
-<nav>
-    <a href="#">Home</a> | <a href="#">Link1</a> | <a href="#">Link2</a> | <a href="#">Link3</a>
-</nav>
-
-<div class="content">
-    <div class="tables">
-        <table>
-            <tr><td>Table 1</td></tr>
-        </table>
-        <table>
-            <tr><td>Table 2</td></tr>
-        </table>
-        <table>
-            <tr><td>Table 3</td></tr>
-        </table>
-    </div>
-
-    <div class="main-table">
-        <table>
-            <tr><td>Main Table</td></tr>
-        </table>
-        <div class="links">
-            <a href="{% url 'page1' %}"><button>Page 1</button></a>
-            <a href="{% url 'page2' %}"><button>Page 2</button></a>
-            <a href="{% url 'page3' %}"><button>Page 3</button></a>
-            <a href="{% url 'page4' %}"><button>Page 4</button></a>
-        </div>
-    </div>
+<div class="main-table">
+    <table>
+        <tr>
+            <td>
+                <a href="{% url 'page1' %}"><button>Přihlášení</button></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{% url 'page2' %}"><button>Register</button></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{% url 'page3' %}"><button>Přihlášení přes Github</button></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{% url 'page4' %}"><button>Přihlášení přes Google</button></a>
+            </td>
+        </tr>
+    </table>
 </div>
 
 </body>

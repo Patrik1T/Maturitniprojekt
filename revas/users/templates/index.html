@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kvíz a Piškvorky</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question-wrapper {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .text-input {
+            margin-top: 10px;
+        }
+
+        .text-input input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .add-question-btn, .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover {
+            background-color: #104e8b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Kvíz a Piškvorky</h1>
+
+    <form id="quizForm" method="POST">
+        {% csrf_token %}
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestionField()">Přidat otázku</button>
+        <button type="submit" class="submit-btn">Odeslat kvíz</button>
+    </form>
+</div>
+
+<script>
+    function addQuestionField() {
+        const questionsContainer = document.getElementById('questionsContainer');
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-wrapper';
+
+        questionDiv.innerHTML = `
+            <label>Otázka: <input type="text" name="questions" required></label>
+            <label>Odpověď: <input type="text" name="answers" required></label>
+        `;
+
+        questionsContainer.appendChild(questionDiv);
+    }
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .add-question-btn, .submit-btn, .delete-question-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .delete-question-btn {
+            background-color: #FF6347;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .delete-question-btn:hover {
+            background-color: #c44133;
+        }
+
+        .question-wrapper {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .test-name {
+            margin-bottom: 20px;
+        }
+
+        .test-name input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .answer input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Vytvořit test</h1>
+
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    </div>
+
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+        <button type="button" class="submit-btn" onclick="saveTest()">Uložit test jako HTML</button>
+    </form>
+</div>
+
+<script>
+    let questionCount = 0;
+
+    function addQuestion() {
+        questionCount++;
+
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+            </div>
+            <div class="points">
+                <label for="question${questionCount}_points">Počet bodů:</label>
+                <input type="number" name="question${questionCount}_points" value="1" min="1" required>
+            </div>
+            <div class="answer">
+                <label for="question${questionCount}_answer">Správná odpověď:</label>
+                <input type="text" name="question${questionCount}_answer" placeholder="Zadejte správnou odpověď" required>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>
+        `;
+
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
+    }
+
+    function deleteQuestion(questionId) {
+        const questionElement = document.getElementById(`question${questionId}`);
+        questionElement.remove();
+    }
+
+    function saveTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = [];
+
+        for (let i = 1; i <= questionCount; i++) {
+            const questionText = document.querySelector(`input[name="question${i}_text"]`);
+            if (!questionText) continue;
+
+            const answer = document.querySelector(`input[name="question${i}_answer"]`).value;
+            const points = document.querySelector(`input[name="question${i}_points"]`).value;
+            questions.push({ question: questionText.value, answer, points: parseInt(points) });
+        }
+
+        const testHtml = generateTestHtml(testName, questions);
+        downloadFile(`${testName}.html`, testHtml);
+    }
+
+    function generateTestHtml(testName, questions) {
+        let questionsHtml = questions.map((q, index) => `
+            <div class="question">
+                <h3>${index + 1}. ${q.question}</h3>
+                <label>Odpověď: <input type="text" name="question${index + 1}_answer" required></label>
+            </div>
+        `).join('');
+
+        return `
+            <!DOCTYPE html>
+            <html lang="cs">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${testName}</title>
+            </head>
+            <body>
+                <h1>${testName}</h1>
+                <form id="testForm">
+                    ${questionsHtml}
+                    <button type="button" onclick="submitAnswers()">Odeslat test</button>
+                </form>
+                <script>
+                    function submitAnswers() {
+                        const questions = ${JSON.stringify(questions)};
+                        let score = 0;
+                        let totalPoints = 0;
+                        const wrongQuestions = [];
+
+                        questions.forEach((q, index) => {
+                            const selectedAnswer = document.querySelector(\`input[name="question\${index + 1}_answer"]\`).value;
+                            const points = q.points;
+                            totalPoints += points;
+
+                            if (selectedAnswer.trim() === q.answer.trim()) {
+                                score += points;
+                            } else {
+                                wrongQuestions.push(q.question);
+                            }
+                        });
+
+                        alert(\`Skóre: \${score} z \${totalPoints}\\nChybné otázky: \${wrongQuestions.join(', ') || 'Žádné'}\`);
+                    }
+                <\/script>
+            </body>
+            </html>
+        `;
+    }
+
+    function downloadFile(fileName, content) {
+        const blob = new Blob([content], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+    }
+
+    window.onload = function() {
+        addQuestion();
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piškvorky</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 64px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border: 1px solid #b3d4fc;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Hrajeme Piškvorky!</h1>
+
+    <div class="board" id="board"></div>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    let board = [['', '', ''], ['', '', ''], ['', '', '']];
+    let currentPlayer = 'X';
+    let gameOver = false;
+
+    function setupBoard() {
+        const boardContainer = document.getElementById('board');
+        boardContainer.innerHTML = '';
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.addEventListener('click', () => {
+                    if (!gameOver && board[i][j] === '') {
+                        board[i][j] = currentPlayer;
+                        cell.textContent = currentPlayer;
+                        checkWinner();
+                        currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+                    }
+                });
+                boardContainer.appendChild(cell);
+            }
+        }
+    }
+
+    function checkWinner() {
+        for (let i = 0; i < 3; i++) {
+            if (board[i][0] !== '' && board[i][0] === board[i][1] && board[i][1] === board[i][2]) {
+                declareWinner(board[i][0]);
+            }
+        }
+
+        for (let i = 0; i < 3; i++) {
+            if (board[0][i] !== '' && board[0][i] === board[1][i] && board[1][i] === board[2][i]) {
+                declareWinner(board[0][i]);
+            }
+        }
+
+        if (board[0][0] !== '' && board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
+            declareWinner(board[0][0]);
+        }
+        if (board[0][2] !== '' && board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
+            declareWinner(board[0][2]);
+        }
+    }
+
+    function declareWinner(player) {
+        gameOver = true;
+        const resultContainer = document.getElementById('result');
+        resultContainer.innerHTML = `<h2>Hráč ${player} vyhrál!</h2>`;
+        resultContainer.style.display = 'block';
+    }
+
+    setupBoard();
+</script>
+
+</body>
+</html>

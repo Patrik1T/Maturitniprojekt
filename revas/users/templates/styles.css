@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Zarovnání nadpisu nad tabulku */
+    background-image: url('tvuj-obrazek.jpg'); /* Cesta k tvému obrázku */
+    background-size: cover; /* Obrázek pokryje celou obrazovku */
+    background-position: center; /* Obrázek bude centrovaný */
+    background-repeat: no-repeat; /* Obrázek se nebude opakovat */
+}
+h1 {
+    color: white; /* Bílý text pro nadpis */
+    margin-bottom: 20px; /* Odstup nadpisu od tabulky */
+}
+.main-table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%; /* Můžeš upravit podle potřeby */
+}
+table {
+    width: 100%;
+    border: 3px solid black; /* Černé tlusté okraje tabulky */
+    text-align: center;
+    background-color: white; /* Bílá barva pozadí tabulky pro lepší čitelnost */
+}
+button {
+    width: 100%; /* Tlačítka na celou šířku buňky */
+    padding: 10px;
+    background-color: grey; /* Šedé pozadí tlačítek */
+    border: 3px solid black; /* Černé tlusté okraje tlačítek */
+    font-size: 16px;
+    cursor: pointer;
+}
