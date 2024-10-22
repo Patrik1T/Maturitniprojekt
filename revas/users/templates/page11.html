@@ -39,7 +39,7 @@
             margin-bottom: 5px;
         }
 
-        .add-question-btn, .submit-btn, .delete-question-btn {
+        .add-question-btn, .submit-btn, .delete-question-btn, .preview-btn {
             display: block;
             width: 100%;
             padding: 10px;
@@ -55,7 +55,7 @@
             background-color: #FF6347;
         }
 
-        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover {
+        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover, .preview-btn:hover {
             background-color: #104e8b;
         }
 
@@ -81,6 +81,14 @@
             border-radius: 5px;
         }
 
+        #previewTest {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .test-section {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -97,7 +105,14 @@
         <div id="questionsContainer"></div>
         <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
         <button type="button" class="submit-btn" onclick="saveTest()">Uložit test jako HTML</button>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
     </form>
+
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <button type="button" onclick="submitTest()">Odeslat test</button>
+    </div>
 </div>
 
 <script>
@@ -146,8 +161,22 @@
         questionElement.remove();
     }
 
-    function saveTest() {
+    function previewTest() {
         const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
+
+        if (questions.length === 0 || !testName) {
+            alert("Zadejte název testu a alespoň jednu otázku.");
+            return;
+        }
+
+        document.getElementById('previewTest').style.display = 'block';
+
+        const testContent = generateTestHtml(testName, questions);
+        document.getElementById('testContent').innerHTML = testContent;
+    }
+
+    function getQuestions() {
         const questions = [];
 
         for (let i = 1; i <= questionCount; i++) {
@@ -160,17 +189,16 @@
                 options.push(option);
             }
 
-            const answer = document.querySelector(`input[name="question${i}_answer"]:checked`).value;
+            const answer = document.querySelector(`input[name="question${i}_answer"]:checked`)?.value;
             const points = document.querySelector(`input[name="question${i}_points"]`).value;
             questions.push({ question: questionText.value, options, answer, points: parseInt(points) });
         }
 
-        const testHtml = generateTestHtml(testName, questions);
-        downloadFile(`${testName}.html`, testHtml);
+        return questions;
     }
 
     function generateTestHtml(testName, questions) {
-        let questionsHtml = questions.map((q, index) => `
+        return questions.map((q, index) => `
             <div class="question">
                 <h3>${index + 1}. ${q.question}</h3>
                 ${q.options.map((option, i) => `
@@ -181,8 +209,39 @@
                 `).join('')}
             </div>
         `).join('');
+    }
 
-        return `
+    function submitTest() {
+        const questions = getQuestions();
+        let score = 0;
+        let totalPoints = 0;
+        const wrongQuestions = [];
+
+        questions.forEach((q, index) => {
+            const selectedAnswer = document.querySelector(`#testContent input[name="question${index + 1}_answer"]:checked`);
+            const points = q.points;
+            totalPoints += points;
+
+            if (selectedAnswer && selectedAnswer.value === q.answer) {
+                score += points;
+            } else {
+                wrongQuestions.push(q.question);
+            }
+        });
+
+        alert(`Skóre: ${score} z ${totalPoints}\nChybné otázky: ${wrongQuestions.join(', ') || 'Žádné'}`);
+    }
+
+    function saveTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
+
+        if (!testName || questions.length === 0) {
+            alert("Zadejte název testu a alespoň jednu otázku.");
+            return;
+        }
+
+        const testHtml = `
             <!DOCTYPE html>
             <html lang="cs">
             <head>
@@ -193,34 +252,17 @@
             <body>
                 <h1>${testName}</h1>
                 <form id="testForm">
-                    ${questionsHtml}
-                    <button type="button" onclick="submitAnswers()">Odeslat test</button>
+                    ${generateTestHtml(testName, questions)}
+                    <button type="button" onclick="submitTest()">Odeslat test</button>
                 </form>
                 <script>
-                    function submitAnswers() {
-                        const questions = ${JSON.stringify(questions)};
-                        let score = 0;
-                        let totalPoints = 0;
-                        const wrongQuestions = [];
-
-                        questions.forEach((q, index) => {
-                            const selectedAnswer = document.querySelector(\`input[name="question\${index + 1}_answer"]:checked\`);
-                            const points = q.points;
-                            totalPoints += points;
-
-                            if (selectedAnswer && selectedAnswer.value === q.answer.toString()) {
-                                score += points;
-                            } else {
-                                wrongQuestions.push(q.question);
-                            }
-                        });
-
-                        alert(\`Skóre: \${score} z \${totalPoints}\\nChybné otázky: \${wrongQuestions.join(', ') || 'Žádné'}\`);
-                    }
+                    ${submitTest.toString()}
                 <\/script>
             </body>
             </html>
         `;
+
+        downloadFile(`${testName}.html`, testHtml);
     }
 
     function downloadFile(fileName, content) {

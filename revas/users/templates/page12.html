@@ -67,7 +67,7 @@
             margin-bottom: 5px;
         }
 
-        .save-btn {
+        .save-btn, .show-btn, .download-btn {
             background-color: #1E90FF;
             color: white;
             border: none;
@@ -76,6 +76,10 @@
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
+        }
+
+        .save-results-btn {
+            background-color: #32CD32; /* Zelená barva pro tlačítko uložení */
         }
     </style>
 </head>
@@ -108,7 +112,11 @@
 
     <div class="pair-info" id="pairInfoContainer"></div>
     <button onclick="addPairInput()">Přidat pár</button>
-    <button onclick="startGame()">Spustit hru</button>
+
+    <!-- Tlačítka pro zobrazení, uložení a stažení hry -->
+    <button class="show-btn" onclick="showPreview()">Ukázat náhled hry</button>
+    <button class="save-btn" onclick="saveGameResults()">Uložit výsledky do souboru</button>
+    <button class="save-results-btn" onclick="saveGameResultsDirectly()">Uložit výsledky přímo na stránku</button>
 
     <!-- Pexeso hra -->
     <div class="timer" id="timer"></div>
@@ -134,7 +142,7 @@
     function preload(numPairs) {
         cardImages = [];
         for (let i = 0; i < numPairs; i++) {
-            cardImages.push(`images/card${i + 1}.png`); // Předpokládáme, že obrázky jsou ve složce images
+            cardImages.push(`images/card${i + 1}.png`);
         }
     }
 
@@ -175,7 +183,7 @@
             selectedCards.push(index);
             flippedCount++;
 
-            drawCards(); // Znovu vykreslí karty
+            drawCards();
 
             if (flippedCount === 2) {
                 canFlip = false;
@@ -192,22 +200,21 @@
         if (cards[firstCardIndex].text === cards[secondCardIndex].text) {
             matchedCards.push(firstCardIndex);
             matchedCards.push(secondCardIndex);
-            score += pointsPerPair; // Přidání bodů za nalezení páru
-            playersScores[currentPlayer] = (playersScores[currentPlayer] || 0) + pointsPerPair; // Přidání bodů pro hráče
-            drawCards(); // Znovu vykreslí karty
+            score += pointsPerPair;
+            playersScores[currentPlayer] = (playersScores[currentPlayer] || 0) + pointsPerPair;
+            drawCards();
         } else {
             setTimeout(() => {
                 cards[firstCardIndex].flipped = false;
                 cards[secondCardIndex].flipped = false;
                 canFlip = true;
-                drawCards(); // Znovu vykreslí karty
+                drawCards();
             }, 1000);
         }
 
         selectedCards = [];
         flippedCount = 0;
 
-        // Přepnutí na dalšího hráče
         if (matchedCards.length / 2 === Math.floor(cards.length / 2)) {
             clearInterval(timerInterval);
             alert(`Hra skončila! Hráč ${currentPlayer + 1} vyhrál se skóre ${playersScores[currentPlayer]}`);
@@ -215,7 +222,7 @@
             resetGame();
         } else {
             currentPlayer = (currentPlayer + 1) % parseInt(document.getElementById('numPlayers').value);
-            drawCards(); // Znovu vykreslí karty, aby se zobrazilo nové skóre
+            drawCards();
         }
     }
 
@@ -248,7 +255,6 @@
             cards.push({ imageIndex: index % (pairs.length), flipped: false, text: pair[1] });
         });
 
-        // Zamíchej karty
         cards.sort(() => Math.random() - 0.5);
         playersScores = Array(parseInt(document.getElementById('numPlayers').value)).fill(0);
         drawCards();
@@ -288,6 +294,17 @@
         link.click();
     }
 
+    // Uložení výsledků přímo na stránku
+    function saveGameResultsDirectly() {
+        const gameName = document.getElementById('gameName').value;
+        const results = {
+            gameName: gameName,
+            playersScores: playersScores
+        };
+
+        alert(`Výsledky byly uloženy:\nNázev hry: ${results.gameName}\nSkóre hráčů: ${JSON.stringify(results.playersScores)}`);
+    }
+
     // Přidání polí pro pár
     function addPairInput() {
         const pairInfoContainer = document.getElementById('pairInfoContainer');
@@ -304,6 +321,11 @@
 
         pairInfoContainer.appendChild(input1);
         pairInfoContainer.appendChild(input2);
+    }
+
+    // Zobrazení náhledu hry
+    function showPreview() {
+        startGame();
     }
 
     // Spuštění hry na základě nastavení

@@ -114,6 +114,8 @@
             cursor: pointer;
             margin: 5px 0;
             display: block; /* Zaručí, že tlačítka budou pod sebou */
+            text-align: center; /* Centrumje text */
+            text-decoration: none; /* Odstraní podtržení */
         }
     </style>
 </head>
@@ -151,51 +153,51 @@
         <div class="test-category">
             <h2>Testy</h2>
             <div class="main-table">
-            <button class="button" href="{% url 'page11' %}">Test 1</button>
-                </div>
+                <a class="button" href="{% url 'page11' %}">Test 1</a>
+            </div>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Test 2</button>
+            <a class="button" href="{% url 'page12' %}">Test 2</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Test 3</button>
+            <a class="button" href="{% url 'page12' %}">Test 3</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Test 4</button>
+            <a class="button" href="{% url 'page14' %}">Test 4</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Test 5</button>
+            <a class="button" href="{% url 'page15' %}">Test 5</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Test 6</button>
+            <a class="button" href="{% url 'page16' %}">Test 6</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Test 7</button>
+            <a class="button" href="{% url 'page17' %}">Test 7</a>
             <p>Popis</p>
             <p>öbrazky</p>
         </div>
 
         <div class="test-category">
             <h2>Herní testy</h2>
-            <button class="button">Herní Test 1</button>
+            <a class="button" href="{% url 'page18' %}">Herní Test 1</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Herní Test 2</button>
+            <a class="button" href="{% url 'page19' %}">Herní Test 2</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Herní Test 3</button>
+            <a class="button" href="{% url 'page11' %}">Herní Test 3</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Herní Test 4</button>
+            <a class="button" href="{% url 'page11' %}">Herní Test 4</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Herní Test 5</button>
+            <a class="button" href="{% url 'page11' %}">Herní Test 5</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Herní Test 6</button>
+            <a class="button" href="{% url 'page11' %}">Herní Test 6</a>
             <p>Popis</p>
             <p>öbrazky</p>
-            <button class="button">Herní Test 7</button>
+            <a class="button" href="{% url 'page11' %}">Herní Test 7</a>
             <p>Popis</p>
             <p>öbrazky</p>
         </div>
