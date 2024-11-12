@@ -1,12 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testovací hra</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="sketch.js"></script>
+    <title>Vytvořit kvíz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question-wrapper {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .text-input {
+            margin-top: 10px;
+        }
+
+        .text-input input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .add-question-btn, .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border: 1px solid #b3d4fc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
+
+<div class="container">
+    <h1>Vytvořit kvíz</h1>
+
+    <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestionField()">Přidat otázku</button>
+        <button type="button" class="submit-btn" onclick="submitQuiz()">Odeslat kvíz</button>
+    </form>
+</div>
+
+<script>
+    let questions = [];
+
+    function addQuestionField() {
+        const questionsContainer = document.getElementById('questionsContainer');
+
+        const questionTemplate = `
+            <div class="question-wrapper">
+                <input type="text" placeholder="Zadejte otázku" required>
+                <div class="text-input">
+                    <input type="text" placeholder="Zadejte správnou odpověď" required>
+                </div>
+            </div>
+        `;
+
+        questionsContainer.insertAdjacentHTML('beforeend', questionTemplate);
+    }
+
+    function submitQuiz() {
+        const questionWrappers = document.querySelectorAll('.question-wrapper');
+        let score = 0;
+
+        questionWrappers.forEach((wrapper, index) => {
+            const questionInput = wrapper.querySelector('input[type="text"]');
+            const answerInput = wrapper.querySelector('input[type="text"]:nth-of-type(2)');
+            const questionText = questionInput.value.trim();
+            const correctAnswer = answerInput.value.trim();
+            questions.push({ question: questionText, answer: correctAnswer });
+
+            // Simulace správných odpovědí (můžeš to upravit, pokud chceš mít předem definované odpovědi)
+            const userAnswer = prompt(`Otázka ${index + 1}: ${questionText}`);
+            if (userAnswer && userAnswer.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+                score++;
+            }
+        });
+
+        // Zobrazit výsledek
+        const resultContainer = document.createElement('div');
+        resultContainer.className = 'result';
+        resultContainer.innerHTML = `<h2>Tvé skóre: ${score} z ${questions.length}</h2>`;
+        document.body.appendChild(resultContainer);
+    }
+
+    // Spuštění kvízu při načtení stránky
+    window.onload = function() {
+        addQuestionField(); // Přidá první otázku
+    };
+</script>
+
 </body>
 </html>

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testy</title>
+    <title>Veřejné Testy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1E90FF;
+            background-color: #1E90FF; /* Modré pozadí */
             margin: 0;
             padding: 0;
         }
@@ -96,7 +96,7 @@
             gap: 20px; /* Vytvoří mezery mezi sekcemi */
         }
         .test-category {
-            background-color: white;
+            background-color: white; /* Bílé pozadí */
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -114,8 +114,6 @@
             cursor: pointer;
             margin: 5px 0;
             display: block; /* Zaručí, že tlačítka budou pod sebou */
-            text-align: center; /* Centrumje text */
-            text-decoration: none; /* Odstraní podtržení */
         }
     </style>
 </head>
@@ -148,61 +146,7 @@
     </div>
 </div>
 
-<div class="main-content">
-    <div class="test-section">
-        <div class="test-category">
-            <h2>Testy</h2>
-            <div class="main-table">
-                <a class="button" href="{% url 'page11' %}">Test 1</a>
-            </div>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page12' %}">Test 2</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page12' %}">Test 3</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page14' %}">Test 4</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page15' %}">Test 5</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page16' %}">Test 6</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page17' %}">Test 7</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-        </div>
 
-        <div class="test-category">
-            <h2>Herní testy</h2>
-            <a class="button" href="{% url 'page18' %}">Herní Test 1</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page19' %}">Herní Test 2</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 3</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 4</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 5</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 6</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 7</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-        </div>
-    </div>
-</div>
 
 </body>
 </html>

@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Question
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import UserRegisterForm
+from django.contrib.auth import authenticate, login
 
 def main_page(request):
     return render(request, 'main_page.html')
@@ -69,17 +73,7 @@ def piskvorky(request):
     return render(request, 'piskvorky')
 
 def index(request):
-    if request.method == 'POST':
-        questions_data = request.POST.getlist('questions')
-        answers_data = request.POST.getlist('answers')
-
-        # Uložení otázek a odpovědí do databáze
-        for question_text, answer_text in zip(questions_data, answers_data):
-            Question.objects.create(text=question_text, answer=answer_text)
-
-        return redirect('play')
-
-    return render(request, 'myapp/index.html')
+    return render(request, 'main_page.html')
 
 def play(request):
     questions = Question.objects.all()
@@ -116,3 +110,15 @@ def vytvor_test(request):
         return HttpResponse(f"Test s {total_questions} otázkami byl úspěšně odeslán.")
 
     return render(request, 'vytvor_test.html')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Uložíme nového uživatele do databáze
+            login(request, user)  # Automatické přihlášení po registraci
+            messages.success(request, 'Úspěšná registrace! Nyní jste přihlášeni.')
+            return redirect('main_page')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'users/register.html', {'form': form})

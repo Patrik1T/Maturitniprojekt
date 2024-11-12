@@ -1,77 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
+
+     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-image: url('images.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        h1 {
-            color: white;
-            margin-bottom: 20px;
-        }
-        .main-table {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 50%;
-        }
-        table {
-            width: 100%;
-            border: 3px solid black;
-            text-align: center;
-            background-color: white;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: grey;
-            border: 3px solid black;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+    <title>Hlavní stránka</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+    <!-- Pozadí -->
+    <div class="background-image"></div>
 
-<h1>Revas</h1> <!-- Nadpis nad tabulkou -->
+    <!-- Kontejner pro obsah stránky -->
+    <div class="content-container">
+        <!-- Logo -->
+        <img src="{% static 'images/logo.png' %}" alt="Logo aplikace" class="app-logo">
 
-<div class="main-table">
-    <table>
-        <tr>
-            <td>
-                <a href="{% url 'page1' %}"><button>Přihlášení</button></a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href="{% url 'page2' %}"><button>Register</button></a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href="{% url 'page3' %}"><button>Přihlášení přes Github</button></a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a href="{% url 'page4' %}"><button>Přihlášení přes Google</button></a>
-            </td>
-        </tr>
-    </table>
-</div>
-
+        <!-- Tabulka s tlačítky -->
+        <div class="button-table">
+            <button onclick="location.href='{% url 'page1' %}'">Tlačítko 1</button>
+            <button onclick="location.href='{% url 'page2' %}'">Tlačítko 2</button>
+            <button onclick="location.href='{% url 'page3' %}'">Tlačítko 3</button>
+            <button onclick="location.href='{% url 'page4' %}'">Tlačítko 4</button>
+        </div>
+    </div>
 </body>
 </html>

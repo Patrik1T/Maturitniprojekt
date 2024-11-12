@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .question-wrapper {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="number"], button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #104e8b;
+        }
+
+        .btn-danger {
+            background-color: #FF6347;
+        }
+
+        .btn-danger:hover {
+            background-color: #c44133;
+        }
+
+        .answers label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .test-preview, .results-section {
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Vytvořit hru</h1>
+    <div>
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    </div>
+
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="btn" onclick="addQuestion()">Přidat otázku</button>
+        <button type="button" class="btn" onclick="previewTest()">Ukázat test</button>
+        <button type="button" class="btn" onclick="saveTest()">Uložit test</button>
+    </form>
+
+    <div class="test-preview hidden" id="testPreview">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <label for="timer">Časovač (v sekundách):</label>
+        <input type="number" id="timer" value="30" min="5">
+        <button type="button" class="btn" onclick="startGame()">Začít test</button>
+    </div>
+
+    <div class="results-section hidden" id="resultsSection">
+        <h2>Výsledky</h2>
+        <p id="scoreDisplay"></p>
+    </div>
+</div>
+
+<script>
+    let questionCount = 0;
+
+    function addQuestion() {
+        questionCount++;
+        const questionHtml = `
+            <div class="question-wrapper" id="question${questionCount}">
+                <label>Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+                <label>Počet bodů:</label>
+                <input type="number" name="question${questionCount}_points" value="1" min="1" required>
+                <div class="answers">
+                    ${[1, 2, 3, 4].map(i => `
+                        <label>
+                            <input type="radio" name="question${questionCount}_answer" value="${i}" required>
+                            <input type="text" name="question${questionCount}_option${i}" placeholder="Odpověď ${i}" required>
+                        </label>
+                    `).join('')}
+                </div>
+                <button type="button" class="btn btn-danger" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+            </div>
+        `;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHtml);
+    }
+
+    function deleteQuestion(id) {
+        const question = document.getElementById(`question${id}`);
+        question.remove();
+    }
+
+    function previewTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
+        if (!testName || questions.length === 0) {
+            alert('Zadejte název testu a alespoň jednu otázku.');
+            return;
+        }
+        document.getElementById('testPreview').classList.remove('hidden');
+        document.getElementById('testContent').innerHTML = generateTestHtml(questions);
+    }
+
+    function startGame() {
+        const timer = parseInt(document.getElementById('timer').value);
+        const questions = Array.from(document.querySelectorAll('.test-content div')).sort(() => Math.random() - 0.5);
+        document.getElementById('testContent').innerHTML = '';
+        questions.forEach(q => document.getElementById('testContent').appendChild(q));
+        document.getElementById('resultsSection').classList.add('hidden');
+        startTimer(timer);
+    }
+
+    function startTimer(seconds) {
+        let timeLeft = seconds;
+        const timerId = setInterval(() => {
+            document.getElementById('testPreview').querySelector('h2').innerText = `Zbývá čas: ${timeLeft}s`;
+            if (--timeLeft < 0) {
+                clearInterval(timerId);
+                finishGame();
+            }
+        }, 1000);
+    }
+
+    function finishGame() {
+        alert('Čas vypršel!');
+    }
+
+    function getQuestions() {
+        return [...Array(questionCount)].map((_, i) => {
+            const id = i + 1;
+            const text = document.querySelector(`input[name="question${id}_text"]`);
+            if (!text) return null;
+            const points = parseInt(document.querySelector(`input[name="question${id}_points"]`).value);
+            const options = [...Array(4)].map((_, j) => document.querySelector(`input[name="question${id}_option${j + 1}"]`).value);
+            const answer = document.querySelector(`input[name="question${id}_answer"]:checked`).value;
+            return { text: text.value, points, options, answer };
+        }).filter(q => q !== null);
+    }
+
+    function generateTestHtml(questions) {
+        return questions.map((q, i) => `
+            <div class="test-content">
+                <h3>${i + 1}. ${q.text}</h3>
+                ${q.options.map((opt, j) => `<label><input type="radio" name="question${i + 1}" value="${j + 1}"> ${opt}</label>`).join('')}
+            </div>
+        `).join('');
+    }
+
+    function saveTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
+        if (!testName || questions.length === 0) {
+            alert('Zadejte název testu a alespoň jednu otázku.');
+            return;
+        }
+        const testHtml = generateTestHtml(questions);
+        downloadFile(`${testName}.html`, testHtml);
+    }
+
+    function downloadFile(filename, content) {
+        const blob = new Blob([content], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hra - Košík</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #e0e0e0;
+            overflow: hidden;
+            border: 2px solid #333;
+            margin-top: 20px;
+        }
+
+        .answer {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            background-color: #1E90FF;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .answer.correct {
+            background-color: green;
+        }
+
+        .basket {
+            position: absolute;
+            width: 150px;
+            height: 100px;
+            background-color: orange;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            border-radius: 10px;
+            bottom: 20px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .controls input, .controls button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+        }
+
+        .btn:hover {
+            background-color: #104e8b;
+        }
+
+        #timer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Hra - Košík</h1>
+
+    <div class="controls">
+        <label for="newQuestion">Otázka:</label>
+        <input type="text" id="newQuestion" placeholder="Zadejte otázku">
+        <label for="newAnswer">Odpověď:</label>
+        <input type="text" id="newAnswer" placeholder="Zadejte odpověď">
+        <button class="btn" onclick="addBasket()">Přidat otázku/odpověď</button>
+    </div>
+
+    <div id="gameSetup" class="controls">
+        <label for="timerInput">Časovač (v sekundách):</label>
+        <input type="number" id="timerInput" value="60" min="10">
+        <button class="btn" onclick="startGame()">Začít hru</button>
+    </div>
+
+    <div id="gameArea" class="game-area"></div>
+
+    <div id="timer"></div>
+
+    <div id="scoreDisplay" class="controls hidden">
+        <h2>Výsledek: <span id="score"></span> bodů</h2>
+    </div>
+</div>
+
+<script>
+    let baskets = [];
+    let answers = [];
+    let score = 0;
+    let timerId;
+    let timeLeft;
+
+    function addBasket() {
+        const question = document.getElementById('newQuestion').value.trim();
+        const answer = document.getElementById('newAnswer').value.trim();
+
+        if (!question || !answer) {
+            alert('Zadejte otázku i odpověď.');
+            return;
+        }
+
+        baskets.push({ question, answer });
+        document.getElementById('newQuestion').value = '';
+        document.getElementById('newAnswer').value = '';
+    }
+
+    function startGame() {
+        if (baskets.length === 0) {
+            alert('Přidejte alespoň jednu otázku a odpověď.');
+            return;
+        }
+
+        score = 0;
+        timeLeft = parseInt(document.getElementById('timerInput').value, 10);
+        document.getElementById('gameArea').innerHTML = '';
+        startTimer();
+
+        // Vytvoření košíků
+        baskets.forEach((basket, index) => {
+            const basketDiv = document.createElement('div');
+            basketDiv.className = 'basket';
+            basketDiv.style.left = `${index * 160}px`;
+            basketDiv.textContent = basket.question;
+            basketDiv.dataset.answer = basket.answer;
+            basketDiv.dataset.index = index;
+            document.getElementById('gameArea').appendChild(basketDiv);
+        });
+
+        spawnAnswers();
+    }
+
+    function startTimer() {
+        document.getElementById('timer').textContent = `Čas: ${timeLeft}s`;
+        timerId = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = `Čas: ${timeLeft}s`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                endGame();
+            }
+        }, 1000);
+    }
+
+    function spawnAnswers() {
+        answers = baskets.map(basket => basket.answer).sort(() => Math.random() - 0.5);
+
+        answers.forEach((answerText, index) => {
+            setTimeout(() => {
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'answer';
+                answerDiv.textContent = answerText;
+                answerDiv.style.left = `${Math.random() * 300}px`;
+                answerDiv.style.top = `-50px`;
+                document.getElementById('gameArea').appendChild(answerDiv);
+
+                dropAnswer(answerDiv);
+            }, index * 2000);
+        });
+    }
+
+    function dropAnswer(answerDiv) {
+        const interval = setInterval(() => {
+            const currentTop = parseInt(answerDiv.style.top, 10);
+            answerDiv.style.top = `${currentTop + 5}px`;
+
+            if (currentTop > 450) {
+                clearInterval(interval);
+                answerDiv.remove();
+            }
+
+            checkCollision(answerDiv, interval);
+        }, 50);
+    }
+
+    function checkCollision(answerDiv, interval) {
+        const basketsDivs = document.querySelectorAll('.basket');
+
+        basketsDivs.forEach(basketDiv => {
+            const basketRect = basketDiv.getBoundingClientRect();
+            const answerRect = answerDiv.getBoundingClientRect();
+
+            if (
+                answerRect.left < basketRect.right &&
+                answerRect.right > basketRect.left &&
+                answerRect.bottom > basketRect.top &&
+                answerRect.top < basketRect.bottom
+            ) {
+                clearInterval(interval);
+
+                if (basketDiv.dataset.answer === answerDiv.textContent) {
+                    score += 10;
+                    answerDiv.className = 'answer correct';
+                } else {
+                    answerDiv.className = 'answer';
+                }
+
+                answerDiv.remove();
+                document.getElementById('scoreDisplay').querySelector('#score').textContent = score;
+            }
+        });
+    }
+
+    function endGame() {
+        alert(`Hra skončila! Získali jste ${score} bodů.`);
+        document.getElementById('scoreDisplay').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
