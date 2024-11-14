@@ -12,6 +12,94 @@ def main_page(request):
 def page1(request):
     return render(request, 'page1.html')
 
+def ano_ne(request):
+    return render(request, 'ano_ne.html')
+
+def dvere_hra(request):
+    return render(request, 'dvere_hra.html')
+
+def github_log(request):
+    return render(request, 'github_log.html')
+
+def google_log(request):
+    return render(request, 'google_log.html')
+
+def hlavni_stranka(request):
+    return render(request, 'hlavni_stranka.html')
+
+def klikaci_hra(request):
+    return render(request, 'klikaci_hra.html')
+
+def kosik(request):
+    return render(request, 'kosik.html')
+
+def kosiky(request):
+    return render(request, 'kosiky.html')
+
+def kviz(request):
+    return render(request, 'kviz.html')
+
+def login(request):
+    return render(request, 'login.html')
+
+def piskvorky(request):
+    return render(request, 'piskvorky.html')
+
+def pexeso(request):
+    return render(request, 'pexeso.html')
+
+def prihlasovacistranka(request):
+    return render(request, 'prihlasovacistranka.html')
+
+def profil(request):
+    return render(request, 'profil.html')
+
+def psaci_testy(request):
+    return render(request, 'psaci_testy.html')
+
+def register(request):
+    return render(request, 'register.html')
+
+def spojovacka(request):
+    return render(request, 'spojovacka.html')
+
+def tabulka(request):
+    return render(request, 'tabulka.html')
+
+def testy(request):
+    return render(request, 'testy.html')
+
+def ulozene_testy(request):
+    return render(request, 'ulozene_testy.html')
+
+def verejne_testy(request):
+    return render(request, 'verejne_testy.html')
+
+def vytvor_test(request):
+    return render(request, 'vytvor_test.html')
+
+def programovaci_test(request):
+    return render(request, 'programovaci_test.html')
+
+def maraton(request):
+    return render(request, 'maraton.html')
+
+def labyrint(request):
+    return render(request, 'labyrint.html')
+
+def lov_pokladu(request):
+    return render(request, 'lov_pokladu.html')
+
+def multi_test(request):
+    return render(request, 'multi_test.html')
+
+def flappy_bird(request):
+    return render(request, 'flappy_bird.html')
+
+def obesenec(request):
+    return render(request, 'obesene.html')
+
+
 def page2(request):
     return render(request, 'page2.html')
 

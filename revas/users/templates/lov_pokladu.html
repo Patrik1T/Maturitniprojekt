@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otázkový lov pokladů</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #gameArea {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            background-color: #87CEEB;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+
+        .player {
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            position: absolute;
+            top: 280px;
+            left: 380px;
+            border-radius: 50%;
+        }
+
+        .treasure {
+            width: 30px;
+            height: 30px;
+            background-color: gold;
+            border: 2px solid #DAA520;
+            position: absolute;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: black;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        .questionPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            display: none;
+            z-index: 100;
+        }
+
+        .questionPopup h2 {
+            margin: 0 0 10px;
+        }
+
+        .questionPopup button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .gameOver {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            line-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameArea">
+    <div id="score">Body: 0</div>
+    <div id="timer">Čas: 60</div>
+    <div class="player"></div>
+    <div class="treasure" style="top: 50px; left: 100px;">?</div>
+    <div class="treasure" style="top: 400px; left: 200px;">?</div>
+    <div class="treasure" style="top: 300px; left: 600px;">?</div>
+</div>
+
+<div class="questionPopup" id="questionPopup">
+    <h2 id="questionText">Otázka?</h2>
+    <div id="answerOptions"></div>
+</div>
+
+<div class="gameOver" id="gameOver">
+    Konec hry! Získal/a jste <span id="finalScore">0</span> bodů.
+</div>
+
+<script>
+    const player = document.querySelector('.player');
+    const treasures = document.querySelectorAll('.treasure');
+    const questionPopup = document.getElementById('questionPopup');
+    const questionText = document.getElementById('questionText');
+    const answerOptions = document.getElementById('answerOptions');
+    const scoreDisplay = document.getElementById('score');
+    const timerDisplay = document.getElementById('timer');
+    const gameOverDisplay = document.getElementById('gameOver');
+    const finalScore = document.getElementById('finalScore');
+
+    const questions = [
+        { question: "Kolik je 5 + 3?", answers: ["8", "7", "9", "6"], correct: "8" },
+        { question: "Jaké je hlavní město ČR?", answers: ["Praha", "Brno", "Ostrava", "Plzeň"], correct: "Praha" },
+        { question: "Jaká je barva nebe za jasného dne?", answers: ["Modrá", "Zelená", "Červená", "Fialová"], correct: "Modrá" },
+    ];
+
+    let currentScore = 0;
+    let timeLeft = 60;
+    let currentTreasure;
+
+    function movePlayer(event) {
+        const step = 10;
+        const rect = player.getBoundingClientRect();
+        const gameAreaRect = document.getElementById('gameArea').getBoundingClientRect();
+
+        switch (event.key) {
+            case 'ArrowUp': if (rect.top > gameAreaRect.top) player.style.top = `${player.offsetTop - step}px`; break;
+            case 'ArrowDown': if (rect.bottom < gameAreaRect.bottom) player.style.top = `${player.offsetTop + step}px`; break;
+            case 'ArrowLeft': if (rect.left > gameAreaRect.left) player.style.left = `${player.offsetLeft - step}px`; break;
+            case 'ArrowRight': if (rect.right < gameAreaRect.right) player.style.left = `${player.offsetLeft + step}px`; break;
+        }
+
+        checkCollision();
+    }
+
+    function checkCollision() {
+        treasures.forEach(treasure => {
+            const playerRect = player.getBoundingClientRect();
+            const treasureRect = treasure.getBoundingClientRect();
+
+            if (
+                playerRect.top < treasureRect.bottom &&
+                playerRect.bottom > treasureRect.top &&
+                playerRect.left < treasureRect.right &&
+                playerRect.right > treasureRect.left
+            ) {
+                currentTreasure = treasure;
+                showQuestion();
+            }
+        });
+    }
+
+    function showQuestion() {
+        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+        questionText.textContent = randomQuestion.question;
+        answerOptions.innerHTML = '';
+
+        randomQuestion.answers.forEach(answer => {
+            const button = document.createElement('button');
+            button.textContent = answer;
+            button.onclick = () => handleAnswer(answer, randomQuestion.correct);
+            answerOptions.appendChild(button);
+        });
+
+        questionPopup.style.display = 'block';
+    }
+
+    function handleAnswer(answer, correctAnswer) {
+        if (answer === correctAnswer) {
+            currentScore += 10;
+            currentTreasure.style.display = 'none';
+        } else {
+            currentScore -= 5;
+        }
+        updateScore();
+        questionPopup.style.display = 'none';
+    }
+
+    function updateScore() {
+        scoreDisplay.textContent = `Body: ${currentScore}`;
+    }
+
+    function updateTimer() {
+        timeLeft--;
+        timerDisplay.textContent = `Čas: ${timeLeft}`;
+        if (timeLeft <= 0) {
+            endGame();
+        }
+    }
+
+    function endGame() {
+        clearInterval(timerInterval);
+        document.removeEventListener('keydown', movePlayer);
+        gameOverDisplay.style.display = 'block';
+        finalScore.textContent = currentScore;
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    document.addEventListener('keydown', movePlayer);
+</script>
+
+</body>
+</html>

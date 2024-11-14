@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testovací aplikace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .add-question-btn, .submit-btn {
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .question-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background: #f0f8ff;
+        }
+
+        .remove-question-btn {
+            background-color: #FF6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .remove-question-btn:hover {
+            background-color: #c44133;
+        }
+
+        #test-preview {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Testovací aplikace</h1>
+
+    <div class="form-group">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu">
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+    <button type="button" class="submit-btn" onclick="previewTest()">Zobrazit test</button>
+
+    <div id="test-preview">
+        <h2>Náhled testu</h2>
+        <div id="preview-content"></div>
+    </div>
+</div>
+
+<script>
+    let questionCount = 0;
+
+    function addQuestion() {
+        questionCount++;
+        const questionTemplate = `
+            <div class="question-container" id="question${questionCount}">
+                <div class="form-group">
+                    <label for="questionTitle${questionCount}">Otázka ${questionCount}:</label>
+                    <textarea id="questionTitle${questionCount}" placeholder="Zadejte text otázky (může obsahovat kód)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="questionAnswer${questionCount}">Odpověď:</label>
+                    <textarea id="questionAnswer${questionCount}" placeholder="Zadejte text odpovědi (může obsahovat kód)"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="questionPoints${questionCount}">Počet bodů:</label>
+                    <input type="number" id="questionPoints${questionCount}" value="1" min="1">
+                </div>
+                <button type="button" class="remove-question-btn" onclick="removeQuestion(${questionCount})">Odstranit otázku</button>
+            </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
+    }
+
+    function removeQuestion(questionId) {
+        const questionElement = document.getElementById(`question${questionId}`);
+        if (questionElement) {
+            questionElement.remove();
+        }
+    }
+
+    function previewTest() {
+        const testName = document.getElementById('testName').value.trim();
+        const questions = getQuestions();
+
+        if (!testName || questions.length === 0) {
+            alert('Zadejte název testu a alespoň jednu otázku.');
+            return;
+        }
+
+        const previewContent = `
+            <h2>${testName}</h2>
+            ${questions.map((q, index) => `
+                <div>
+                    <h3>${index + 1}. ${q.title}</h3>
+                    <pre>${q.answer}</pre>
+                    <p><strong>Body:</strong> ${q.points}</p>
+                </div>
+            `).join('')}
+        `;
+
+        document.getElementById('preview-content').innerHTML = previewContent;
+        document.getElementById('test-preview').style.display = 'block';
+    }
+
+    function getQuestions() {
+        const questions = [];
+        for (let i = 1; i <= questionCount; i++) {
+            const titleElement = document.getElementById(`questionTitle${i}`);
+            const answerElement = document.getElementById(`questionAnswer${i}`);
+            const pointsElement = document.getElementById(`questionPoints${i}`);
+
+            if (titleElement && answerElement && pointsElement) {
+                questions.push({
+                    title: titleElement.value.trim(),
+                    answer: answerElement.value.trim(),
+                    points: parseInt(pointsElement.value, 10)
+                });
+            }
+        }
+        return questions;
+    }
+</script>
+
+</body>
+</html>
