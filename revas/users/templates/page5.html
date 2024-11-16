@@ -239,6 +239,34 @@
         button:hover {
             background-color: #4682B4;
         }
+
+h1.animated-title {
+    background-color: white;  /* Bílé pozadí */
+    padding: 20px;  /* Větší mezery kolem textu */
+    border-radius: 5px;  /* Zaoblené rohy */
+    width: max-content;  /* Šířka podle obsahu */
+    margin: 0 auto;  /* Centerování horizontálně */
+    position: relative;  /* Pro pozicování v animaci */
+    animation: slideUp 1s ease-out forwards;  /* Animace zespoda nahoru, s tím že zůstane na pozici */
+    opacity: 0;  /* Počáteční průhlednost */
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(50px);  /* Začátek animace (posunuto dolů) */
+        opacity: 0;  /* Počáteční průhlednost */
+    }
+    100% {
+        transform: translateY(100px);  /* Konec animace (posunuto o 100px dolů) */
+        opacity: 1;  /* Konec animace s plnou viditelností */
+    }
+}
+
+.current-day {
+    background-color: #1E90FF;  /* Modrá barva pro aktuální den */
+    color: white;  /* Bílý text pro lepší kontrast */
+    font-weight: bold;  /* Zvýraznění textu */
+}
     </style>
 </head>
 <body>
@@ -259,7 +287,7 @@
         <a class="icon-button" href="/page6">6</a> <!-- Tlačítko pro page6 -->
     </div>
 </header>
-
+<h1 class="animated-title">Hlavní stránka</h1>
 <div class="left-sidebar">
     <div class="table">
         <h2>Skupiny</h2>
@@ -318,26 +346,35 @@
     let currentYear = new Date().getFullYear();
 
     function renderCalendar() {
-        const months = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
-        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const months = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const today = new Date();  // Získáme dnešní datum
+    const todayDate = today.getDate();  // Získáme pouze den (bez měsíce a roku)
 
-        document.getElementById("calendar-title").textContent = `${months[currentMonth]} ${currentYear}`;
+    document.getElementById("calendar-title").textContent = `${months[currentMonth]} ${currentYear}`;
 
-        let daysHTML = "";
-        for (let i = 0; i < firstDay; i++) {
-            daysHTML += "<td></td>";
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            if ((firstDay + day - 1) % 7 === 0) {
-                daysHTML += "</tr><tr>";
-            }
-            daysHTML += `<td>${day}</td>`;
-        }
-
-        document.getElementById("calendar-days").innerHTML = `<tr>${daysHTML}</tr>`;
+    let daysHTML = "<tr>";  // Začneme první řadou
+    for (let i = 0; i < firstDay; i++) {
+        daysHTML += "<td></td>";  // Prázdné buňky pro dny před 1. dnem v měsíci
     }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        // Pokud je dnešní den, přidáme třídu 'current-day'
+        const isToday = day === todayDate && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+        const dayClass = isToday ? 'class="current-day"' : '';  // Pokud je dnešní den, přidáme třídu
+
+        if ((firstDay + day - 1) % 7 === 0 && day !== 1) {
+            daysHTML += "</tr><tr>";  // Nový řádek pro každý týden
+        }
+
+        daysHTML += `<td ${dayClass}>${day}</td>`;  // Přidání dne s volitelnou třídou
+    }
+
+    daysHTML += "</tr>";  // Uzavření posledního řádku
+    document.getElementById("calendar-days").innerHTML = daysHTML;  // Aplikujeme HTML na tabulku
+}
+
 
     function changeMonth(offset) {
         currentMonth += offset;
