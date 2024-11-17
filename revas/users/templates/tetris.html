@@ -1,10 +1,255 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test a hru Tetris</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .answers label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .add-question-btn, .submit-btn, .preview-btn, .end-test-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover, .preview-btn:hover, .end-test-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .question-wrapper {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #previewTest {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .test-section {
+            margin-bottom: 20px;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .timer-display {
+            margin-top: 20px;
+        }
+
+        /* Tetris style */
+        #tetrisCanvas {
+            border: 2px solid #000;
+            background-color: #f4f4f4;
+            display: none;
+        }
+
+    </style>
 </head>
 <body>
 
+<div class="container">
+    <h1>Vytvořit test a hru Tetris</h1>
+
+    <!-- Test Section -->
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    </div>
+
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <button type="button" class="submit-btn" onclick="submitTest()">Odeslat test</button>
+    </form>
+
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+    </div>
+
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <p id="scoreDisplay"></p>
+        <p id="gradeDisplay"></p>
+    </div>
+
+    <!-- Tetris Game Section -->
+    <div id="tetrisSection" style="display: none;">
+        <h2>Hra Tetris</h2>
+        <canvas id="tetrisCanvas" width="300" height="600"></canvas>
+    </div>
+</div>
+
+<script>
+    let questionCount = 0;
+    let totalPoints = 0;
+    let correctAnswers = 0;
+
+    // Funkce pro přidání otázky
+    function addQuestion() {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+            </div>
+            <div class="answers">
+                <label><input type="radio" name="question${questionCount}_answer" value="1" required>
+                <input type="text" name="question${questionCount}_option1" placeholder="Odpověď 1" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="2" required>
+                <input type="text" name="question${questionCount}_option2" placeholder="Odpověď 2" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="3" required>
+                <input type="text" name="question${questionCount}_option3" placeholder="Odpověď 3" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="4" required>
+                <input type="text" name="question${questionCount}_option4" placeholder="Odpověď 4" required></label>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
+    }
+
+    // Funkce pro smazání otázky
+    function deleteQuestion(questionId) {
+        const questionElement = document.getElementById(`question${questionId}`);
+        questionElement.remove();
+    }
+
+    // Funkce pro náhled testu
+    function previewTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
+
+        if (!testName || questions.length === 0) {
+            alert('Přidejte otázky a název testu');
+            return;
+        }
+
+        let testContent = `<h2>${testName}</h2><form id="previewForm">`;
+
+        questions.forEach((question, index) => {
+            testContent += `
+                <div class="question">
+                    <p>${question.text}</p>
+                    <div class="answers">
+                        ${question.options.map((option, i) => `
+                            <label>
+                                <input type="radio" name="question${index + 1}_answer" value="${i + 1}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+        });
+
+        testContent += `<button type="button" onclick="submitTest()">Hotovo</button></form>`;
+        document.getElementById('testContent').innerHTML = testContent;
+        document.getElementById('previewTest').style.display = 'block';
+    }
+
+    // Funkce pro získání otázky
+    function getQuestions() {
+        const questions = [];
+        for (let i = 1; i <= questionCount; i++) {
+            const questionText = document.querySelector(`input[name="question${i}_text"]`).value;
+            const options = [];
+            for (let j = 1; j <= 4; j++) {
+                const optionText = document.querySelector(`input[name="question${i}_option${j}"]`).value;
+                options.push(optionText);
+            }
+            const answer = document.querySelector(`input[name="question${i}_answer"]:checked`)?.value;
+            if (questionText && answer) {
+                questions.push({
+                    text: questionText,
+                    options: options,
+                    correctAnswer: answer
+                });
+            }
+        }
+        return questions;
+    }
+
+    // Funkce pro odeslání testu
+    function submitTest() {
+        const questions = getQuestions();
+        questions.forEach((question, index) => {
+            const selectedAnswer = document.querySelector(`input[name="question${index + 1}_answer"]:checked`);
+            if (selectedAnswer && selectedAnswer.value === question.correctAnswer) {
+                correctAnswers++;
+            }
+        });
+
+        if (correctAnswers >= 3) {  // Pokud jsou alespoň 3 správné odpovědi, může začít hra
+            alert('Správně! Můžete začít hru Tetris.');
+            startTetrisGame();
+        } else {
+            alert('Některé odpovědi jsou špatně. Hra končí.');
+        }
+    }
+
+    // Funkce pro spuštění hry Tetris
+    function startTetrisGame() {
+        document.getElementById('tetrisSection').style.display = 'block';
+        document.getElementById('tetrisCanvas').style.display = 'block';
+
+        // Nastavení pro hru Tetris (v tuto chvíli pouze základní kód pro začátek)
+        const canvas = document.getElementById('tetrisCanvas');
+        const context = canvas.getContext('2d');
+
+        function drawTetris() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = 'red';
+            context.fillRect(50, 50, 30, 30);  // Jen ukázka jednoho bloku
+        }
+
+        setInterval(drawTetris, 500);
+    }
+</script>
+
 </body>
 </html>
+
