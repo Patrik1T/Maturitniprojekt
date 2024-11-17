@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1E90FF;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            height: 70px;
+            padding: 0 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: grey;
+            border-radius: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: black;
+            background-color: #d3d3d3;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .icon-rect {
+            width: 40px;
+            height: 25px;
+            background-color: grey;
+            border-radius: 5px;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: black;
+            padding: 8px 15px;
+            border: 2px solid #d3d3d3;
+            border-radius: 5px;
+        }
+
+        .left-sidebar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 200px;
+            background-color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .table {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 3px solid black;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .table:hover {
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            margin-left: 220px;
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .test-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .test-category {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 3px solid black;
+            width: calc(50% - 20px);
+            box-sizing: border-box;
+        }
+
+        .test-category img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo"></div>
+    <div class="nav-links">
+        <a href="#">Testy</a>
+        <a href="#">Veřejné testy</a>
+        <a href="#">Uložené testy</a>
+    </div>
+    <div class="icons">
+        <div class="icon-rect"></div>
+        <div class="icon-rect"></div>
+        <div class="nav-buttons">
+            <a href="#">🔔</a>
+            <a href="#">✉️</a>
+        </div>
+    </div>
+</header>
+
+<div class="left-sidebar">
+    <div class="table"><h2>Skupiny</h2></div>
+    <div class="table"><h2>Historie</h2></div>
+    <div class="table"><h2>Vaše vyrobené</h2></div>
+</div>
+
+<div class="main-content">
+    <div class="test-section">
+        <!-- První test -->
+        <div class="test-category">
+            <h1>Rozhodovačka</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/page11">Vytvořit</a>
+
+            <h1>Ano nebo ne</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/ano_ne">Vytvořit</a>
+
+            <h1>Spojovačka</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/spojovacka">Vytvořit</a>
+
+            <h1>Kviz</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/kviz">Vytvořit</a>
+
+            <h1>Multi test</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/Multi_test">Vytvořit</a>
+
+            <h1>Programovaci test</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/programovaci_test">Vytvořit</a>
+
+            <h1>Psaci</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/psaci_testy">Vytvořit</a>
+
+            <h1>Tabulka</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/tabulka">Vytvořit</a>
+
+            <h1>Košíky</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/kosiky">Vytvořit</a>
+
+            <h1>Maraton</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/maraton">Vytvořit</a>
+
+            <h1>Chytačka</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/chytacka">Vytvořit</a>
+        </div>
+
+
+        <!-- Druhý test -->
+        <div class="test-category">
+           <h1>Pexeso</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/pexeso">Vytvořit</a>
+
+            <h1>piskvorky</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/piskvorky">Vytvořit</a>
+
+            <h1>Oběšenec</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/obesenec">Vytvořit</a>
+
+            <h1>Labyrint</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/Labyrint">Vytvořit</a>
+
+            <h1>Dveře hra</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/dvere_hra">Vytvořit</a>
+
+            <h1>Flappy bird</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/flappy_bird">Vytvořit</a>
+
+            <h1>Lov pokladů</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/lov_pokladu">Vytvořit</a>
+
+            <h1>Snake</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/snake">Vytvořit</a>
+
+            <h1>Kámen, nůžky, papír</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/snake">Vytvořit</a>
+
+            <h1>Tetris</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/tetris">Vytvořit</a>
+
+            <h1>Klikačka</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <a class="button" href="/klikaci_hra/">Vytvořit</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
