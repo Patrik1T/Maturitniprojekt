@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vytvořit kvíz</title>
+    <title>Vytvořit test s tajenkou</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,20 +33,38 @@
             border-radius: 5px;
         }
 
-        .text-input {
-            margin-top: 10px;
-        }
-
-        .text-input input {
-            width: calc(100% - 22px);
+        .question-wrapper input[type="text"] {
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            margin-right: 10px;
-            display: inline-block;
+            margin-top: 10px;
         }
 
-        .add-question-btn, .submit-btn {
+        .answer-wrapper {
+            margin-top: 20px;
+        }
+
+        .answer-wrapper .square {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .answer-wrapper .square.active {
+            background-color: #1E90FF;
+        }
+
+        .answer-wrapper .square.thicker {
+            border-width: 2px;
+            background-color: #FF6347;
+        }
+
+        .submit-btn {
             display: block;
             width: 100%;
             padding: 10px;
@@ -58,7 +76,7 @@
             margin-top: 20px;
         }
 
-        .add-question-btn:hover, .submit-btn:hover {
+        .submit-btn:hover {
             background-color: #104e8b;
         }
 
@@ -69,18 +87,26 @@
             border: 1px solid #b3d4fc;
             border-radius: 5px;
         }
+
+        .secret-answer {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #FF6347;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Vytvořit kvíz</h1>
+    <h1>Vytvořit test s tajenkou</h1>
 
     <form id="quizForm">
         <div id="questionsContainer"></div>
-        <button type="button" class="add-question-btn" onclick="addQuestionField()">Přidat otázku</button>
+
         <button type="button" class="submit-btn" onclick="submitQuiz()">Odeslat kvíz</button>
     </form>
+
+    <div class="result" id="resultSection" style="display:none;"></div>
 </div>
 
 <script>
@@ -89,16 +115,47 @@
     function addQuestionField() {
         const questionsContainer = document.getElementById('questionsContainer');
 
+        // Generování otázky
         const questionTemplate = `
             <div class="question-wrapper">
                 <input type="text" placeholder="Zadejte otázku" required>
-                <div class="text-input">
-                    <input type="text" placeholder="Zadejte správnou odpověď" required>
+                <div class="answer-wrapper">
+                    <div class="answer-square-container">
+                        <span>Počet čtverečků:</span>
+                        <input type="number" min="1" value="5" onchange="updateSquares(this)">
+                    </div>
+                    <div class="squares"></div>
+                </div>
+                <div class="secret-answer">
+                    <span>Tajenka:</span>
+                    <input type="text" placeholder="Zadejte tajenku" required>
                 </div>
             </div>
         `;
 
         questionsContainer.insertAdjacentHTML('beforeend', questionTemplate);
+        updateSquares({ value: 5 }); // Inicializace pro 5 čtverečků
+    }
+
+    function updateSquares(input) {
+        const answerWrapper = input.closest('.question-wrapper').querySelector('.answer-wrapper');
+        const squareCount = parseInt(input.value);
+        const squaresContainer = answerWrapper.querySelector('.squares');
+
+        // Clear existing squares
+        squaresContainer.innerHTML = '';
+
+        // Create new squares based on the number
+        for (let i = 0; i < squareCount; i++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.onclick = () => toggleSquare(square);
+            squaresContainer.appendChild(square);
+        }
+    }
+
+    function toggleSquare(square) {
+        square.classList.toggle('active');
     }
 
     function submitQuiz() {
@@ -106,24 +163,35 @@
         let score = 0;
 
         questionWrappers.forEach((wrapper, index) => {
-            const questionInput = wrapper.querySelector('input[type="text"]');
-            const answerInput = wrapper.querySelector('input[type="text"]:nth-of-type(2)');
-            const questionText = questionInput.value.trim();
-            const correctAnswer = answerInput.value.trim();
-            questions.push({ question: questionText, answer: correctAnswer });
+            const questionInput = wrapper.querySelector('input[type="text"]:first-of-type');
+            const answerSquares = wrapper.querySelectorAll('.square');
+            const secretAnswerInput = wrapper.querySelector('input[type="text"]:last-of-type');
+            const secretAnswer = secretAnswerInput.value.trim();
 
-            // Simulace správných odpovědí (můžeš to upravit, pokud chceš mít předem definované odpovědi)
-            const userAnswer = prompt(`Otázka ${index + 1}: ${questionText}`);
-            if (userAnswer && userAnswer.trim().toLowerCase() === correctAnswer.toLowerCase()) {
+            // Logika pro vyhodnocení odpovědi
+            const markedSquares = Array.from(answerSquares).filter(square => square.classList.contains('active')).length;
+            const correctSquares = Math.floor(answerSquares.length / 2); // Očekáváme, že polovina čtverečků je označena
+
+            if (markedSquares >= correctSquares) {
                 score++;
             }
+
+            // Uložíme otázku a tajenku
+            questions.push({
+                question: questionInput.value.trim(),
+                answerSquares: markedSquares,
+                secretAnswer: secretAnswer
+            });
         });
 
-        // Zobrazit výsledek
-        const resultContainer = document.createElement('div');
-        resultContainer.className = 'result';
-        resultContainer.innerHTML = `<h2>Tvé skóre: ${score} z ${questions.length}</h2>`;
-        document.body.appendChild(resultContainer);
+        // Zobrazí výsledek
+        const resultContainer = document.getElementById('resultSection');
+        resultContainer.style.display = 'block';
+        resultContainer.innerHTML = `<h2>Výsledek: ${score} z ${questions.length}</h2>`;
+
+        // Tajenka
+        const secretAnswers = questions.map(q => q.secretAnswer).join(', ');
+        resultContainer.innerHTML += `<div><strong>Tajenka:</strong> ${secretAnswers}</div>`;
     }
 
     // Spuštění kvízu při načtení stránky
