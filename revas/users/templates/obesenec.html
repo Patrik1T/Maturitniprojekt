@@ -3,301 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Quiz Bird s Oběšencem</title>
+    <title>Hra Oběšenec</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
-            overflow: hidden;
-            background-color: #87CEEB;
+            padding: 20px;
         }
 
-        #gameCanvas {
-            display: block;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            background-color: #70C5CE;
-            border: 2px solid black;
-        }
-
-        .questionPopup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background-color: white;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            display: none;
-            z-index: 100;
-        }
-
-        .questionPopup h2 {
-            margin: 0 0 10px;
-        }
-
-        .questionPopup button {
-            margin-top: 10px;
-            padding: 10px 15px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
             border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .hangmanContainer {
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 30px;
-        }
-
-        .hangmanContainer p {
-            font-size: 20px;
-        }
-
-        .gameOver {
-            display: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
+        h1 {
             text-align: center;
-            font-size: 24px;
-            line-height: 100vh;
+            color: #333;
         }
+
+        .word-display {
+            font-size: 2em;
+            letter-spacing: 2px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .input-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .input-container input {
+            font-size: 1.5em;
+            padding: 5px;
+            width: 50px;
+            text-align: center;
+        }
+
+        .submit-btn, .restart-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover, .restart-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .restart-btn {
+            background-color: #FFD700;
+        }
+
+        .game-info {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .letters-guessed {
+            margin-top: 20px;
+        }
+
+        .letters-guessed span {
+            margin: 0 5px;
+            font-size: 1.2em;
+        }
+
+        .incorrect-guesses {
+            color: red;
+        }
+
     </style>
 </head>
 <body>
 
-<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div class="container">
+    <h1>Hra Oběšenec</h1>
 
-<div class="questionPopup" id="questionPopup">
-    <h2 id="questionText">Otázka?</h2>
-    <div id="answerOptions"></div>
-</div>
+    <!-- Formulář pro zadání slova -->
+    <div class="input-container">
+        <label for="wordInput">Zadejte slovo pro hru:</label><br>
+        <input type="text" id="wordInput" placeholder="Slovo" maxlength="15">
+        <button class="submit-btn" onclick="startGame()">Začít hru</button>
+    </div>
 
-<div class="hangmanContainer" id="hangmanContainer" style="display: none;">
-    <h3>Hádání slova:</h3>
-    <p id="hangmanWord"></p>
-    <p>Špatné pokusy: <span id="hangmanTries">0</span>/6</p>
-    <input type="text" id="hangmanInput" maxlength="1">
-    <button onclick="guessLetter()">Hádnout písmeno</button>
-</div>
+    <!-- Ukázka slova pro hádání -->
+    <div class="word-display" id="wordDisplay"></div>
 
-<div class="gameOver" id="gameOver">
-    Konec hry! Získal/a jste <span id="finalScore">0</span> bodů.
+    <!-- Hráč zadává písmena -->
+    <div class="input-container">
+        <label for="letterInput">Zadejte písmeno:</label><br>
+        <input type="text" id="letterInput" maxlength="1" oninput="this.value = this.value.toUpperCase();">
+        <button class="submit-btn" onclick="guessLetter()">Hádnout</button>
+    </div>
+
+    <!-- Informace o hře -->
+    <div class="game-info" id="gameInfo">
+        <p id="incorrectGuesses"></p>
+        <p id="remainingAttempts"></p>
+    </div>
+
+    <!-- Restartování hry -->
+    <button class="restart-btn" onclick="restartGame()" style="display: none;">Restartovat hru</button>
+
+    <!-- Seznam uhádnutých písmen -->
+    <div class="letters-guessed" id="lettersGuessed"></div>
 </div>
 
 <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-
-    const bird = {
-        x: 100,
-        y: 150,
-        width: 30,
-        height: 30,
-        gravity: 0.5,
-        lift: -10,
-        velocity: 0,
-        alive: true
-    };
-
-    const pipes = [];
-    const pipeWidth = 50;
-    const pipeGap = 150;
-    let pipeFrequency = 90; // Distance between pipes
-    let pipeSpeed = 2;
-
-    let score = 0;
-    let gameInterval;
-    let questionPopup = document.getElementById("questionPopup");
-    let questionText = document.getElementById("questionText");
-    let answerOptions = document.getElementById("answerOptions");
-    let hangmanContainer = document.getElementById("hangmanContainer");
-    let hangmanWord = document.getElementById("hangmanWord");
-    let hangmanTries = document.getElementById("hangmanTries");
-    let hangmanInput = document.getElementById("hangmanInput");
-
-    const questions = [
-        { question: "Jaké je hlavní město ČR?", answers: ["Praha", "Brno", "Ostrava", "Plzeň"], correct: "Praha" },
-        { question: "Kolik je 5 + 3?", answers: ["7", "8", "9", "6"], correct: "8" },
-        { question: "Kdo objevil Ameriku?", answers: ["Kryštof Kolumbus", "Marco Polo", "Vasco da Gama", "Magellan"], correct: "Kryštof Kolumbus" },
-    ];
-
-    let hangmanWordToGuess = "";
+    let wordToGuess = "";
     let guessedLetters = [];
-    let wrongAttempts = 0;
+    let remainingAttempts = 6;
+    let correctGuesses = [];
+    let gameOver = false;
 
-    function createPipe() {
-        const height = Math.floor(Math.random() * (canvas.height - pipeGap));
-        pipes.push({ x: canvas.width, y: height, question: getRandomQuestion() });
-    }
+    // Funkce pro spuštění hry
+    function startGame() {
+        const wordInput = document.getElementById('wordInput').value.trim().toUpperCase();
 
-    function getRandomQuestion() {
-        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-        return randomQuestion;
-    }
-
-    function drawBird() {
-        ctx.fillStyle = "#FFD700";
-        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-    }
-
-    function drawPipes() {
-        ctx.fillStyle = "#228B22";
-        pipes.forEach(pipe => {
-            ctx.fillRect(pipe.x, 0, pipeWidth, pipe.y);
-            ctx.fillRect(pipe.x, pipe.y + pipeGap, pipeWidth, canvas.height - pipe.y - pipeGap);
-        });
-    }
-
-    function updateGame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        bird.velocity += bird.gravity;
-        bird.y += bird.velocity;
-
-        if (bird.y + bird.height >= canvas.height) {
-            bird.y = canvas.height - bird.height;
-            bird.velocity = 0;
+        if (wordInput === "") {
+            alert("Zadejte platné slovo!");
+            return;
         }
 
-        pipes.forEach(pipe => {
-            pipe.x -= pipeSpeed;
-
-            if (pipe.x + pipeWidth <= 0) {
-                pipes.shift();
-                score++;
-            }
-
-            if (
-                bird.x + bird.width > pipe.x &&
-                bird.x < pipe.x + pipeWidth &&
-                (bird.y < pipe.y || bird.y + bird.height > pipe.y + pipeGap)
-            ) {
-                // Stop the game if there is a collision and ask the question from the pipe
-                endGame();
-                askQuestion(pipe);
-            }
-        });
-
-        if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - pipeFrequency) {
-            createPipe();
-        }
-
-        drawBird();
-        drawPipes();
-
-        ctx.fillStyle = "#000";
-        ctx.font = "20px Arial";
-        ctx.fillText(`Score: ${score}`, 20, 30);
-    }
-
-    function gameLoop() {
-        if (bird.alive) {
-            updateGame();
-        } else {
-            clearInterval(gameInterval);
-        }
-    }
-
-    function endGame() {
-        bird.alive = false;
-        document.getElementById("gameOver").style.display = "block";
-        document.getElementById("finalScore").textContent = score;
-    }
-
-    function askQuestion(pipe) {
-        // Show the question when the bird encounters a pipe
-        questionText.textContent = pipe.question.question;
-        answerOptions.innerHTML = "";
-
-        pipe.question.answers.forEach(answer => {
-            const button = document.createElement("button");
-            button.textContent = answer;
-            button.onclick = () => handleAnswer(answer, pipe.question.correct);
-            answerOptions.appendChild(button);
-        });
-
-        questionPopup.style.display = "block";
-    }
-
-    function handleAnswer(answer, correctAnswer) {
-        if (answer === correctAnswer) {
-            score += 10;
-        } else {
-            score -= 5;
-            startHangmanGame();
-        }
-
-        questionPopup.style.display = "none";
-        pipes.shift(); // Remove the answered pipe
-    }
-
-    function startHangmanGame() {
-        hangmanContainer.style.display = "block";
-        wrongAttempts = 0;
+        wordToGuess = wordInput;
         guessedLetters = [];
+        remainingAttempts = 6;
+        correctGuesses = [];
+        gameOver = false;
 
-        // Pick a random word for hangman game
-        hangmanWordToGuess = getRandomWord();
-        hangmanWord.textContent = "_ ".repeat(hangmanWordToGuess.length).trim();
+        document.getElementById('wordInput').disabled = true;
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('letterInput').disabled = false;
+        document.getElementById('submit-btn').style.display = 'block';
+
+        displayWord();
+        updateGameInfo();
     }
 
-    function getRandomWord() {
-        const words = ["programování", "javascript", "hangman", "flappybird"];
-        return words[Math.floor(Math.random() * words.length)];
-    }
-
-    function guessLetter() {
-        const letter = hangmanInput.value.toLowerCase();
-        if (letter && !guessedLetters.includes(letter)) {
-            guessedLetters.push(letter);
-            if (hangmanWordToGuess.includes(letter)) {
-                updateHangmanWord(letter);
+    // Funkce pro zobrazení slova s hádacími písmeny
+    function displayWord() {
+        let display = '';
+        for (let i = 0; i < wordToGuess.length; i++) {
+            if (correctGuesses.includes(wordToGuess[i])) {
+                display += wordToGuess[i] + ' ';
             } else {
-                wrongAttempts++;
-                hangmanTries.textContent = wrongAttempts;
+                display += '_ ';
             }
+        }
+        document.getElementById('wordDisplay').textContent = display.trim();
+    }
 
-            if (wrongAttempts >= 6) {
-                alert("Prohráli jste! Slovo bylo: " + hangmanWordToGuess);
-                hangmanContainer.style.display = "none";
-                endGame();
-            }
+    // Funkce pro hádání písmen
+    function guessLetter() {
+        const letter = document.getElementById('letterInput').value.toUpperCase();
 
-            hangmanInput.value = "";
+        if (!letter || guessedLetters.includes(letter)) {
+            alert("Zadejte platné písmeno!");
+            return;
+        }
+
+        guessedLetters.push(letter);
+
+        if (wordToGuess.includes(letter)) {
+            correctGuesses.push(letter);
+        } else {
+            remainingAttempts--;
+        }
+
+        document.getElementById('letterInput').value = "";
+        displayWord();
+        updateGameInfo();
+
+        if (remainingAttempts <= 0) {
+            gameOver = true;
+            alert("Prohráli jste! Slovo bylo: " + wordToGuess);
+            document.getElementById('restart-btn').style.display = 'block';
+        }
+
+        if (correctGuesses.length === [...new Set(wordToGuess.split(''))].length) {
+            gameOver = true;
+            alert("Vyhráli jste!");
+            document.getElementById('restart-btn').style.display = 'block';
         }
     }
 
-    function updateHangmanWord(letter) {
-        let updatedWord = "";
-        for (const char of hangmanWordToGuess) {
-            updatedWord += guessedLetters.includes(char) ? char + " " : "_ ";
-        }
-        hangmanWord.textContent = updatedWord.trim();
-        if (!hangmanWord.textContent.includes("_")) {
-            alert("Vyhráli jste hádanku!");
-            hangmanContainer.style.display = "none";
-            pipes.shift();
-        }
+    // Funkce pro aktualizaci informací o hře
+    function updateGameInfo() {
+        document.getElementById('incorrectGuesses').textContent = "Nesprávná písmena: " + guessedLetters.join(", ");
+        document.getElementById('remainingAttempts').textContent = "Zbývající pokusy: " + remainingAttempts;
     }
 
-    document.addEventListener("keydown", event => {
-        if (event.key === " " && bird.alive) {
-            bird.velocity = bird.lift;
-        }
-    });
-
-    // Start the game loop
-    gameInterval = setInterval(gameLoop, 1000 / 60);
+    // Funkce pro restartování hry
+    function restartGame() {
+        document.getElementById('wordInput').disabled = false;
+        document.getElementById('letterInput').disabled = true;
+        document.getElementById('restart-btn').style.display = 'none';
+        document.getElementById('wordInput').value = "";
+        document.getElementById('wordDisplay').textContent = "";
+        document.getElementById('incorrectGuesses').textContent = "";
+        document.getElementById('remainingAttempts').textContent = "";
+        guessedLetters = [];
+        correctGuesses = [];
+        gameOver = false;
+    }
 </script>
 
 </body>
 </html>
+
