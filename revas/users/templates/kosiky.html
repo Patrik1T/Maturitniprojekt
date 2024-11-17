@@ -3,350 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hra - Košík</title>
+    <title>Vytvořit test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1, h2 {
-            text-align: center;
-        }
-
-        .game-area {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            background-color: #e0e0e0;
-            overflow: hidden;
-            border: 2px solid #333;
-            margin-top: 20px;
-        }
-
-        .answer {
-            position: absolute;
-            width: 100px;
-            height: 50px;
-            background-color: #1E90FF;
-            color: white;
-            text-align: center;
-            line-height: 50px;
+            padding: 20px;
             border-radius: 5px;
-            cursor: pointer;
-            opacity: 0;
-            animation: drop 2s forwards;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .answer.correct {
-            background-color: green;
-        }
-
-        .basket {
-            position: absolute;
-            width: 150px;
-            height: 100px;
-            background-color: orange;
-            color: white;
+        h1 {
             text-align: center;
-            line-height: 100px;
-            border-radius: 10px;
-            bottom: 20px;
+            color: #333;
         }
 
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .controls input, .controls button {
-            padding: 10px;
-            margin: 5px;
-            border-radius: 5px;
+        .question-wrapper {
             border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
 
-        .btn {
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .answers label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .add-question-btn, .submit-btn, .delete-question-btn, .preview-btn, .end-test-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
             background-color: #1E90FF;
             color: white;
             border: none;
-            padding: 12px 20px;
-            text-align: center;
             border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
         }
 
-        .btn:hover {
+        .delete-question-btn {
+            background-color: #FF6347;
+        }
+
+        .end-test-btn {
+            background-color: #FFD700;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover, .preview-btn:hover, .end-test-btn:hover {
             background-color: #104e8b;
         }
 
-        #timer {
-            text-align: center;
+        .delete-question-btn:hover {
+            background-color: #c44133;
+        }
+
+        .test-name {
+            margin-bottom: 20px;
+        }
+
+        .test-name input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #previewTest {
+            display: none;
             margin-top: 20px;
-            font-size: 20px;
         }
 
-        /* Levý navigační panel */
-        .left-sidebar {
-            width: 250px;
-            position: fixed;
-            top: 80px;
-            left: 0;
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        .test-section {
+            margin-bottom: 20px;
         }
 
-        .left-sidebar h2 {
-            text-align: center;
+        .timer {
+            margin-top: 20px;
         }
 
-        .table {
-            background-color: #444;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
+        .score {
+            margin-top: 20px;
         }
 
-        .table:hover {
-            background-color: #555;
-            cursor: pointer;
-        }
-
-        /* Vzhled navigace */
-        .navigation {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            display: flex;
-            gap: 15px;
-            background-color: transparent;
-        }
-
-        .navigation a {
-            color: white;
-            background-color: #1E90FF;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
+        .timer span {
             font-weight: bold;
         }
 
-        .navigation a:hover {
-            background-color: #104e8b;
+        .results {
+            margin-top: 20px;
         }
 
-        /* Styl pro obrázky */
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin-top: 10px;
+        /* Styling for the baskets */
+        .basket {
+            width: 150px;
+            height: 100px;
+            border: 2px solid #000;
+            margin: 10px;
+            display: inline-block;
+            position: relative;
+            background-color: #000;
         }
 
-        .hidden {
-            display: none;
+        .basket.open {
+            border-top: none;
+            background-color: transparent;
+            height: 80px;
         }
 
-        @keyframes drop {
-            0% {
-                opacity: 0;
-                top: -50px;
-            }
-            100% {
-                opacity: 1;
-                top: 450px;
-            }
+        .basket span {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+        }
+
+        .answer-draggable {
+            width: 150px;
+            margin: 5px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .answer-draggable:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigační panel -->
-    <div class="navigation">
-        <a href="#">Domů</a>
-        <a href="#">Testy</a>
-        <a href="#">Veřejné testy</a>
-        <a href="#">Uložené testy</a>
+<div class="container">
+    <h1>Vytvořit test</h1>
+
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
     </div>
 
-    <!-- Levý navigační panel -->
-    <div class="left-sidebar">
-        <div class="table">Skupiny</div>
-        <div class="table">Historie</div>
-        <div class="table">Vaše vyrobené</div>
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako soukromý test</button>
+        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
+    </form>
+
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <button type="button" class="end-test-btn" onclick="endTest()">Ukončit test</button>
     </div>
 
-    <div class="container">
-        <h1>Hra - Košík</h1>
+</div>
 
-        <div class="controls">
-            <label for="newQuestion">Otázka:</label>
-            <input type="text" id="newQuestion" placeholder="Zadejte otázku">
-            <label for="newAnswer">Odpověď:</label>
-            <input type="text" id="newAnswer" placeholder="Zadejte odpověď">
-            <button class="btn" onclick="addBasket()">Přidat otázku/odpověď</button>
-        </div>
+<script>
+    let questionCount = 0;
 
-        <div id="gameSetup" class="controls">
-            <label for="timerInput">Časovač (v sekundách):</label>
-            <input type="number" id="timerInput" value="60" min="10">
-            <button class="btn" onclick="startGame()">Začít hru</button>
-        </div>
+    // Funkce pro přidání otázky
+    function addQuestion() {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+            </div>
+            <div class="answers">
+                <label for="question${questionCount}_option1">Odpověď 1:</label>
+                <input type="text" name="question${questionCount}_option1" placeholder="Odpověď 1" required>
+                <label for="question${questionCount}_option2">Odpověď 2:</label>
+                <input type="text" name="question${questionCount}_option2" placeholder="Odpověď 2" required>
+                <label for="question${questionCount}_option3">Odpověď 3:</label>
+                <input type="text" name="question${questionCount}_option3" placeholder="Odpověď 3" required>
+                <label for="question${questionCount}_option4">Odpověď 4:</label>
+                <input type="text" name="question${questionCount}_option4" placeholder="Odpověď 4" required>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
+    }
 
-        <div id="gameArea" class="game-area"></div>
+    // Funkce pro smazání otázky
+    function deleteQuestion(questionId) {
+        const questionElement = document.getElementById(`question${questionId}`);
+        questionElement.remove();
+    }
 
-        <div id="timer"></div>
+    // Funkce pro náhled testu
+    function previewTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
 
-        <div id="scoreDisplay" class="controls hidden">
-            <h2>Výsledek: <span id="score"></span> bodů</h2>
-        </div>
-
-        <!-- Příklad s obrázky -->
-        <div class="image-container">
-            <h2>Obrázky</h2>
-            <img src="https://via.placeholder.com/600x400" alt="Obrázek 1">
-            <img src="https://via.placeholder.com/600x400" alt="Obrázek 2">
-        </div>
-    </div>
-
-    <script>
-        let baskets = [];
-        let answers = [];
-        let score = 0;
-        let timerId;
-        let timeLeft;
-
-        function addBasket() {
-            const question = document.getElementById('newQuestion').value.trim();
-            const answer = document.getElementById('newAnswer').value.trim();
-
-            if (!question || !answer) {
-                alert('Zadejte otázku i odpověď.');
-                return;
-            }
-
-            baskets.push({ question, answer });
-            document.getElementById('newQuestion').value = '';
-            document.getElementById('newAnswer').value = '';
+        if (!testName || questions.length === 0) {
+            alert('Přidejte otázky a název testu');
+            return;
         }
 
-        function startGame() {
-            if (baskets.length === 0) {
-                alert('Přidejte alespoň jednu otázku a odpověď.');
-                return;
-            }
+        let testContent = `<h2>${testName}</h2><form id="previewForm">`;
 
-            score = 0;
-            timeLeft = parseInt(document.getElementById('timerInput').value, 10);
-            document.getElementById('gameArea').innerHTML = '';
-            startTimer();
+        questions.forEach((question, index) => {
+            testContent += `
+                <div class="question">
+                    <p>${question.text}</p>
+                    <div class="answers">
+                        ${question.options.map((option, i) => `
+                            <div class="answer-draggable" id="answer${index}_${i}" draggable="true" ondragstart="drag(event)">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="basket open" id="basket${index}">
+                        <span>Košík ${index + 1}</span>
+                    </div>
+                </div>`;
+        });
 
-            // Vytvoření košíků
-            baskets.forEach((basket, index) => {
-                const basketDiv = document.createElement('div');
-                basketDiv.className = 'basket';
-                basketDiv.style.left = `${index * 160}px`;
-                basketDiv.textContent = basket.question;
-                basketDiv.dataset.answer = basket.answer;
-                basketDiv.dataset.index = index;
-                document.getElementById('gameArea').appendChild(basketDiv);
+        testContent += `<button type="button" onclick="submitTest()">Hotovo</button></form>`;
+        document.getElementById('testContent').innerHTML = testContent;
+        document.getElementById('previewTest').style.display = 'block';
+    }
+
+    // Funkce pro získání otázek a odpovědí
+    function getQuestions() {
+        const questions = [];
+        const questionElements = document.querySelectorAll('.question-wrapper');
+        questionElements.forEach(questionElement => {
+            const questionText = questionElement.querySelector('input[type="text"]').value;
+            const options = [];
+            questionElement.querySelectorAll('.answers input[type="text"]').forEach(optionElement => {
+                options.push(optionElement.value);
             });
+            questions.push({ text: questionText, options });
+        });
+        return questions;
+    }
 
-            spawnAnswers();
-        }
+    // Funkce pro přetahování odpovědí do košíků
+    function drag(event) {
+        event.dataTransfer.setData("text", event.target.id);
+    }
 
-        function startTimer() {
-            document.getElementById('timer').textContent = `Čas: ${timeLeft}s`;
-            timerId = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').textContent = `Čas: ${timeLeft}s`;
+    function drop(event, basketId) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text");
+        const answer = document.getElementById(data);
+        const basket = document.getElementById(basketId);
+        basket.appendChild(answer);
+    }
 
-                if (timeLeft <= 0) {
-                    clearInterval(timerId);
-                    endGame();
-                }
-            }, 1000);
-        }
+    function saveTest(type) {
+        const questions = getQuestions();
+        const testData = {
+            name: document.getElementById('testName').value,
+            questions: questions
+        };
+        // Uložit data testu na server nebo do lokalní úložiště
+        console.log('Saving test', type, testData);
+    }
 
-        function spawnAnswers() {
-            answers = baskets.map(basket => basket.answer).sort(() => Math.random() - 0.5);
+    function saveAsHtml() {
+        const questions = getQuestions();
+        const htmlContent = `
+        <h1>${document.getElementById('testName').value}</h1>
+        <ol>
+            ${questions.map(q => `
+                <li>${q.text}</li>
+                <ul>
+                    ${q.options.map(option => `<li>${option}</li>`).join('')}
+                </ul>
+            `).join('')}
+        </ol>`;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${document.getElementById('testName').value}.html`;
+        link.click();
+    }
 
-            answers.forEach((answerText, index) => {
-                setTimeout(() => {
-                    const answerDiv = document.createElement('div');
-                    answerDiv.className = 'answer';
-                    answerDiv.textContent = answerText;
-                    answerDiv.style.left = `${Math.random() * 300}px`;
-                    answerDiv.style.top = `-50px`;
-                    document.getElementById('gameArea').appendChild(answerDiv);
+    function endTest() {
+        alert('Test byl ukončen!');
+    }
+</script>
 
-                    dropAnswer(answerDiv);
-                }, index * 2000);
-            });
-        }
-
-        function dropAnswer(answerDiv) {
-            const interval = setInterval(() => {
-                const currentTop = parseInt(answerDiv.style.top, 10);
-                answerDiv.style.top = `${currentTop + 5}px`;
-
-                if (currentTop > 450) {
-                    clearInterval(interval);
-                    answerDiv.remove();
-                }
-
-                checkCollision(answerDiv, interval);
-            }, 50);
-        }
-
-        function checkCollision(answerDiv, interval) {
-            const basketsDivs = document.querySelectorAll('.basket');
-
-            basketsDivs.forEach(basketDiv => {
-                const basketRect = basketDiv.getBoundingClientRect();
-                const answerRect = answerDiv.getBoundingClientRect();
-
-                if (
-                    answerRect.left < basketRect.right &&
-                    answerRect.right > basketRect.left &&
-                    answerRect.bottom > basketRect.top &&
-                    answerRect.top < basketRect.bottom
-                ) {
-                    clearInterval(interval);
-
-                    if (basketDiv.dataset.answer === answerDiv.textContent) {
-                        score += 10;
-                        answerDiv.className = 'answer correct';
-                    } else {
-                        answerDiv.className = 'answer';
-                    }
-
-                    answerDiv.remove();
-                    document.getElementById('scoreDisplay').querySelector('#score').textContent = score;
-                }
-            });
-        }
-
-        function endGame() {
-            alert(`Hra skončila! Získali jste ${score} bodů.`);
-            document.getElementById('scoreDisplay').classList.remove('hidden');
-        }
-    </script>
 </body>
 </html>
