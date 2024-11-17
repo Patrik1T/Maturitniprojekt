@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vytvořit test s tabulkami</title>
+    <title>Vytvořit test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,11 +26,11 @@
             color: #333;
         }
 
-        .table-wrapper {
+        .question {
             margin-bottom: 20px;
         }
 
-        .add-table-btn, .submit-btn, .delete-table-btn {
+        .add-question-btn, .submit-btn, .preview-btn, .add-table-btn, .delete-question-btn, .end-test-btn {
             display: block;
             width: 100%;
             padding: 10px;
@@ -42,153 +42,284 @@
             margin-top: 20px;
         }
 
-        .delete-table-btn {
+        .delete-question-btn {
             background-color: #FF6347;
         }
 
-        .add-table-btn:hover, .submit-btn:hover, .delete-table-btn:hover {
+        .end-test-btn {
+            background-color: #FFD700;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover, .preview-btn:hover, .end-test-btn:hover {
             background-color: #104e8b;
         }
 
-        .delete-table-btn:hover {
+        .delete-question-btn:hover {
             background-color: #c44133;
         }
 
-        .table-title {
-            margin-bottom: 10px;
+        .question-wrapper, .table-wrapper {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
         }
 
-        .table-title input {
+        .test-name {
+            margin-bottom: 20px;
+        }
+
+        .test-name input {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
 
-        .text-input {
-            margin-top: 10px;
-        }
-
-        .text-input input {
-            width: calc(100% - 22px);
+        .table-name input {
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            margin-right: 10px;
-            display: inline-block;
+            margin-bottom: 10px;
         }
 
-        .text-input button {
-            padding: 10px;
-            background-color: #1E90FF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        #previewTest {
+            display: none;
+            margin-top: 20px;
         }
 
-        .text-input button:hover {
-            background-color: #104e8b;
+        .test-section {
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            margin-top: 20px;
+        }
+
+        .score {
+            margin-top: 20px;
+        }
+
+        .timer span {
+            font-weight: bold;
+        }
+
+        .results {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Vytvořit test s tabulkami</h1>
+    <h1>Vytvořit test</h1>
+
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    </div>
+
+    <div class="timer">
+        <label for="timer">Nastavit časovač (v minutách):</label>
+        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+        <label for="enableTimer">Povolit časovač</label>
+        <input type="checkbox" id="enableTimer">
+    </div>
 
     <form id="testForm">
         <div id="tablesContainer"></div>
         <button type="button" class="add-table-btn" onclick="addTable()">Přidat tabulku</button>
-        <button type="button" class="submit-btn" onclick="saveTest()">Uložit test jako HTML</button>
+        <button type="button" class="submit-btn" onclick="previewTest()">Ukázat test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako soukromý test</button>
+        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
     </form>
+
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <button type="button" class="end-test-btn" onclick="endTest()">Ukončit test</button>
+    </div>
+
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <p id="scoreDisplay"></p>
+    </div>
+
+    <div class="timer-display" id="timerDisplay" style="display:none;">
+        <p>Čas zbývající: <span id="timerCount"></span></p>
+    </div>
+
 </div>
 
 <script>
     let tableCount = 0;
+    let questionCount = 0;
+    let timerInterval;
+    let totalTime = 0;
+    let timeRemaining = 0;
 
+    // Funkce pro přidání tabulky
     function addTable() {
         tableCount++;
-
         const tableTemplate = `
         <div class="table-wrapper" id="table${tableCount}">
-            <div class="table-title">
-                <label for="table${tableCount}_title">Název tabulky ${tableCount}:</label>
-                <input type="text" name="table${tableCount}_title" placeholder="Zadejte název tabulky" required>
+            <div class="table-name">
+                <label for="table${tableCount}_name">Název tabulky:</label>
+                <input type="text" id="table${tableCount}_name" placeholder="Zadejte název tabulky" required>
             </div>
-            <div class="text-input">
-                <input type="text" name="table${tableCount}_text" placeholder="Zadejte text" required>
-                <button type="button" onclick="deleteTextInput(${tableCount})">Smazat text</button>
-            </div>
-            <button type="button" class="delete-table-btn" onclick="deleteTable(${tableCount})">Smazat tabulku</button>
-        </div>
-        `;
-
+            <div class="questions-container" id="table${tableCount}_questions"></div>
+            <button type="button" class="add-question-btn" onclick="addQuestion(${tableCount})">Přidat otázku do tabulky</button>
+            <button type="button" class="delete-question-btn" onclick="deleteTable(${tableCount})">Smazat tabulku</button>
+        </div>`;
         document.getElementById('tablesContainer').insertAdjacentHTML('beforeend', tableTemplate);
     }
 
+    // Funkce pro smazání tabulky
     function deleteTable(tableId) {
         const tableElement = document.getElementById(`table${tableId}`);
         tableElement.remove();
     }
 
-    function deleteTextInput(tableId) {
-        const textInput = document.querySelector(`input[name="table${tableId}_text"]`);
-        if (textInput) {
-            textInput.value = ''; // Clear the text input
-        }
-    }
-
-    function saveTest() {
-        const tables = [];
-
-        for (let i = 1; i <= tableCount; i++) {
-            const tableTitle = document.querySelector(`input[name="table${i}_title"]`);
-            if (!tableTitle) continue;
-
-            const tableText = document.querySelector(`input[name="table${i}_text"]`).value;
-            tables.push({ title: tableTitle.value, text: tableText });
-        }
-
-        const testHtml = generateTestHtml(tables);
-        downloadFile(`test_s_tabulkami.html`, testHtml);
-    }
-
-    function generateTestHtml(tables) {
-        let tablesHtml = tables.map((t) => `
-            <div class="table">
-                <h3>${t.title}</h3>
-                <p>${t.text}</p>
+    // Funkce pro přidání otázky do tabulky
+    function addQuestion(tableId) {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
             </div>
-        `).join('');
-
-        return `
-            <!DOCTYPE html>
-            <html lang="cs">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Test s tabulkami</title>
-            </head>
-            <body>
-                <h1>Test s tabulkami</h1>
-                ${tablesHtml}
-            </body>
-            </html>
-        `;
+            <div class="answers">
+                <label><input type="radio" name="question${questionCount}_answer" value="1" required>
+                <input type="text" name="question${questionCount}_option1" placeholder="Odpověď 1" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="2" required>
+                <input type="text" name="question${questionCount}_option2" placeholder="Odpověď 2" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="3" required>
+                <input type="text" name="question${questionCount}_option3" placeholder="Odpověď 3" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="4" required>
+                <input type="text" name="question${questionCount}_option4" placeholder="Odpověď 4" required></label>
+            </div>
+        </div>`;
+        document.getElementById(`table${tableId}_questions`).insertAdjacentHTML('beforeend', questionTemplate);
     }
 
-    function downloadFile(fileName, content) {
-        const blob = new Blob([content], { type: 'text/html' });
+    // Funkce pro náhled testu
+    function previewTest() {
+        const testName = document.getElementById('testName').value;
+        const tables = getTables();
+
+        if (!testName || tables.length === 0) {
+            alert('Přidejte tabulky a název testu');
+            return;
+        }
+
+        let testContent = `<h3>${testName}</h3>`;
+        tables.forEach((table, index) => {
+            testContent += `<h4>${table.name}</h4><ul>`;
+            table.questions.forEach(question => {
+                testContent += `
+                <li>
+                    <p>${question.text}</p>
+                    <ul>
+                        <li>${question.options[0]}</li>
+                        <li>${question.options[1]}</li>
+                        <li>${question.options[2]}</li>
+                        <li>${question.options[3]}</li>
+                    </ul>
+                </li>`;
+            });
+            testContent += `</ul>`;
+        });
+
+        document.getElementById('testContent').innerHTML = testContent;
+        document.getElementById('previewTest').style.display = 'block';
+    }
+
+    // Funkce pro získání tabulek a jejich dat
+    function getTables() {
+        const tables = [];
+        for (let i = 1; i <= tableCount; i++) {
+            const tableName = document.getElementById(`table${i}_name`).value;
+            const questions = [];
+            const questionWrappers = document.querySelectorAll(`#table${i} .question-wrapper`);
+
+            questionWrappers.forEach(questionWrapper => {
+                const questionText = questionWrapper.querySelector('input[name$="_text"]').value;
+                const options = [
+                    questionWrapper.querySelector('input[name$="_option1"]').value,
+                    questionWrapper.querySelector('input[name$="_option2"]').value,
+                    questionWrapper.querySelector('input[name$="_option3"]').value,
+                    questionWrapper.querySelector('input[name$="_option4"]').value
+                ];
+                questions.push({ text: questionText, options });
+            });
+
+            if (tableName && questions.length > 0) {
+                tables.push({ name: tableName, questions });
+            }
+        }
+        return tables;
+    }
+
+    // Funkce pro uložení testu
+    function saveTest(type) {
+        const testName = document.getElementById('testName').value;
+        const tables = getTables();
+
+        if (!testName || tables.length === 0) {
+            alert('Přidejte tabulky a název testu');
+            return;
+        }
+
+        // Zde můžete uložit test na server nebo do souboru
+        console.log('Ukládám test jako ' + type, testName, tables);
+    }
+
+    // Funkce pro uložení testu jako HTML
+    function saveAsHtml() {
+        const testName = document.getElementById('testName').value;
+        const tables = getTables();
+
+        if (!testName || tables.length === 0) {
+            alert('Přidejte tabulky a název testu');
+            return;
+        }
+
+        let htmlContent = `
+        <!DOCTYPE html>
+        <html lang="cs">
+        <head><meta charset="UTF-8"><title>${testName}</title></head>
+        <body>
+        <h1>${testName}</h1>`;
+
+        tables.forEach(table => {
+            htmlContent += `<h2>${table.name}</h2><ul>`;
+            table.questions.forEach(question => {
+                htmlContent += `<li><strong>${question.text}</strong><ul>`;
+                question.options.forEach(option => {
+                    htmlContent += `<li>${option}</li>`;
+                });
+                htmlContent += `</ul></li>`;
+            });
+            htmlContent += `</ul>`;
+        });
+
+        htmlContent += `</body></html>`;
+
+        const blob = new Blob([htmlContent], { type: 'text/html' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = fileName;
+        link.download = `${testName}.html`;
         link.click();
     }
 
-    window.onload = function() {
-        addTable();
-    };
+    // Funkce pro ukončení testu
+    function endTest() {
+        alert("Test byl ukončen.");
+        document.getElementById('previewTest').style.display = 'none';
+    }
 </script>
 
 </body>
