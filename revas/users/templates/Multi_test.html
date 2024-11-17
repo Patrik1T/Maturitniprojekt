@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rozšířená tvorba testu</title>
+    <title>Vytvořit test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 20px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background-color: white;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -26,204 +26,262 @@
             color: #333;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .question {
+            margin-bottom: 20px;
         }
 
-        label {
-            font-weight: bold;
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .answers label {
             display: block;
             margin-bottom: 5px;
         }
 
-        input[type="text"], input[type="number"], textarea {
+        .add-question-btn, .submit-btn, .delete-question-btn, .preview-btn, .end-test-btn {
+            display: block;
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
         }
 
-        select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        .delete-question-btn {
+            background-color: #FF6347;
+        }
+
+        .end-test-btn {
+            background-color: #FFD700;
+        }
+
+        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover, .preview-btn:hover, .end-test-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .delete-question-btn:hover {
+            background-color: #c44133;
         }
 
         .question-wrapper {
-            margin-bottom: 20px;
-            padding: 15px;
             border: 1px solid #ccc;
+            padding: 20px;
             border-radius: 5px;
-            background-color: #f7f7f7;
+            margin-bottom: 20px;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
-            text-align: center;
+        .test-name {
+            margin-bottom: 20px;
         }
 
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background-color: #a71d2a;
-        }
-
-        .output {
-            margin-top: 20px;
+        .test-name input {
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
-            background-color: #f1f1f1;
             border-radius: 5px;
         }
+
+        #previewTest {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .test-section {
+            margin-bottom: 20px;
+        }
+
+        .timer {
+            margin-top: 20px;
+        }
+
+        .score {
+            margin-top: 20px;
+        }
+
+        .timer span {
+            font-weight: bold;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Rozšířená tvorba testu</h1>
+    <h1>Vytvořit test</h1>
 
-    <div class="form-group">
+    <div class="test-name">
         <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu">
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
     </div>
 
-    <div id="questionsContainer"></div>
+    <div class="timer">
+        <label for="timer">Nastavit časovač (v minutách):</label>
+        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+        <label for="enableTimer">Povolit časovač</label>
+        <input type="checkbox" id="enableTimer">
+    </div>
 
-    <button class="btn" onclick="addQuestion()">Přidat otázku</button>
-    <button class="btn" onclick="generateTest()">Vytvořit test</button>
+    <div class="add-question-type">
+        <button type="button" class="add-question-btn" onclick="addYesNoQuestion()">Přidat otázku (Ano/Ne)</button>
+        <button type="button" class="add-question-btn" onclick="addMultipleChoiceQuestion()">Přidat otázku (4 odpovědi)</button>
+        <button type="button" class="add-question-btn" onclick="addTextAnswerQuestion()">Přidat otázku (Textová odpověď)</button>
+        <button type="button" class="add-question-btn" onclick="addLongInstructionsQuestion()">Přidat otázku s dlouhými instrukcemi a souborem</button>
+    </div>
 
-    <div id="testOutput" class="output" style="display: none;"></div>
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako soukromý test</button>
+        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
+    </form>
+
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <button type="button" class="end-test-btn" onclick="endTest()">Ukončit test</button>
+    </div>
+
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <p id="scoreDisplay"></p>
+        <p id="gradeDisplay"></p>
+    </div>
+
+    <div class="timer-display" id="timerDisplay" style="display:none;">
+        <p>Čas zbývající: <span id="timerCount"></span></p>
+    </div>
+
 </div>
 
 <script>
     let questionCount = 0;
 
-    // Přidání otázky
-    function addQuestion() {
+    // Funkce pro přidání otázky Ano/Ne
+    function addYesNoQuestion() {
         questionCount++;
-
         const questionTemplate = `
-            <div class="question-wrapper" id="question${questionCount}">
-                <h3>Otázka ${questionCount}</h3>
-                <div class="form-group">
-                    <label for="question${questionCount}_text">Text otázky:</label>
-                    <textarea id="question${questionCount}_text" placeholder="Zadejte text otázky"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="question${questionCount}_type">Typ otázky:</label>
-                    <select id="question${questionCount}_type" onchange="changeQuestionType(${questionCount})">
-                        <option value="text">Textová odpověď</option>
-                        <option value="single">Jedna správná odpověď</option>
-                        <option value="multiple">Více správných odpovědí</option>
-                        <option value="matching">Spojovačka</option>
-                    </select>
-                </div>
-                <div id="answers${questionCount}"></div>
-                <button class="btn" onclick="addAnswer(${questionCount})">Přidat odpověď</button>
-                <button class="btn btn-danger" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount} (Ano/Ne):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
             </div>
-        `;
+            <div class="answers">
+                <label><input type="radio" name="question${questionCount}_answer" value="1" required> Ano</label>
+                <label><input type="radio" name="question${questionCount}_answer" value="2" required> Ne</label>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
         document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
     }
 
-    // Přidání odpovědi
-    function addAnswer(questionId) {
-        const questionType = document.getElementById(`question${questionId}_type`).value;
-        const answersDiv = document.getElementById(`answers${questionId}`);
-        const answerCount = answersDiv.querySelectorAll('input[type="text"]').length + 1;
-
-        if (questionType === "text") {
-            alert("Textová otázka nepotřebuje možnosti odpovědí.");
-            return;
-        }
-
-        let answerTemplate = `<div class="form-group" id="answer${questionId}_${answerCount}">`;
-
-        if (questionType === "single" || questionType === "multiple") {
-            answerTemplate += `
-                <input type="text" placeholder="Odpověď ${answerCount}">
-                ${questionType === "single" ? `<input type="radio" name="question${questionId}_correct" value="${answerCount}"> Správná` :
-                `<input type="checkbox" name="question${questionId}_correct" value="${answerCount}"> Správná`}
-            `;
-        } else if (questionType === "matching") {
-            answerTemplate += `
-                <input type="text" placeholder="Otázka ${answerCount}">
-                <input type="text" placeholder="Správná odpověď">
-            `;
-        }
-
-        answerTemplate += `</div>`;
-        answersDiv.insertAdjacentHTML('beforeend', answerTemplate);
+    // Funkce pro přidání otázky s 4 odpověďmi
+    function addMultipleChoiceQuestion() {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount} (4 odpovědi):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+            </div>
+            <div class="answers">
+                <label><input type="radio" name="question${questionCount}_answer" value="1" required>
+                <input type="text" name="question${questionCount}_option1" placeholder="Odpověď 1" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="2" required>
+                <input type="text" name="question${questionCount}_option2" placeholder="Odpověď 2" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="3" required>
+                <input type="text" name="question${questionCount}_option3" placeholder="Odpověď 3" required></label>
+                <label><input type="radio" name="question${questionCount}_answer" value="4" required>
+                <input type="text" name="question${questionCount}_option4" placeholder="Odpověď 4" required></label>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
     }
 
-    // Změna typu otázky
-    function changeQuestionType(questionId) {
-        document.getElementById(`answers${questionId}`).innerHTML = ""; // Vyčistit odpovědi
+    // Funkce pro přidání otázky s textovou odpovědí
+    function addTextAnswerQuestion() {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount} (Textová odpověď):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+            </div>
+            <div class="answers">
+                <label for="question${questionCount}_text_answer">Odpověď:</label>
+                <textarea name="question${questionCount}_text_answer" placeholder="Zadejte odpověď" required></textarea>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
     }
 
-    // Smazání otázky
-    function deleteQuestion(questionId) {
-        const questionDiv = document.getElementById(`question${questionId}`);
-        questionDiv.remove();
+    // Funkce pro přidání otázky s dlouhými instrukcemi a souborem
+    function addLongInstructionsQuestion() {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount} (Dlouhé instrukce + soubor):</label>
+                <textarea name="question${questionCount}_text" placeholder="Zadejte dlouhé instrukce" required></textarea>
+            </div>
+            <div class="answers">
+                <label for="fileUpload">Přidat soubor:</label>
+                <input type="file" name="fileUpload" required>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
     }
 
-    // Generování testu
-    function generateTest() {
-        const testName = document.getElementById('testName').value;
-        const questions = [];
+    // Funkce pro smazání otázky
+    function deleteQuestion(id) {
+        document.getElementById(`question${id}`).remove();
+    }
 
-        for (let i = 1; i <= questionCount; i++) {
-            const questionText = document.getElementById(`question${i}_text`);
-            const questionType = document.getElementById(`question${i}_type`);
-            const answers = document.querySelectorAll(`#answers${i} input[type="text"]`);
-            const correctAnswers = document.querySelectorAll(`#answers${i} input[type="radio"]:checked, input[type="checkbox"]:checked`);
+    // Funkce pro uložení testu
+    function saveTest(type) {
+        let testName = document.getElementById('testName').value;
+        let timer = document.getElementById('timer').value;
+        let enableTimer = document.getElementById('enableTimer').checked;
 
-            if (questionText && questionType) {
-                const questionData = {
-                    text: questionText.value,
-                    type: questionType.value,
-                    answers: Array.from(answers).map(answer => answer.value),
-                    correct: Array.from(correctAnswers).map(correct => correct.value)
-                };
-                questions.push(questionData);
-            }
-        }
+        // Zde můžete přidat logiku pro uložení testu do různých typů
+        alert(`Test ${testName} uložen jako ${type}`);
+    }
 
-        if (!testName || questions.length === 0) {
-            alert("Zadejte název testu a alespoň jednu otázku.");
-            return;
-        }
+    // Funkce pro uložení testu jako HTML
+    function saveAsHtml() {
+        let testName = document.getElementById('testName').value;
+        let testContent = document.getElementById('questionsContainer').innerHTML;
 
-        const testOutput = `
-            <h2>${testName}</h2>
-            ${questions.map((q, i) => `
-                <div>
-                    <h3>${i + 1}. ${q.text} (${q.type})</h3>
-                    <ul>
-                        ${q.answers.map((a, j) => `
-                            <li>${a} ${q.correct.includes((j + 1).toString()) ? "(Správná)" : ""}</li>
-                        `).join('')}
-                    </ul>
-                </div>
-            `).join('')}
-        `;
+        let htmlContent = `
+        <html>
+        <head><title>${testName}</title></head>
+        <body>
+            <h1>${testName}</h1>
+            <div>${testContent}</div>
+        </body>
+        </html>`;
 
-        const outputDiv = document.getElementById('testOutput');
-        outputDiv.style.display = 'block';
-        outputDiv.innerHTML = testOutput;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${testName}.html`;
+        link.click();
+    }
+
+    // Funkce pro náhled testu
+    function endTest() {
+        document.getElementById('testContent').innerHTML = '';
+        alert('Test byl ukončen');
     }
 </script>
 
