@@ -90,15 +90,46 @@ def labyrint(request):
 def lov_pokladu(request):
     return render(request, 'lov_pokladu.html')
 
-def multi_test(request):
-    return render(request, 'multi_test.html')
+def Multi_test(request):
+    return render(request, 'Multi_test.html')
 
 def flappy_bird(request):
     return render(request, 'flappy_bird.html')
 
 def obesenec(request):
-    return render(request, 'obesene.html')
+    return render(request, 'obesenec.html')
 
+def klikaci(request):
+    return render(request, 'klikaci.html')
+
+def nakup(request):
+    return render(request, 'nakup.html')
+
+def logout(request):
+    return render(request, 'logout.html')
+
+def vice(request):
+    return render(request, 'vice.html')
+
+def sparovaci_stranka_moodle(request):
+    return render(request, 'sparovaci_stranka_moodle.html')
+def sparovaci_stranka_github(request):
+    return render(request, 'sparovaci_stranka_github.html')
+
+def snake(request):
+    return render(request, 'snake.html')
+
+def chytacka(request):
+    return render(request, 'chytacka.html')
+
+def labyrint(request):
+    return render(request, 'labyrint.html')
+
+def tetris(request):
+    return render(request, 'tetris.html')
+
+def nahoda(request):
+    return render(request, 'nahoda.html')
 
 def page2(request):
     return render(request, 'page2.html')
