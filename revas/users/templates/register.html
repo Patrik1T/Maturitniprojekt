@@ -5,19 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <style>
+        /* Celkový styl pro tělo stránky */
         body {
-            background-color: black; /* Černé pozadí */
+            background-image: url('your-image.jpg'); /* Zde přidejte cestu k obrázku */
+            background-size: cover; /* Obrázek pokryje celou obrazovku */
+            background-position: left center; /* Obrázek se přisune zleva */
+            background-attachment: fixed; /* Obrázek se nezmění při scrollování */
             display: flex;
             justify-content: flex-end;
             align-items: flex-end;
             height: 100vh;
             margin: 0;
+            overflow: hidden; /* Skrytí posuvníků */
         }
+
+        /* Styl pro tabulku s bílým pozadím */
         table {
             border: 3px solid black;
             margin: 20px;
-            background-color: white;
+            padding: 20px;
+            background-color: white; /* Bílý pozadí pro tabulku */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Jemný stín kolem tabulky */
+            transform: translateX(100%); /* Tabulka začíná mimo obrazovku zprava */
+            animation: slideIn 1s forwards; /* Animace posouvání tabulky */
         }
+
+        /* Animace pro posun tabulky */
+        @keyframes slideIn {
+            0% {
+                transform: translateX(100%); /* Začíná mimo obrazovku */
+            }
+            100% {
+                transform: translateX(0); /* Posune se na původní pozici */
+            }
+        }
+
+        /* Styl pro inputy a tlačítka */
         input, button {
             display: block;
             margin: 10px 0;
@@ -57,8 +80,9 @@
     </tr>
     <tr>
         <td colspan="2">
-            <a href="{% url 'page5' %}"><button>Submit</button></a> <!-- Odkaz na Page5 -->
-            <a href="{% url 'main_page' %}"><button>Back to Main Page</button></a>
+             <a href="{% url 'hlavni_stranka' %}"><button>Přihlásit se</button></a>
+            <a href="{% url 'main_page' %}"><button>Zpátky na hlavní stránku</button></a>
+            <a href="{% url 'hlavni_stranka' %}"><button>Přeskočit</button></a>
         </td>
     </tr>
 </table>
