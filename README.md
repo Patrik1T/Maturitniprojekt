@@ -7,61 +7,113 @@ p# Aplikace Revas pro dělání testů
 
 ## Moje hlavní cíle, můj hlavní plán:
 ###1. týden (15.9. – 22.9.): Plánování a Nastavení Projektu (100%)
-•	- `Detailní specifikace aplikace (moduly: testy, platby, denní výzvy, veřejné sdílení). `(hotovo)
-•	- `Vytvoření readme.md. `(hotovo)
-•	- `Vytvoření SQL databáze pro strukturu projektu. `(hotovo)
-•	- `Nastavení vývojového prostředí: Django (backend), React (frontend), P5.js (herní prvky). `(hotovo)
-•	- `Základní struktura projektu (databáze: testy, otázky, uživatelé, platby). `(hotovo)
-•	- `Přidání knihovny pro zpracování plateb (např. Stripe nebo PayPal SDK). `(hotovo)
-###2.–3. týden: Backendová Logika (38%)
-•	- `Vytvoření datových modelů: `
-o	Testy, otázky, odpovědi. ()
-o	Uživatelské profily s pokročilými statistikami (úspěchy, chyby). ()
-o	Platby za prémiové funkce. ` ()
-•	- `Implementace REST API: 
-o	CRUD operace pro správu testů. ()
-o	API pro ukládání statistik uživatelů (chyby, postup). ()
-o	API pro zpracování plateb. ` ()
-•	- `Export testů do formátů GIFT a Moodle XML. ` ()
-•	- `Testy backendové logiky (unit testy). ` ()
-###4.–5. týden: Frontendová Základní Struktura (0%)
-•	- `Základní UI v Reactu: registrace, správa testů, zobrazení kalendáře. ` ()
-•	- `Integrace API (získávání a zobrazování testů, uživatelských statistik). ` ()
-•	- `První verze herních prvků v P5.js (např. jednoduchý kvíz, pexeso). ` ()
-•	- `Autentifikace uživatelů (Django + React). ` ()
-###6.–7. týden: Gamifikace a Pokročilé Herní Prvky (0%)
+
+•	`Detailní specifikace aplikace (moduly: testy, platby, denní výzvy, veřejné sdílení). `(hotovo)
+
+•	`Vytvoření readme.md. `(hotovo)
+
+•	`Vytvoření SQL databáze pro strukturu projektu. `(hotovo)
+
+•	`Nastavení vývojového prostředí: Django (backend), React (frontend), P5.js (herní prvky). `(hotovo)
+
+•	`Základní struktura projektu (databáze: testy, otázky, uživatelé, platby). `(hotovo)
+
+•	`Přidání knihovny pro zpracování plateb (např. Stripe nebo PayPal SDK). `(hotovo)
+
+###2.–3. týden: Backendová Logika (100%)
+
+•	`Vytvoření datových modelů: `
+
+•	Testy, otázky, odpovědi. ()
+
+•	Uživatelské profily s pokročilými statistikami (úspěchy, chyby). ()
+
+•	Platby za prémiové funkce. ` ()
+
+•	`Implementace REST API: 
+
+•	CRUD operace pro správu testů. ()
+
+•	API pro ukládání statistik uživatelů (chyby, postup). ()
+
+•	API pro zpracování plateb. ` ()
+
+•	`Export testů do formátů GIFT a Moodle XML. ` ()
+
+•	`Testy backendové logiky (unit testy). ` ()
+
+###4.–5. týden: Frontendová Základní Struktura (100%)
+
+•	`Základní UI v Reactu: registrace, správa testů, zobrazení kalendáře. ` ()
+
+•	`Integrace API (získávání a zobrazování testů, uživatelských statistik). ` ()
+
+•	`První verze herních prvků v P5.js (např. jednoduchý kvíz, pexeso). ` ()
+
+•	`Autentifikace uživatelů (Django). ` ()
+
+###6.–7. týden: Gamifikace a Pokročilé Herní Prvky (100%)
+
 •	- `Implementace postupování levelů: za úspěšné testy uživatel získá body nebo odměny. ` ()
+
 •	- `Rozšíření herních prvků a vizualizací (např. animace v P5.js). ` ()
+
 •	- `Denní výzvy: sledování, v jakých otázkách uživatel chybuje, a vytváření denních kvízů pro opravu chyb. ` ()
+
 •	- `Propojení gamifikace s backendem (ukládání skóre, úspěchů a chyb). ` ()
+
 ###8. týden: Veřejné Sdílení a Učební Materiály (0%)
-•	- `Implementace veřejného sdílení testů. Autor testu může rozhodnout, zda bude test přístupný veřejnosti. ` ()
-•	- `Možnost vytvářet učební materiály k jednotlivým tématům (např. lekce, které doplní testy). ` ()
-•	- `Integrace kalendáře pro zobrazení naplánovaných testů a výzev. ` ()
+
+•	`Implementace veřejného sdílení testů. Autor testu může rozhodnout, zda bude test přístupný veřejnosti. ` ()
+
+•	`Možnost vytvářet učební materiály k jednotlivým tématům (např. lekce, které doplní testy). ` ()
+
+•	`Integrace kalendáře pro zobrazení naplánovaných testů a výzev. ` ()
+
 ###9. týden: Platby a Prémiové Funkce (0%)
-•	- `Integrace platební brány (Stripe, PayPal) pro nákup prémiových funkcí (např. extra herní prvky nebo personalizace UI). ` ()
-•	- `Zajištění bezpečnosti plateb a ochrany uživatelských dat. ` ()
-•	- `Testování API pro zpracování plateb a napojení na uživatelské profily (zobrazení zakoupených výhod). ` ()
+
+•	`Integrace platební brány (Stripe, PayPal) pro nákup prémiových funkcí (např. extra herní prvky nebo personalizace UI). ` ()
+
+•	`Zajištění bezpečnosti plateb a ochrany uživatelských dat. ` ()
+
+•	`Testování API pro zpracování plateb a napojení na uživatelské profily (zobrazení zakoupených výhod). ` ()
+
 ###10. týden: Optimalizace a Integrace s Moodle (0%)
-•	- `Optimalizace výkonu aplikace (rychlost načítání, plynulost herních prvků). ` ()
-•	- `Testování exportu do Moodle, ladění generovaných formátů (GIFT a Moodle XML). ` ()
-•	- `Zabezpečení API a ochrana dat uživatelů (např. SSL, správné ošetření vstupů). ` ()
+
+•	`Optimalizace výkonu aplikace (rychlost načítání, plynulost herních prvků). ` ()
+
+•	`Testování exportu do Moodle, ladění generovaných formátů (GIFT a Moodle XML). ` ()
+
+•	`Zabezpečení API a ochrana dat uživatelů (např. SSL, správné ošetření vstupů). ` ()
+
 ###11.–12. týden: Nasazení a Finální Testování (0%)
-•	- `Nasazení aplikace na produkční server (Heroku, DigitalOcean, AWS). ` ()
-•	- `Testování všech funkcí (platby, herní mechaniky, veřejné testy).  ` ()
-•	- `Nakreslení všech animací a obrázků.  ` ()
-•	- `Udělání prezentace  a video prezentace o projektu. ` ()
+
+•	`Nasazení aplikace na produkční server (Heroku, DigitalOcean, AWS). ` ()
+
+•	`Testování všech funkcí (platby, herní mechaniky, veřejné testy).  ` ()
+
+•	`Nakreslení všech animací a obrázků.  ` ()
+
+•	`Udělání prezentace  a video prezentace o projektu. ` ()
 
 
 ## Používané technologie:
-- `Backend (Django): Pro autentifikaci uživatelů, správu testů, export do Moodle a zpracování plateb (např. Stripe nebo PayPal). `
--`Frontend (React + Javascript): Pro tvorbu interaktivního uživatelského rozhraní s integrací P5.js pro herní prvky. `
--`P5.js: Pro vizualizace a gamifikaci testů. `
--`FullCalendar.js: Pro zobrazení plánovaných testů v kalendáři. `
--`Django REST Framework: Pro vytváření API.`
--`Stripe/PayPal SDK: Pro implementaci platebních funkcí. `
--`MySQL: Databáze pro ukládání uživatelských statistik, testů a transakcí. `
--`Photoshop: pro nakreslení a nanimování některých funkcí a her. `
+
+`Backend (Django): Pro autentifikaci uživatelů, správu testů, export do Moodle a zpracování plateb (např. Stripe nebo PayPal). `
+
+`Frontend (Javascript): Pro tvorbu interaktivního uživatelského rozhraní s integrací P5.js pro herní prvky. `
+
+`P5.js: Pro vizualizace a gamifikaci testů. `
+
+`FullCalendar.js: Pro zobrazení plánovaných testů v kalendáři. `
+
+`Django REST Framework: Pro vytváření API.`
+
+`Stripe/PayPal SDK: Pro implementaci platebních funkcí. `
+
+`MySQL: Databáze pro ukládání uživatelských statistik, testů a transakcí. `
+
+`Photoshop: pro nakreslení a nanimování některých funkcí a her. `
 
 ## Konkurence
 `Existuje několik open-source projektů zaměřených na tvorbu kvízových aplikací, které mi sloužili jako základ pro můj projekt nebo jako inspirace: `
