@@ -134,6 +134,10 @@ def vyber_testy(request):
 def piskvorky(request):
     return render(request, 'piskvorky')
 
+def spravy(request):
+    return render(request, 'spravy')
+
+
 
 def vytvor_test(request):
     if request.method == 'POST':

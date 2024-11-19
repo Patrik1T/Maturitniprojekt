@@ -62,6 +62,7 @@ urlpatterns = [
     path('tetris/', views.tetris, name='tetris'),
     path('nahoda/', views.nahoda, name='nahoda'),
     path('vyber_testy/', views.vyber_testy, name='vyber_testy'),
+    path('spravy/', views.spravy, name='spravy'),
 
     path('piskvorky/', views.piskvorky, name='piskvorky'),
     path('vytvor_test/', views.vytvor_test, name='vytvor_test'),

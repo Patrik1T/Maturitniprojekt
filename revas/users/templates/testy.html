@@ -129,19 +129,18 @@
 <body>
 
 <header>
-    <div class="logo"></div>
+     <div class="logo">LOGO</div>
     <div class="nav-links">
-        <a href="#">Testy</a>
-        <a href="#">Veřejné testy</a>
-        <a href="#">Uložené testy</a>
+        <a href="{% url 'testy' %}">Testy</a>
+        <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
+        <a href="{% url 'ulozene_testy' %}">Uložené testy</a>
+        <a href="{% url 'profil' %}">Profil</a>
+        <a href="{% url 'kosik' %}">Košík</a>
     </div>
     <div class="icons">
-        <div class="icon-rect"></div>
-        <div class="icon-rect"></div>
-        <div class="nav-buttons">
-            <a href="#">🔔</a>
-            <a href="#">✉️</a>
-        </div>
+        <a class="icon-button" href="{% url 'spravy' %}">3</a>
+        <a class="icon-button" href="{% url 'kosik' %}">4</a>
+        <a class="icon-button" href="{% url 'profil' %}">6</a>
     </div>
 </header>
 
