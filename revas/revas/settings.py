@@ -38,6 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'revas.urls'
@@ -100,6 +107,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Nastavení pro odesílání e-mailů
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Například pro Gmail
+EMAIL_PORT = 587  # SMTP port
+EMAIL_USE_TLS = True  # Používání TLS
+EMAIL_HOST_USER = 'tvuj_email@gmail.com'  # Tvá emailová adresa
+EMAIL_HOST_PASSWORD = 'tvé_emailové_heslo'  # Tvé heslo nebo app password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -125,6 +142,27 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+
+# Vlastnosti pro přihlašování a registraci
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATED_REMEMBER = True
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<tvůj google client id>'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<tvůj google client secret>'
+
+SOCIAL_AUTH_GITHUB_KEY = '<tvůj github client id>'
+SOCIAL_AUTH_GITHUB_SECRET = '<tvůj github client secret>'
+
 
 LOGIN_REDIRECT_URL = 'main_page'
 LOGOUT_REDIRECT_URL = 'login'
