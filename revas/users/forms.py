@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 import re
+from .models import UserProfile
+
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -36,3 +38,42 @@ class UserRegisterForm(UserCreationForm):
         password2 = cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
             raise ValidationError("Hesla se neshodují.")
+
+
+class RegisterForm(forms.Form):
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
+    repeat_password = forms.CharField(widget=forms.PasswordInput)
+    age = forms.IntegerField()
+    gender = forms.CharField(max_length=10)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        repeat_password = cleaned_data.get('repeat_password')
+
+        if password != repeat_password:
+            raise forms.ValidationError("Passwords do not match.")
+
+        return cleaned_data
+
+
+class RegisterForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    repeat_password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        repeat_password = cleaned_data.get("repeat_password")
+
+        if password != repeat_password:
+            raise forms.ValidationError("Hesla se neshodují.")
+
+        return cleaned_data

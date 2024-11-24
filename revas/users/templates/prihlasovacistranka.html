@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <style>
         /* Celkový styl pro tělo stránky */
         body {
-            background-image: url('your-image.jpg'); /* Zde přidejte cestu k obrázku */
-            background-size: cover; /* Ujistíme se, že obrázek bude pokrývat celou obrazovku */
-            background-position: right center; /* Obrázek bude na pravé straně */
+            background-size: cover; /* Obrázek pokryje celou obrazovku */
+            background-position: left center; /* Obrázek se přisune zleva */
             background-attachment: fixed; /* Obrázek se nezmění při scrollování */
             display: flex;
-            justify-content: flex-start;
-            align-items: flex-start;
+            justify-content: flex-end;
+            align-items: flex-end;
             height: 100vh;
             margin: 0;
             overflow: hidden; /* Skrytí posuvníků */
@@ -26,14 +25,14 @@
             padding: 20px;
             background-color: white; /* Bílý pozadí pro tabulku */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Jemný stín kolem tabulky */
-            transform: translateX(-100%); /* Tabulka začíná mimo obrazovku zleva */
+            transform: translateX(100%); /* Tabulka začíná mimo obrazovku zprava */
             animation: slideIn 1s forwards; /* Animace posouvání tabulky */
         }
 
         /* Animace pro posun tabulky */
         @keyframes slideIn {
             0% {
-                transform: translateX(-100%); /* Začíná mimo obrazovku */
+                transform: translateX(100%); /* Začíná mimo obrazovku */
             }
             100% {
                 transform: translateX(0); /* Posune se na původní pozici */
@@ -49,23 +48,44 @@
 </head>
 <body>
 
-<table>
-    <tr>
-        <td>Email:</td>
-        <td><input type="email" name="email"></td>
-    </tr>
-    <tr>
-        <td>Password:</td>
-        <td><input type="password" name="password"></td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <a href="{% url 'hlavni_stranka' %}"><button>Přihlásit se</button></a>
-            <a href="{% url 'main_page' %}"><button>Zpátky na hlavní stránku</button></a>
-            <a href="{% url 'hlavni_stranka' %}"><button>Přeskočit</button></a>
-        </td>
-    </tr>
-</table>
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>First Name:</td>
+                <td><input type="text" name="first_name" value="{{ form.first_name.value }}"></td>
+            </tr>
+            <tr>
+                <td>Last Name:</td>
+                <td><input type="text" name="last_name" value="{{ form.last_name.value }}"></td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td><input type="email" name="email" value="{{ form.email.value }}"></td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" name="password" value="{{ form.password.value }}"></td>
+            </tr>
+            <tr>
+                <td>Repeat Password:</td>
+                <td><input type="password" name="repeat_password" value="{{ form.repeat_password.value }}"></td>
+            </tr>
+            <tr>
+                <td>Age:</td>
+                <td><input type="number" name="age" value="{{ form.age.value }}"></td>
+            </tr>
+            <tr>
+                <td>Gender:</td>
+                <td><input type="text" name="gender" value="{{ form.gender.value }}"></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button type="submit">Register</button>
+                </td>
+            </tr>
+        </table>
+    </form>
 
 </body>
 </html>

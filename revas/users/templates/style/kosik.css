@@ -1,13 +1,4 @@
-{% load static %}
-
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hlavní stránka</title>
-    <style>
-        body {
+body {
             font-family: Arial, sans-serif;
             background-color: #1E90FF;
             margin: 0;
@@ -196,71 +187,3 @@
             padding: 10px;
             border-radius: 5px;
         }
-
-    </style>
-</head>
-<body>
-<header>
-    <div class="logo"></div>
-    <div class="nav-links">
-        <a href="{% url 'testy' %}">Testy</a>
-        <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
-        <a href="{% url 'ulozene_testy' %}">Uložené testy</a>
-        <a href="{% url 'profil' %}">Profil</a>
-        <a href="{% url 'kosik' %}">Košík</a>
-    </div>
-    <div class="icons">
-        <a class="icon-button" href="{% url 'hlavni_stranka' %}">1</a>
-        <a class="icon-button" href="{% url 'hlavni_stranka' %}">2</a>
-        <a class="icon-button" href="{% url 'hlavni_stranka' %}">3</a>
-    </div>
-</header>
-
-<main>
-    <div class="left-sidebar">
-        <div class="table">
-            <h2>Skupiny</h2>
-        </div>
-        <div class="table">
-            <h2>Historie</h2>
-        </div>
-        <div class="table">
-            <h2>Vaše vyrobené</h2>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div class="card-section">
-            <h1>Košík</h1>
-            <h2>Vyberte jednu z karet níže:</h2>
-            <div class="buttons">
-                <div class="card">
-                    <h3>Level 1</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
-                </div>
-                <div class="card">
-                    <h3>Level 2</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
-                </div>
-                <div class="card">
-                    <h3>Level 3</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
-                </div>
-                <div class="card">
-                    <h3>Učitel</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-</body>
-</html>

@@ -1,10 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Question
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import UserRegisterForm
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from .forms import RegisterForm
+from .models import UserProfile
+from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
 
 def main_page(request):
     return render(request, 'main_page.html')
@@ -53,9 +57,6 @@ def profil(request):
 
 def psaci_testy(request):
     return render(request, 'psaci_testy.html')
-
-def register(request):
-    return render(request, 'register.html')
 
 def spojovacka(request):
     return render(request, 'spojovacka.html')
@@ -110,6 +111,7 @@ def vice(request):
 
 def sparovaci_stranka_moodle(request):
     return render(request, 'sparovaci_stranka_moodle.html')
+
 def sparovaci_stranka_github(request):
     return render(request, 'sparovaci_stranka_github.html')
 
@@ -170,14 +172,48 @@ def vytvor_test(request):
 
     return render(request, 'vytvor_test.html')
 
+
 def register(request):
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()  # Uložíme nového uživatele do databáze
-            login(request, user)  # Automatické přihlášení po registraci
-            messages.success(request, 'Úspěšná registrace! Nyní jste přihlášeni.')
-            return redirect('main_page')
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            password = make_password('somepassword')
+            age = form.cleaned_data['age']
+            gender = form.cleaned_data['gender']
+
+            # Vytvoření nového uživatele
+            user = User.objects.create_user(username=email, email=email, password=password)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+
+            # Vytvoření profilu pro nového uživatele
+            user_profile = UserProfile.objects.create(user=user, age=age, gender=gender)
+
+            return redirect('login')  # Přesměrování na přihlašovací stránku nebo jinou stránku po úspěšné registraci
     else:
-        form = UserRegisterForm()
+        form = RegisterForm()
+
     return render(request, 'users/register.html', {'form': form})
+
+class LoginView(LoginView):
+    template_name = 'prihlasovacistranka.html'
+
+
+def custom_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # Přesměrování po úspěšném přihlášení
+        else:
+            # Pokud přihlášení neproběhlo
+            return render(request, 'prihlasovacistranka.html', {'error': 'Neplatné přihlašovací údaje'})
+    else:
+        return render(request, 'prihlasovacistranka.html')

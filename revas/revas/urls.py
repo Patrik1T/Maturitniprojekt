@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from users import views
 from django.contrib.auth import views as auth_views
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('users/', include('users.urls')),
     path('', views.main_page, name='main_page'),
     path('ano_ne/', views.ano_ne, name='ano_ne'),
     path('dvere_hra/', views.dvere_hra, name='dvere_hra'),
@@ -45,7 +47,7 @@ urlpatterns = [
     path('profil/', views.profil, name='profil'),
     path('programovaci_test/', views.programovaci_test, name='programovaci_test'),
     path('psaci_testy/', views.psaci_testy, name='psaci_testy'),
-    path('register/', views.register, name='register'),
+
     path('spojovacka/', views.spojovacka, name='spojovacka'),
     path('tabulka/', views.tabulka, name='tabulka'),
     path('testy/', views.testy, name='testy'),
@@ -66,7 +68,9 @@ urlpatterns = [
 
     path('piskvorky/', views.piskvorky, name='piskvorky'),
     path('vytvor_test/', views.vytvor_test, name='vytvor_test'),
-    path('register/', views.register, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+
+
+    path('login/', views.LoginView.as_view(), name='login'),
 ]
