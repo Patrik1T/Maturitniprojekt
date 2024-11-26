@@ -122,6 +122,12 @@
         <input type="text" id="testName" placeholder="Zadejte název testu" required>
     </div>
 
+    <label for="testImage">Obrázek testu (URL):</label>
+    <input type="text" id="testImage" placeholder="Zadejte URL obrázku pro test">
+    <label for="testDescription">Popis testu:</label>
+    <input type="text" id="testDescription" placeholder="Zadejte popis testu">
+
+
     <div class="timer">
         <label for="timer">Nastavit časovač (v minutách):</label>
         <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
@@ -147,8 +153,10 @@
         <div id="questionsContainer"></div>
         <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
         <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit na profil</button>
+        <button type="button" class="submit-btn" onclick="saveTest('hlavni_stranka')">Uložit na hlavní stránku</button>
         <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako soukromý test</button>
+        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako uložený test</button>
         <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
     </form>
 
@@ -177,6 +185,26 @@
     let timeRemaining = 0;
     let totalPoints = 0;
     let correctAnswers = 0;
+
+    function saveTest(type) {
+    // Získání dat testu
+    const testName = document.getElementById('testName').value;
+    const questions = getQuestions();
+
+    if (type === 'verejne_testy') {
+        // Při ukládání do veřejných testů přidej text a obrázek
+        const imageUrl = prompt("Zadejte URL obrázku pro veřejný test");
+        const description = prompt("Zadejte popis testu");
+
+        // Tady bys měl uložit test na server nebo do lokálního úložiště
+        console.log(`Test uložen do veřejných testů: ${testName}, Popis: ${description}, Obrázek: ${imageUrl}`);
+    } else {
+        // Uložení na profil, hlavní stránku nebo uložené testy
+        console.log(`Test uložen na ${type}: ${testName}`);
+    }
+
+    alert(`Test byl uložen jako ${type}`);
+}
 
     // Funkce pro přidání otázky
     function addQuestion() {

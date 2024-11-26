@@ -57,6 +57,9 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+
 ROOT_URLCONF = 'revas.urls'
 
 TEMPLATES = [
@@ -133,9 +136,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+STATICFILES_DIRS = []
+
 
 
 # Default primary key field type
@@ -166,3 +168,8 @@ SOCIAL_AUTH_GITHUB_SECRET = '<tvůj github client secret>'
 
 LOGIN_REDIRECT_URL = 'main_page'
 LOGOUT_REDIRECT_URL = 'login'
+
+ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'example.com']
+

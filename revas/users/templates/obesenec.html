@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hra Oběšenec</title>
+    <title>Vytvoření testu Oběšenec</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 20px;
         }
@@ -26,200 +26,249 @@
             color: #333;
         }
 
-        .word-display {
-            font-size: 2em;
-            letter-spacing: 2px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
         .input-container {
-            text-align: center;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
 
-        .input-container input {
-            font-size: 1.5em;
-            padding: 5px;
-            width: 50px;
-            text-align: center;
+        .input-container label {
+            font-size: 1.1em;
         }
 
-        .submit-btn, .restart-btn {
-            display: block;
+        .input-container input, .input-container textarea, .input-container select {
             width: 100%;
             padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+
+        .input-container textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .submit-btn {
             background-color: #1E90FF;
             color: white;
             border: none;
             border-radius: 5px;
+            padding: 10px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 10px;
+            width: 100%;
         }
 
-        .submit-btn:hover, .restart-btn:hover {
+        .submit-btn:hover {
             background-color: #104e8b;
         }
 
-        .restart-btn {
-            background-color: #FFD700;
+        .timer-section {
+            margin-top: 20px;
         }
 
-        .game-info {
+        .timer-section input {
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .word-section {
+            margin-top: 30px;
+        }
+
+        .word-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .word-item button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .word-item button:hover {
+            background-color: #218838;
+        }
+
+        #hangmanImage {
+            width: 200px;
+            height: auto;
+            margin-top: 30px;
+        }
+
+        #wordToGuess {
+            font-size: 2em;
+            letter-spacing: 2px;
             text-align: center;
-            font-size: 1.2em;
-            margin-top: 20px;
+            margin: 20px 0;
         }
 
-        .letters-guessed {
-            margin-top: 20px;
-        }
-
-        .letters-guessed span {
-            margin: 0 5px;
-            font-size: 1.2em;
-        }
-
-        .incorrect-guesses {
+        #incorrectGuesses {
             color: red;
+            text-align: center;
         }
 
+        #remainingAttempts {
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Hra Oběšenec</h1>
+    <h1>Vytvoření testu Oběšenec</h1>
 
-    <!-- Formulář pro zadání slova -->
+    <!-- Sekce pro název testu, obrázek a popis -->
     <div class="input-container">
-        <label for="wordInput">Zadejte slovo pro hru:</label><br>
-        <input type="text" id="wordInput" placeholder="Slovo" maxlength="15">
-        <button class="submit-btn" onclick="startGame()">Začít hru</button>
+        <label for="testName">Název testu</label>
+        <input type="text" id="testName" placeholder="Název testu">
     </div>
 
-    <!-- Ukázka slova pro hádání -->
-    <div class="word-display" id="wordDisplay"></div>
-
-    <!-- Hráč zadává písmena -->
     <div class="input-container">
-        <label for="letterInput">Zadejte písmeno:</label><br>
-        <input type="text" id="letterInput" maxlength="1" oninput="this.value = this.value.toUpperCase();">
-        <button class="submit-btn" onclick="guessLetter()">Hádnout</button>
+        <label for="testImage">Obrázek k testu (URL)</label>
+        <input type="text" id="testImage" placeholder="URL obrázku">
     </div>
 
-    <!-- Informace o hře -->
-    <div class="game-info" id="gameInfo">
-        <p id="incorrectGuesses"></p>
-        <p id="remainingAttempts"></p>
+    <div class="input-container">
+        <label for="testDescription">Popis testu</label>
+        <textarea id="testDescription" placeholder="Napište popis testu"></textarea>
     </div>
 
-    <!-- Restartování hry -->
-    <button class="restart-btn" onclick="restartGame()" style="display: none;">Restartovat hru</button>
+    <div class="timer-section">
+        <label for="enableTimer">Nastavit časovač</label>
+        <input type="checkbox" id="enableTimer">
+        <input type="number" id="timerValue" placeholder="Nastavit časovač (v minutách)" disabled>
+    </div>
 
-    <!-- Seznam uhádnutých písmen -->
-    <div class="letters-guessed" id="lettersGuessed"></div>
+    <div class="input-container">
+        <label for="pointsPerGrade">Bodové ohodnocení pro každou známku</label>
+        <input type="number" id="pointsPerGrade" placeholder="Například 10 bodů za každou známku">
+    </div>
+
+    <!-- Sekce pro přidání slov -->
+    <div class="word-section">
+        <h3>Slova k hádání</h3>
+        <div class="input-container">
+            <button class="submit-btn" onclick="addWord()">Přidat slovo</button>
+        </div>
+        <ul class="word-list" id="wordList"></ul>
+    </div>
+
+    <!-- Sekce pro hraní oběšence -->
+    <div id="hangmanGame" style="display:none;">
+        <div id="wordToGuess"></div>
+        <div id="incorrectGuesses"></div>
+        <div id="remainingAttempts"></div>
+        <div>
+            <label for="letterInput">Zadejte písmeno:</label>
+            <input type="text" id="letterInput" maxlength="1">
+            <button class="submit-btn" onclick="guessLetter()">Hádnout</button>
+        </div>
+        <img id="hangmanImage" src="" alt="Obrázek oběšence">
+    </div>
+
 </div>
 
 <script>
-    let wordToGuess = "";
+    let words = [];
+    let currentWord = "";
     let guessedLetters = [];
     let remainingAttempts = 6;
-    let correctGuesses = [];
-    let gameOver = false;
+    let timerInterval;
+    let timeRemaining = 0;
 
-    // Funkce pro spuštění hry
-    function startGame() {
-        const wordInput = document.getElementById('wordInput').value.trim().toUpperCase();
-
-        if (wordInput === "") {
-            alert("Zadejte platné slovo!");
-            return;
+    // Funkce pro přidání slova
+    function addWord() {
+        const wordInput = prompt("Zadejte slovo k hádání:");
+        if (wordInput && wordInput.trim() !== "") {
+            words.push(wordInput.trim().toUpperCase());
+            updateWordList();
         }
+    }
 
-        wordToGuess = wordInput;
+    // Funkce pro aktualizaci seznamu slov
+    function updateWordList() {
+        const wordList = document.getElementById('wordList');
+        wordList.innerHTML = "";
+        words.forEach((word, index) => {
+            const li = document.createElement('li');
+            li.classList.add('word-item');
+            li.innerHTML = `
+                <span>${word}</span>
+                <button onclick="startHangmanGame(${index})">Začít hru</button>
+            `;
+            wordList.appendChild(li);
+        });
+    }
+
+    // Funkce pro spuštění hry Oběšenec
+    function startHangmanGame(wordIndex) {
+        currentWord = words[wordIndex];
         guessedLetters = [];
         remainingAttempts = 6;
-        correctGuesses = [];
-        gameOver = false;
-
-        document.getElementById('wordInput').disabled = true;
-        document.getElementById('submit-btn').style.display = 'none';
-        document.getElementById('letterInput').disabled = false;
-        document.getElementById('submit-btn').style.display = 'block';
-
-        displayWord();
-        updateGameInfo();
+        document.getElementById('hangmanGame').style.display = 'block';
+        document.getElementById('wordToGuess').textContent = "_ ".repeat(currentWord.length).trim();
+        document.getElementById('incorrectGuesses').textContent = "";
+        document.getElementById('remainingAttempts').textContent = "Zbývající pokusy: " + remainingAttempts;
+        document.getElementById('hangmanImage').src = "images/hangman-0.png"; // Počáteční obrázek
     }
 
-    // Funkce pro zobrazení slova s hádacími písmeny
-    function displayWord() {
-        let display = '';
-        for (let i = 0; i < wordToGuess.length; i++) {
-            if (correctGuesses.includes(wordToGuess[i])) {
-                display += wordToGuess[i] + ' ';
-            } else {
-                display += '_ ';
-            }
-        }
-        document.getElementById('wordDisplay').textContent = display.trim();
-    }
-
-    // Funkce pro hádání písmen
+    // Funkce pro hádání písmena
     function guessLetter() {
         const letter = document.getElementById('letterInput').value.toUpperCase();
-
         if (!letter || guessedLetters.includes(letter)) {
             alert("Zadejte platné písmeno!");
             return;
         }
 
         guessedLetters.push(letter);
+        let correctGuess = false;
+        let displayWord = "";
 
-        if (wordToGuess.includes(letter)) {
-            correctGuesses.push(letter);
+        for (let i = 0; i < currentWord.length; i++) {
+            if (guessedLetters.includes(currentWord[i])) {
+                displayWord += currentWord[i] + " ";
+            } else {
+                displayWord += "_ ";
+            }
+        }
+
+        document.getElementById('wordToGuess').textContent = displayWord.trim();
+
+        if (currentWord.includes(letter)) {
+            correctGuess = true;
         } else {
             remainingAttempts--;
+            document.getElementById('incorrectGuesses').textContent += letter + " ";
+            document.getElementById('remainingAttempts').textContent = "Zbývající pokusy: " + remainingAttempts;
+            document.getElementById('hangmanImage').src = `images/hangman-${6 - remainingAttempts}.png`;
+        }
+
+        if (remainingAttempts === 0) {
+            alert("Prohráli jste! Slovo bylo: " + currentWord);
+            document.getElementById('hangmanGame').style.display = 'none';
+        }
+
+        if (!displayWord.includes("_")) {
+            alert("Vyhráli jste!");
+            document.getElementById('hangmanGame').style.display = 'none';
         }
 
         document.getElementById('letterInput').value = "";
-        displayWord();
-        updateGameInfo();
-
-        if (remainingAttempts <= 0) {
-            gameOver = true;
-            alert("Prohráli jste! Slovo bylo: " + wordToGuess);
-            document.getElementById('restart-btn').style.display = 'block';
-        }
-
-        if (correctGuesses.length === [...new Set(wordToGuess.split(''))].length) {
-            gameOver = true;
-            alert("Vyhráli jste!");
-            document.getElementById('restart-btn').style.display = 'block';
-        }
-    }
-
-    // Funkce pro aktualizaci informací o hře
-    function updateGameInfo() {
-        document.getElementById('incorrectGuesses').textContent = "Nesprávná písmena: " + guessedLetters.join(", ");
-        document.getElementById('remainingAttempts').textContent = "Zbývající pokusy: " + remainingAttempts;
-    }
-
-    // Funkce pro restartování hry
-    function restartGame() {
-        document.getElementById('wordInput').disabled = false;
-        document.getElementById('letterInput').disabled = true;
-        document.getElementById('restart-btn').style.display = 'none';
-        document.getElementById('wordInput').value = "";
-        document.getElementById('wordDisplay').textContent = "";
-        document.getElementById('incorrectGuesses').textContent = "";
-        document.getElementById('remainingAttempts').textContent = "";
-        guessedLetters = [];
-        correctGuesses = [];
-        gameOver = false;
     }
 </script>
 
 </body>
 </html>
-

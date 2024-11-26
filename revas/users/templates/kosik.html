@@ -9,135 +9,89 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1E90FF;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow-x: hidden;
+            color: #333;
         }
 
         header {
+            background-color: #1E90FF;
+            color: white;
             display: flex;
-            justify-content: flex-start;
             align-items: center;
-            background-color: white;
-            height: 70px;
+            justify-content: space-between;
             padding: 0 20px;
-            position: relative;
+            height: 70px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .logo {
-            width: 150px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 5px;
-            position: absolute;
-            left: 20px;
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
         }
 
-        .nav-links {
+        header .nav-links {
             display: flex;
-            gap: 20px;
-            margin-left: 200px;
+            gap: 15px;
         }
 
-        .nav-links a {
-            text-decoration: none;
-            color: black;
-            background-color: #d3d3d3;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .nav-links a:hover {
-            background-color: #c0c0c0;
-        }
-
-        .icons {
-            position: absolute;
-            right: 20px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .icon-button {
-            width: 40px;
-            height: 40px;
-            background-color: grey;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
+        header .nav-links a {
             text-decoration: none;
             color: white;
-        }
-
-        .icon-button:hover {
-            background-color: darkgrey;
-        }
-
-        /* Animace pro tabulky zleva */
-        @keyframes slideInLeft {
-            0% { opacity: 0; transform: translateX(-100px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-
-        .left-sidebar {
-            position: fixed;
-            top: 120px;
-            left: 0;
-            width: 200px;
-            height: calc(100vh - 120px);
-            background-color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            border-right: 5px solid black;
-            animation: slideInLeft 1s ease-out;
-        }
-
-        .table {
-            background-color: white;
-            padding: 20px;
+            padding: 8px 15px;
             border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border: 5px solid black;
-            height: calc(100% / 3);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            transition: background 0.3s;
+        }
+
+        header .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        header .icons a {
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
         }
 
         .main-content {
-            margin-left: 220px;
-            margin-top: 70px;
-            padding: 20px;
-            height: calc(100vh - 70px);
             display: flex;
-            flex-direction: column;
             gap: 20px;
+            padding: 20px;
+        }
+
+        .left-sidebar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            width: 200px;
+        }
+
+        .left-sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1E90FF;
+        }
+
+        .main-section {
+            flex-grow: 1;
+        }
+
+        .main-section h1 {
+            font-size: 24px;
+            color: #1E90FF;
+            margin-bottom: 20px;
         }
 
         .card-section {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            animation: slideInUp 0.5s ease-out; /* Animace zdola */
-        }
-
-        @keyframes slideInUp {
-            0% { opacity: 0; transform: translateY(50px); }
-            100% { opacity: 1; transform: translateY(0); }
+            gap: 20px;
         }
 
         .card {
-            background-color: white; /* Bílé pozadí pro karty */
+            background-color: white;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -148,18 +102,18 @@
         }
 
         .card:hover {
-            transform: scale(1.05);  /* Efekt zvětšení */
-            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2); /* Efekt stínu při najetí */
+            transform: scale(1.05);
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
         }
 
         .buttons {
             display: flex;
             justify-content: center;
-            gap: 20px; /* Mezi tlačítky */
+            gap: 20px;
         }
 
         .button {
-            background-color: #4CAF50; /* Zelené pozadí */
+            background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -169,39 +123,31 @@
         }
 
         .button:hover {
-            background-color: #45a049; /* Tmavší zelená při najetí */
+            background-color: #45a049;
         }
 
         .buy-button {
-            background-color: #FF6347; /* Červené pozadí pro tlačítko nákupu */
+            background-color: #FF6347;
         }
 
         .buy-button:hover {
-            background-color: #e5533b; /* Tmavší červená při najetí */
+            background-color: #e5533b;
         }
 
-        .random-text {
-            margin: 15px 0;
-            font-size: 14px;
+        .footer {
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
             color: #555;
-            background-color: white; /* Bílé pozadí pro text */
-            padding: 10px;
-            border-radius: 5px;
-            animation: slideInUp 0.5s ease-out; /* Animace zdola */
-        }
-
-        /* Bílé pozadí pro texty h1 a h2 */
-        h1, h2 {
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
+            font-size: 14px;
         }
 
     </style>
 </head>
 <body>
+
 <header>
-    <div class="logo"></div>
+    <div class="logo">Testovací Web</div>
     <div class="nav-links">
         <a href="{% url 'testy' %}">Testy</a>
         <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
@@ -210,29 +156,21 @@
         <a href="{% url 'kosik' %}">Košík</a>
     </div>
     <div class="icons">
-        <a class="icon-button" href="{% url 'hlavni_stranka' %}">1</a>
-        <a class="icon-button" href="{% url 'hlavni_stranka' %}">2</a>
-        <a class="icon-button" href="{% url 'hlavni_stranka' %}">3</a>
+        <a href="{% url 'hlavni_stranka' %}">🔔</a>
+        <a href="{% url 'hlavni_stranka' %}">✉️</a>
     </div>
 </header>
 
-<main>
+<div class="main-content">
     <div class="left-sidebar">
-        <div class="table">
-            <h2>Skupiny</h2>
-        </div>
-        <div class="table">
-            <h2>Historie</h2>
-        </div>
-        <div class="table">
-            <h2>Vaše vyrobené</h2>
-        </div>
+        <h2>Menu</h2>
+        <p>Skupiny</p>
+        <p>Historie</p>
+        <p>Vaše vyrobené</p>
     </div>
 
-    <div class="main-content">
+    <div class="main-section">
         <div class="card-section">
-            <h1>Košík</h1>
-            <h2>Vyberte jednu z karet níže:</h2>
             <div class="buttons">
                 <div class="card">
                     <h3>Level 1</h3>
@@ -261,6 +199,11 @@
             </div>
         </div>
     </div>
-</main>
+</div>
+
+<div class="footer">
+    <p>&copy; 2024 Testovací Web. Všechna práva vyhrazena.</p>
+</div>
+
 </body>
 </html>

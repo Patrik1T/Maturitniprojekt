@@ -1,152 +1,198 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veřejné Testy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1E90FF; /* Modré pozadí */
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
+            color: #333;
         }
+
         header {
+            background-color: #1E90FF;
+            color: white;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            background-color: white;
-            height: 70px;
             padding: 0 20px;
-            position: relative;
+            height: 70px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .logo {
-            position: absolute;
-            left: 20px;
-            top: 10px;
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 50%;
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
         }
-        .nav-links {
+
+        header .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 15px;
         }
-        .nav-links a {
+
+        header .nav-links a {
             text-decoration: none;
-            color: black;
-            background-color: #d3d3d3;
-            padding: 10px 20px;
+            color: white;
+            padding: 8px 15px;
             border-radius: 5px;
+            transition: background 0.3s;
         }
-        .icons {
-            display: flex;
-            gap: 20px;
-            align-items: center;
+
+        header .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
         }
-        .icon {
-            width: 30px;
-            height: 30px;
-            background-color: grey;
-            border-radius: 50%;
+
+        header .icons a {
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
         }
-        .cart-logo {
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 50%;
-        }
-        .second-logo {
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 50%;
-        }
-        .left-sidebar {
-            position: absolute;
-            top: 80px;
-            left: 0;
-            width: 200px;
-            background-color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .table {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        .table h2 {
-            margin: 0;
-            color: black;
-        }
+
         .main-content {
-            margin-left: 220px;
-            margin-top: 80px;
-            padding: 20px;
-        }
-        .test-section {
             display: flex;
-            flex-direction: column;
-            gap: 20px; /* Vytvoří mezery mezi sekcemi */
-        }
-        .test-category {
-            background-color: white; /* Bílé pozadí */
+            gap: 20px;
             padding: 20px;
+        }
+
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            width: 200px;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1E90FF;
+        }
+
+        .sidebar p {
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px;
             border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s;
         }
-        .test-category h2 {
+
+        .sidebar p:hover {
+            background-color: rgba(0, 0, 255, 0.1);
+        }
+
+        .main-section {
+            flex-grow: 1;
+        }
+
+        .main-section h1 {
+            font-size: 24px;
+            color: #1E90FF;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+        }
+
+        .card .content {
+            flex-grow: 1;
+        }
+
+        .card h2 {
             margin: 0;
-            color: black;
+            color: #1E90FF;
         }
-        .button {
-            background-color: #4CAF50; /* Zelené pozadí */
+
+        .card p {
+            margin: 10px 0;
+        }
+
+        .card .try-button {
+            background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px 0;
-            display: block; /* Zaručí, že tlačítka budou pod sebou */
+            margin-top: 15px;
+            text-align: center;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .card .try-button:hover {
+            background-color: #45a049;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            color: #555;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo"></div>
+    <div class="logo">Testovací Web</div>
     <div class="nav-links">
-        <a href="{% url 'page6' %}">Testy</a>
-        <a href="{% url 'page7' %}">Veřejné testy</a>
-        <a href="{% url 'page8' %}">Uložené testy</a>
+        <a href="#">Testy</a>
+        <a href="#">Veřejné testy</a>
+        <a href="#">Uložené testy</a>
+        <a href="#">Profil</a>
+        <a href="#">Košík</a>
     </div>
     <div class="icons">
-        <div class="icon">🔔</div>
-        <div class="icon">✉️</div>
-        <a href="#"><div class="cart-logo"></div></a>
-        <a href="#"><div class="second-logo"></div></a>
+        <a href="#">🔔</a>
+        <a href="#">✉️</a>
     </div>
 </header>
 
-<div class="left-sidebar">
-    <div class="table">
-        <h2>Skupiny</h2>
+<div class="main-content">
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <p>Skupiny</p>
+        <p>Historie</p>
+        <p>Vaše vyrobené</p>
     </div>
-    <div class="table">
-        <h2>Historie</h2>
-    </div>
-    <div class="table">
-        <h2>Vaše vyrobené</h2>
+
+    <div class="main-section">
+        <h1>Veřejné testy</h1>
+
+        <!-- Karta s obrázkem, názvem, popiskem a tlačítkem -->
+        <div class="card">
+            <img src="https://via.placeholder.com/100" alt="Test Image">
+            <div class="content">
+                <h2>Název testu</h2>
+                <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
+                <button class="try-button">Vyzkoušet</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
-
+<div class="footer">
+    <p>&copy; 2024 Testovací Web</p>
+</div>
 
 </body>
 </html>
