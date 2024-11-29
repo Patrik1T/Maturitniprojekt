@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test s tajenkou</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question-wrapper {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .question-wrapper input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .answer-wrapper {
+            margin-top: 20px;
+        }
+
+        .answer-wrapper .square {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .answer-wrapper .square.active {
+            background-color: #1E90FF;
+        }
+
+        .answer-wrapper .square.thicker {
+            border-width: 2px;
+            background-color: #FF6347;
+        }
+
+        .submit-btn, .add-question-btn, .preview-btn, .save-btn, .delete-question-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover, .add-question-btn:hover, .preview-btn:hover, .save-btn:hover, .delete-question-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .delete-question-btn {
+            background-color: #FF6347;
+        }
+
+        .preview-btn {
+            background-color: #FFD700;
+        }
+
+        .test-name input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .timer-display {
+            margin-top: 20px;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border: 1px solid #b3d4fc;
+            border-radius: 5px;
+        }
+
+        .secret-answer {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #FF6347;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+     <h1>Vytvořit test</h1>
+      <h2>Popisek k testu</h2>
+
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    </div>
+
+    <!-- Obrázek testu (nahrání souboru) -->
+<label for="testImage">Obrázek testu (nahrát soubor):</label>
+<input type="file" id="testImage" accept="image/*">
+
+<!-- Popis testu (textarea pro více textu) -->
+<label for="testDescription">Popis testu:</label>
+<textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+
+  <h2>Tvoření testu</h2>
+
+    <div class="timer">
+        <label for="timer">Nastavit časovač (v minutách):</label>
+        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+        <label for="enableTimer">Povolit časovač</label>
+        <input type="checkbox" id="enableTimer">
+    </div>
+
+    <div class="grade-settings">
+        <h3>Počet bodů pro každou známku</h3>
+        <label for="grade1">Známka 1 (minimální body):</label>
+        <input type="number" id="grade1" min="1" value="90">
+        <label for="grade2">Známka 2 (minimální body):</label>
+        <input type="number" id="grade2" min="1" value="70">
+        <label for="grade3">Známka 3 (minimální body):</label>
+        <input type="number" id="grade3" min="1" value="50">
+        <label for="grade4">Známka 4 (minimální body):</label>
+        <input type="number" id="grade4" min="1" value="30">
+        <label for="grade5">Známka 5 (minimální body):</label>
+        <input type="number" id="grade5" min="1" value="0">
+    </div>
+
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <h2>Typ uložení</h2>
+        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
+        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
+    </form>
+
+    <div id="previewTest" class="test-section" style="display:none;">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <button type="button" class="delete-question-btn" onclick="endTest()">Ukončit test</button>
+    </div>
+
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <p id="scoreDisplay"></p>
+        <p id="gradeDisplay"></p>
+    </div>
+
+    <div class="timer-display" id="timerDisplay" style="display:none;">
+        <p>Čas zbývající: <span id="timerCount"></span></p>
+    </div>
+
+</div>
+
+<script>
+    let questionCount = 0;
+    let timerInterval;
+    let totalTime = 0;
+    let timeRemaining = 0;
+    let totalPoints = 0;
+    let correctAnswers = 0;
+    let questions = [];
+
+    function addQuestionField() {
+        questionCount++;
+        const questionTemplate = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <div class="question">
+                <label for="question${questionCount}_text">Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+            </div>
+            <div class="answer-wrapper">
+                <div class="answer-square-container">
+                    <span>Počet čtverečků:</span>
+                    <input type="number" min="1" value="5" onchange="updateSquares(this)">
+                </div>
+                <div class="squares"></div>
+            </div>
+            <div class="secret-answer">
+                <span>Tajenka:</span>
+                <input type="text" placeholder="Zadejte tajenku" required>
+            </div>
+            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>`;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
+        updateSquares({ value: 5 });
+    }
+
+    function updateSquares(input) {
+        const answerWrapper = input.closest('.question-wrapper').querySelector('.answer-wrapper');
+        const squareCount = parseInt(input.value);
+        const squaresContainer = answerWrapper.querySelector('.squares');
+
+        squaresContainer.innerHTML = '';
+        for (let i = 0; i < squareCount; i++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.onclick = () => toggleSquare(square);
+            squaresContainer.appendChild(square);
+        }
+    }
+
+    function toggleSquare(square) {
+        square.classList.toggle('active');
+    }
+
+    function deleteQuestion(questionId) {
+        const questionElement = document.getElementById(`question${questionId}`);
+        questionElement.remove();
+    }
+
+    function previewTest() {
+        const testName = document.getElementById('testName').value;
+        const questions = getQuestions();
+
+        if (!testName || questions.length === 0) {
+            alert('Přidejte otázky a název testu');
+            return;
+        }
+
+        let testContent = `<h2>${testName}</h2><form id="previewForm">`;
+
+        questions.forEach((question, index) => {
+            testContent += `
+                <div class="question">
+                    <p>${question.text}</p>
+                    <div class="answers">
+                        ${question.options.map((option, i) => `
+                            <label>
+                                <input type="radio" name="question${index + 1}_answer" value="${i + 1}">
+                                ${option}
+                            </label>`).join('')}
+                    </div>
+                </div>`;
+        });
+
+        testContent += `<button type="button" onclick="submitTest()">Hotovo</button></form>`;
+        document.getElementById('testContent').innerHTML = testContent;
+        document.getElementById('previewTest').style.display = 'block';
+
+        if (document.getElementById('enableTimer').checked) {
+            startTimer();
+        }
+    }
+
+    function getQuestions() {
+        const questions = [];
+        const questionWrappers = document.querySelectorAll('.question-wrapper');
+        questionWrappers.forEach(wrapper => {
+            const questionText = wrapper.querySelector('input[type="text"]:first-of-type').value.trim();
+            const secretAnswer = wrapper.querySelector('input[type="text"]:last-of-type').value.trim();
+            if (questionText && secretAnswer) {
+                const options = Array.from(wrapper.querySelectorAll('.square'))
+                    .map(square => square.classList.contains('active') ? 'Correct' : 'Incorrect');
+                questions.push({ text: questionText, options });
+            }
+        });
+        return questions;
+    }
+
+    function saveAsHtml() {
+        const testHtml = document.getElementById('quizForm').outerHTML;
+        const blob = new Blob([testHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${document.getElementById('testName').value || 'test'}.html`;
+        a.click();
+    }
+
+    function startTimer() {
+        totalTime = parseInt(document.getElementById('timer').value) * 60;
+        timeRemaining = totalTime;
+        document.getElementById('timerCount').innerText = formatTime(timeRemaining);
+        document.getElementById('timerDisplay').style.display = 'block';
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+        timeRemaining--;
+        document.getElementById('timerCount').innerText = formatTime(timeRemaining);
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert('Čas vypršel!');
+        }
+    }
+
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+
+    function submitTest() {
+        // Calculate score and grade
+        const answers = getAnswersFromPreview();
+        let score = 0;
+        answers.forEach(answer => {
+            if (answer.correct) score++;
+        });
+
+        document.getElementById('scoreDisplay').innerText = `Skóre: ${score}`;
+        document.getElementById('gradeDisplay').innerText = `Hodnocení: ${getGrade(score)}`;
+        document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function getAnswersFromPreview() {
+        const form = document.getElementById('previewForm');
+        return Array.from(form.querySelectorAll('input[type="radio"]:checked'))
+            .map(input => ({ correct: input.value === 'Correct' }));
+    }
+
+    function getGrade(score) {
+        if (score === questionCount) return 'A';
+        if (score > questionCount * 0.75) return 'B';
+        if (score > questionCount * 0.5) return 'C';
+        return 'D';
+    }
+
+    function endTest() {
+        document.getElementById('previewTest').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
+

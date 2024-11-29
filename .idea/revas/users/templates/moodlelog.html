@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Přihlášení do Moodle</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1E90FF, #87CEEB);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            background-color: #0073e6;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #005bb5;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Přihlášení do Moodle</h2>
+
+    <!-- Tlačítko pro přihlášení přes Moodle -->
+    <button class="login-btn" onclick="window.location.href='{% url 'social:begin' 'moodle' %}'">Přihlásit se přes Moodle</button>
+
+    <p>Nemáte účet? <a href="/register" class="link">Zaregistrujte se zde.</a></p>
+</div>
+
+</body>
+</html>

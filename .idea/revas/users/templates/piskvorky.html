@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piškvorky s otázkami</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .game-cell {
+            width: 100px;
+            height: 100px;
+            background-color: #e0e0e0;
+            text-align: center;
+            font-size: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .game-cell.taken {
+            pointer-events: none;
+        }
+
+        .question-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .question-wrapper input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .submit-btn {
+            background-color: #1E90FF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #104e8b;
+        }
+
+        .timer-display {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Piškvorky s otázkami</h1>
+
+    <div id="timerDisplay" class="timer-display">
+        <p>Čas zbývající: <span id="timerCount"></span></p>
+    </div>
+
+    <div class="question-wrapper">
+        <label for="questionText">Otázka:</label>
+        <input type="text" id="questionText" placeholder="Zadejte otázku" required>
+        <label for="answer1">Odpověď 1:</label>
+        <input type="text" id="answer1" placeholder="Odpověď 1" required>
+        <label for="answer2">Odpověď 2:</label>
+        <input type="text" id="answer2" placeholder="Odpověď 2" required>
+        <label for="answer3">Odpověď 3:</label>
+        <input type="text" id="answer3" placeholder="Odpověď 3" required>
+        <label for="answer4">Odpověď 4:</label>
+        <input type="text" id="answer4" placeholder="Odpověď 4" required>
+        <button type="button" class="submit-btn" onclick="submitQuestion()">Odpovědět na otázku</button>
+    </div>
+
+    <div class="game-board" id="gameBoard">
+        <!-- Piškvorky budou generovány tady -->
+    </div>
+
+    <div id="gameResult" style="display: none;">
+        <h2>Výsledek hry:</h2>
+        <p id="winnerDisplay"></p>
+    </div>
+</div>
+
+<script>
+    let currentPlayer = 'X'; // Začíná hráč 'X'
+    let gameBoard = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+    let isGameOver = false;
+    let timeRemaining = 60; // Časovač na 60 sekund
+    let timerInterval;
+
+    // Funkce pro spuštění časovače
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                alert('Čas vypršel! Hra končí.');
+                endGame();
+            }
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    // Funkce pro zobrazení času
+    function updateTimerDisplay() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        document.getElementById('timerCount').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    // Funkce pro odeslání otázky
+    function submitQuestion() {
+        const questionText = document.getElementById('questionText').value;
+        const answers = [
+            document.getElementById('answer1').value,
+            document.getElementById('answer2').value,
+            document.getElementById('answer3').value,
+            document.getElementById('answer4').value
+        ];
+        if (!questionText || answers.some(answer => !answer)) {
+            alert('Vyplňte prosím všechny údaje.');
+            return;
+        }
+
+        const correctAnswer = Math.floor(Math.random() * 4) + 1; // Random správná odpověď (1-4)
+        const userAnswer = prompt(`Otázka: ${questionText}\nOdpovědi:\n1. ${answers[0]}\n2. ${answers[1]}\n3. ${answers[2]}\n4. ${answers[3]}`);
+
+        if (parseInt(userAnswer) === correctAnswer) {
+            alert('Správná odpověď! Můžeš hrát.');
+            startGame();
+        } else {
+            alert('Špatná odpověď! Tah dává AI.');
+            aiTurn();
+        }
+    }
+
+    // Funkce pro vytvoření herního pole
+    function createGameBoard() {
+        const gameBoardContainer = document.getElementById('gameBoard');
+        gameBoardContainer.innerHTML = '';
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                const cell = document.createElement('div');
+                cell.classList.add('game-cell');
+                cell.setAttribute('data-row', row);
+                cell.setAttribute('data-col', col);
+                cell.addEventListener('click', playerTurn);
+                gameBoardContainer.appendChild(cell);
+            }
+        }
+    }
+
+    // Funkce pro tah hráče
+    function playerTurn(event) {
+        if (isGameOver) return;
+
+        const row = event.target.getAttribute('data-row');
+        const col = event.target.getAttribute('data-col');
+
+        if (gameBoard[row][col] === '') {
+            gameBoard[row][col] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            checkWinner();
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+    }
+
+    // Funkce pro tah AI
+    function aiTurn() {
+        if (isGameOver) return;
+
+        // Náhodný tah AI
+        let row, col;
+        do {
+            row = Math.floor(Math.random() * 3);
+            col = Math.floor(Math.random() * 3);
+        } while (gameBoard[row][col] !== '');
+
+        gameBoard[row][col] = 'O';
+        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        cell.textContent = 'O';
+        checkWinner();
+        currentPlayer = 'X'; // Po AI jde hráč
+    }
+
+    // Funkce pro kontrolu vítěze
+    function checkWinner() {
+        // Kontrola řádků, sloupců a diagonál
+        for (let i = 0; i < 3; i++) {
+            if (gameBoard[i][0] && gameBoard[i][0] === gameBoard[i][1] && gameBoard[i][1] === gameBoard[i][2]) {
+                endGame(gameBoard[i][0]);
+                return;
+            }
+            if (gameBoard[0][i] && gameBoard[0][i] === gameBoard[1][i] && gameBoard[1][i] === gameBoard[2][i]) {
+                endGame(gameBoard[0][i]);
+                return;
+            }
+        }
+        if (gameBoard[0][0] && gameBoard[0][0] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][2]) {
+            endGame(gameBoard[0][0]);
+            return;
+        }
+        if (gameBoard[0][2] && gameBoard[0][2] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][0]) {
+            endGame(gameBoard[0][2]);
+            return;
+        }
+
+        // Pokud je plné pole a žádný vítěz, hra končí remízou
+        if (gameBoard.every(row => row.every(cell => cell !== ''))) {
+            endGame('remíza');
+        }
+    }
+
+    // Funkce pro ukončení hry
+    function endGame(winner = '') {
+        isGameOver = true;
+        clearInterval(timerInterval);
+
+        let resultMessage = winner ? `Vyhrál hráč ${winner}` : 'Hra skončila remízou.';
+        document.getElementById('winnerDisplay').textContent = resultMessage;
+        document.getElementById('gameResult').style.display = 'block';
+    }
+
+    // Spustí hru po správné odpovědi
+    function startGame() {
+        createGameBoard();
+        startTimer();
+    }
+
+    // Spustí počáteční hru
+    createGameBoard();
+</script>
+
+</body>
+</html>
