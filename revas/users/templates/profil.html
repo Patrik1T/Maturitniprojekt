@@ -1,225 +1,94 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Osobní Údaje</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        header {
-            background-color: #1E90FF;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            height: 70px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        header .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        header .nav-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        header .nav-links a {
-            text-decoration: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        header .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        header .icons a {
-            text-decoration: none;
-            color: white;
-            font-size: 20px;
-        }
-
-        .main-content {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .sidebar {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            width: 200px;
-        }
-
-        .sidebar h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #1E90FF;
-        }
-
-        .main-section {
-            flex-grow: 1;
-        }
-
-        .main-section h1 {
-            font-size: 24px;
-            color: #1E90FF;
-            margin-bottom: 20px;
-        }
-
-        .info-box {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .info-box h2 {
-            margin-top: 0;
-            color: #1E90FF;
-        }
-
-        .info-box p {
-            margin: 10px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: #1E90FF;
-            color: white;
-        }
-
-        tbody tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 10px;
-            margin-top: 20px;
-            color: #555;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'style/profil.css' %}?v=1.0">
+    <script src="{% static 'js/kalendar.js' %}"></script>
+    <script src="{% static 'js/zapisnik.js' %}"></script>
 </head>
 <body>
-<header>
-    <div class="logo">Testovací Web</div>
-    <div class="nav-links">
-        <a href="#">Testy</a>
-        <a href="#">Veřejné testy</a>
-        <a href="#">Uložené testy</a>
-        <a href="#">Profil</a>
-        <a href="#">Košík</a>
-    </div>
-    <div class="icons">
-        <a href="#">🔔</a>
-        <a href="#">✉️</a>
-    </div>
-</header>
+    <!-- Hlavička -->
+    {% include 'struktura/nav.html' %}
 
-<div class="main-content">
-    <div class="sidebar">
-        <h2>Menu</h2>
-        <p>Skupiny</p>
-        <p>Historie</p>
-        <p>Vaše vyrobené</p>
-    </div>
+    <div class="layout">
+        <!-- Levý panel -->
+        {% include 'struktura/tabulky.html' %}
 
-    <div class="main-section">
-        <h1>Osobní údaje</h1>
-        <div class="info-box">
-            <h2>Profil</h2>
-            <p><strong>Logo:</strong> [Logo zde]</p>
-            <p><strong>Jméno:</strong> Jan</p>
-            <p><strong>Příjmení:</strong> Novák</p>
-            <p><strong>Věk:</strong> 25</p>
-            <p><strong>Email:</strong> jan.novak@example.com</p>
-            <p><strong>Heslo:</strong> ********</p>
-        </div>
+        <!-- Hlavní obsah -->
+        <div class="main-content">
+            {% block content %}
+            <h1>Osobní údaje</h1>
 
-        <div class="info-box">
-            <h2>Uložené testy</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Název testu</th>
-                        <th>Typ</th>
-                        <th>Čas provedení</th>
-                        <th>Body</th>
-                        <th>Známka</th>
-                        <th>Mód</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Test 1</td>
-                        <td>Typ testů jako z herních testů nebo testů</td>
-                        <td>14:30, 15. 11. 2024</td>
-                        <td>85</td>
-                        <td>ano/ne</td>
-                        <td>soukromí/veřejný</td>
-                    </tr>
-                    <!-- More rows as needed -->
-                </tbody>
-            </table>
-        </div>
+            <div class="info-box">
+                <h2>Profil</h2>
+                <p><strong>Logo:</strong> [Logo zde]</p>
+                <p><strong>Jméno:</strong> Jan</p>
+                <p><strong>Příjmení:</strong> Novák</p>
+                <p><strong>Věk:</strong> 25</p>
+                <p><strong>Email:</strong> jan.novak@example.com</p>
+                <p><strong>Heslo:</strong> ********</p>
+            </div>
 
-        <div class="info-box">
-            <h2>Historie testů</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Název testu</th>
-                        <th>Typ</th>
-                        <th>Čas provedení</th>
-                        <th>Body</th>
-                        <th>Známka</th>
-                        <th>Mód</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Test A</td>
-                        <td>Typ testů jako z herních testů nebo testů</td>
-                        <td>10:00, 12. 11. 2024</td>
-                        <td>92</td>
-                        <td>1</td>
-                        <td>soukromí/veřejný</td>
-                    </tr>
-                    <!-- More rows as needed -->
-                </tbody>
-            </table>
+            <div class="info-box">
+                <h2>Uložené testy</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Název testu</th>
+                            <th>Typ</th>
+                            <th>Čas provedení</th>
+                            <th>Body</th>
+                            <th>Známka</th>
+                            <th>Mód</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Test 1</td>
+                            <td>Typ testů jako z herních testů nebo testů</td>
+                            <td>14:30, 15. 11. 2024</td>
+                            <td>85</td>
+                            <td>ano/ne</td>
+                            <td>soukromí/veřejný</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-box">
+                <h2>Historie testů</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Název testu</th>
+                            <th>Typ</th>
+                            <th>Čas provedení</th>
+                            <th>Body</th>
+                            <th>Známka</th>
+                            <th>Mód</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Test A</td>
+                            <td>Typ testů jako z herních testů nebo testů</td>
+                            <td>10:00, 12. 11. 2024</td>
+                            <td>92</td>
+                            <td>1</td>
+                            <td>soukromí/veřejný</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endblock %}
         </div>
     </div>
-</div>
 
+    <!-- Footer -->
+    {% include 'struktura/footer.html' %}
 </body>
 </html>

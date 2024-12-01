@@ -59,7 +59,8 @@ header {
 /* Layout */
 .layout {
     display: flex;
-    height: 100vh; /* Celková výška okna */
+    flex-direction: column; /* Zajistí, že hlavní obsah a footer budou pod sebou */
+    height: 100vh; /* Aby se layout roztáhnul na celou výšku */
 }
 
 .left-sidebar {
@@ -70,7 +71,7 @@ header {
 }
 
 .main-content {
-    flex-grow: 1; /* Hlavní obsah se roztáhne a zaplní zbytek */
+    flex-grow: 1; /* Tento obsah vyplní prostor mezi hlavičkou a footerem */
     padding: 20px;
     overflow-y: auto; /* Aby se obsah dal rolovat, pokud je potřeba */
 }
@@ -195,9 +196,14 @@ button:hover {
     background-color: #004C99; /* Světlejší modrá */
     color: white;
     width: 100%; /* Ujistíme se, že footer je celou šířku okna */
-    position: absolute;
+    position: relative;
     bottom: 0; /* Footer bude vždy u spodní části */
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Jemný stín pro oddělení */
+    margin-top: 0; /* Odstranění mezery mezi obsahem a footerem */
+    padding-bottom: 0; /* Odstranění spodní mezery, pokud existuje */
+/* Pokud chcete přidat mezeru mezi main-content a footerem */
+
+    margin-top: 10px; /* Například přidání mezery mezi hlavním obsahem a footerem */
 }
 
 .footer-left,

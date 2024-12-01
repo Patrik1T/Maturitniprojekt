@@ -1,195 +1,40 @@
 {% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
+<script src="{% static 'js/kalendar.js' %}"></script>
+<script src="{% static 'js/zapisnik.js' %}"></script>
 
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hlavní stránka</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+<!-- Hlavička -->
+{% include 'struktura/nav.html' %}
 
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
-
-        .icons {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-        }
-
-        .icons a {
-            color: white;
-            margin-left: 10px;
-        }
-
-        .main-content {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-        }
-
-        .left-sidebar {
-            width: 20%;
-            background-color: #fff;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .main-section {
-            width: 75%;
-        }
-
-        .card-section {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            background-color: #fff;
-            padding: 15px;
-            margin: 10px;
-            width: 22%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .card h3 {
-            margin-bottom: 10px;
-        }
-
-        .card p {
-            font-size: 16px;
-            color: #666;
-        }
-
-        .button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .button:hover {
-            background-color: #218838;
-        }
-
-        .cart {
-            background-color: #fff;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .cart-items {
-            margin-bottom: 15px;
-        }
-
-        .footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="logo">Testovací Web</div>
-    <div class="nav-links">
-        <a href="{% url 'testy' %}">Testy</a>
-        <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
-        <a href="{% url 'ulozene_testy' %}">Uložené testy</a>
-        <a href="{% url 'profil' %}">Profil</a>
-        <a href="{% url 'kosik' %}">Košík</a>
-    </div>
-    <div class="icons">
-        <a href="{% url 'hlavni_stranka' %}">🔔</a>
-        <a href="{% url 'hlavni_stranka' %}">✉️</a>
-    </div>
-</header>
-
-<div class="main-content">
-    <div class="left-sidebar">
-        <h2>Menu</h2>
-        <p>Skupiny</p>
-        <p>Historie</p>
-        <p>Vaše vyrobené</p>
+<div class="card-section">
+{% include 'struktura/tabulky.html' %}
+    <div class="card" id="card-1">
+        <h3>Level 1</h3>
+        <p>Cena: $5</p>
+        <button class="button" onclick="addToCart('Level 1', 5)">Více</button>
+        <button class="button buy-button" onclick="addToCart('Level 1', 5)">Koupit</button>
     </div>
 
-    <div class="main-section">
-        <div class="card-section">
-            <div class="buttons">
-                <!-- Karta Level 1 -->
-                <div class="card" id="card-1">
-                    <h3>Level 1</h3>
-                    <p>Cena: $5</p>
-                    <button class="button" onclick="addToCart('Level 1', 5)">Více</button>
-                    <button class="button buy-button" onclick="addToCart('Level 1', 5)">Koupit</button>
-                </div>
+    <div class="card" id="card-2">
+        <h3>Level 2</h3>
+        <p>Cena: $10</p>
+        <button class="button" onclick="addToCart('Level 2', 10)">Více</button>
+        <button class="button buy-button" onclick="addToCart('Level 2', 10)">Koupit</button>
+    </div>
 
-                <!-- Karta Level 2 -->
-                <div class="card" id="card-2">
-                    <h3>Level 2</h3>
-                    <p>Cena: $10</p>
-                    <button class="button" onclick="addToCart('Level 2', 10)">Více</button>
-                    <button class="button buy-button" onclick="addToCart('Level 2', 10)">Koupit</button>
-                </div>
+    <div class="card" id="card-3">
+        <h3>Level 3</h3>
+        <p>Cena: $15</p>
+        <button class="button" onclick="addToCart('Level 3', 15)">Více</button>
+        <button class="button buy-button" onclick="addToCart('Level 3', 15)">Koupit</button>
+    </div>
 
-                <!-- Karta Level 3 -->
-                <div class="card" id="card-3">
-                    <h3>Level 3</h3>
-                    <p>Cena: $15</p>
-                    <button class="button" onclick="addToCart('Level 3', 15)">Více</button>
-                    <button class="button buy-button" onclick="addToCart('Level 3', 15)">Koupit</button>
-                </div>
-
-                <!-- Karta Učitel -->
-                <div class="card" id="card-4">
-                    <h3>Učitel</h3>
-                    <p>Cena: $20</p>
-                    <button class="button" onclick="addToCart('Učitel', 20)">Více</button>
-                    <button class="button buy-button" onclick="addToCart('Učitel', 20)">Koupit</button>
-                </div>
-            </div>
-        </div>
+    <div class="card" id="card-4">
+        <h3>Učitel</h3>
+        <p>Cena: $20</p>
+        <button class="button" onclick="addToCart('Učitel', 20)">Více</button>
+        <button class="button buy-button" onclick="addToCart('Učitel', 20)">Koupit</button>
     </div>
 </div>
 
@@ -199,62 +44,7 @@
     <p id="total-price">Celková cena: $0</p>
     <button class="button" id="checkout-button" onclick="checkout()">Pokračovat k platbě</button>
 </div>
-
-<div class="footer">
-    <p>&copy; 2024 Testovací Web. Všechna práva vyhrazena.</p>
-</div>
-
-<script src="https://js.stripe.com/v3/"></script>
-
-<script>
-// Array to store items added to cart
-let cart = [];
-
-// Function to add an item to the cart
-function addToCart(item, price) {
-    cart.push({ item, price });
-    updateCart();
-}
-
-// Function to update the cart display
-function updateCart() {
-    const cartItemsContainer = document.getElementById('cart-items');
-    cartItemsContainer.innerHTML = '';  // Clear previous items
-    let totalPrice = 0;
-
-    // Loop through the cart and display items
-    cart.forEach(item => {
-        const cartItem = document.createElement('p');
-        cartItem.textContent = `${item.item} - $${item.price}`;
-        cartItemsContainer.appendChild(cartItem);
-        totalPrice += item.price;
-    });
-
-    // Update the total price
-    const totalPriceElement = document.getElementById('total-price');
-    totalPriceElement.textContent = `Celková cena: $${totalPrice}`;
-}
-
-// Function to create a checkout session and redirect to Stripe Checkout
-function checkout() {
-    const totalAmount = cart.reduce((acc, item) => acc + item.price, 0);
-
-    fetch('/create-checkout-session/', {
-        method: 'POST',
-        body: JSON.stringify({ items: cart }),
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(session => {
-        const stripe = Stripe('your-public-key-here'); // Zadejte svůj veřejný Stripe klíč
-        stripe.redirectToCheckout({ sessionId: session.id });
-    })
-    .catch(error => console.error('Error:', error));
-}
-</script>
-
-</body>
-</html>
+    <!-- Footer -->
+{% include 'struktura/footer.html' %}
+{% endblock %}
 
