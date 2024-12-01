@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% load static %}
 
-</body>
-</html>
+<header>
+     <img class="logo" src="{% static 'obrazky/LOGO_BLACK_SIGN-200.webp' %}" alt="Logo" width="100">
+    <div class="nav-links">
+        <a href="{% url 'testy' %}">Testy</a>
+        <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
+        <a href="{% url 'ulozene_testy' %}">Uložené testy</a>
+        <a href="{% url 'profil' %}">Profil</a>
+        <a href="{% url 'kosik' %}">Košík</a>
+    </div>
+    <div class="icons">
+        <a class="icon-button" href="{% url 'spravy' %}">💬</a>
+        <a class="icon-button" href="{% url 'kosik' %}">€</a>
+        <a class="icon-button" href="{% url 'profil' %}">P</a>
+    </div>
+</header>

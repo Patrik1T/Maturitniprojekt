@@ -116,17 +116,22 @@
 
 <div class="container">
     <h1>Vytvořit test</h1>
+      <h2>Popisek k testu</h2>
 
     <div class="test-name">
         <label for="testName">Název testu:</label>
         <input type="text" id="testName" placeholder="Zadejte název testu" required>
     </div>
 
-    <label for="testImage">Obrázek testu (URL):</label>
-    <input type="text" id="testImage" placeholder="Zadejte URL obrázku pro test">
-    <label for="testDescription">Popis testu:</label>
-    <input type="text" id="testDescription" placeholder="Zadejte popis testu">
+    <!-- Obrázek testu (nahrání souboru) -->
+<label for="testImage">Obrázek testu (nahrát soubor):</label>
+<input type="file" id="testImage" accept="image/*">
 
+<!-- Popis testu (textarea pro více textu) -->
+<label for="testDescription">Popis testu:</label>
+<textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+
+  <h2>Tvoření testu</h2>
 
     <div class="timer">
         <label for="timer">Nastavit časovač (v minutách):</label>
@@ -153,10 +158,9 @@
         <div id="questionsContainer"></div>
         <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
         <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit na profil</button>
-        <button type="button" class="submit-btn" onclick="saveTest('hlavni_stranka')">Uložit na hlavní stránku</button>
+        <h2>Typ uložení</h2>
+        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
         <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako uložený test</button>
         <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
     </form>
 
@@ -379,6 +383,33 @@
 function saveAsHtml() {
     const testName = document.getElementById('testName').value;
     const questions = getQuestions();
+
+    function saveTest(type) {
+    const testName = document.getElementById('testName').value;
+    const description = document.getElementById('testDescription').value;
+    const imageUrl = document.getElementById('testImage').files[0]; // Get the image file
+    const imageSrc = imageUrl ? URL.createObjectURL(imageUrl) : null; // Get the image source URL
+
+    if (type === 'verejne_testy') {
+        // Save the public test information
+        const testData = {
+            name: testName,
+            description: description,
+            image: imageSrc // Store the image URL for display
+        };
+
+        // Store this data locally (you could also store it on a server)
+        let publicTests = JSON.parse(localStorage.getItem('publicTests')) || [];
+        publicTests.push(testData);
+        localStorage.setItem('publicTests', JSON.stringify(publicTests));
+
+        alert('Test byl uložen jako veřejný test');
+    } else {
+        // For other test types, like saving to profile
+        console.log(`Test uložen na ${type}: ${testName}`);
+    }
+}
+
 
     let testContent = `
         <html lang="cs">

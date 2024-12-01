@@ -1,46 +1,22 @@
 {% load static %}
 
-{% if SLIPPERS_RUNTIME_TYPE_CHECKING %}
-    <div id="slippers_errors_ui_root"></div>
-    {{ SLIPPERS_TYPE_CHECKING_OUTPUT|json_script:"slippers_type_checking_output" }}
-    
-    <!-- Načítání CSS -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
-    <!-- Načítání JavaScriptu -->
-    <script src="{% static 'js/kalendar.js' %}"></script>
-{% endif %}
+<link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
+<script src="{% static 'js/kalendar.js' %}"></script>
+<script src="{% static 'js/zapisnik.js' %}"></script>
 
 <!-- Hlavička -->
-<header>
-    <div class="logo">LOGO</div>
-    <div class="nav-links">
-        <a href="{% url 'testy' %}">Testy</a>
-        <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
-        <a href="{% url 'ulozene_testy' %}">Uložené testy</a>
-        <a href="{% url 'profil' %}">Profil</a>
-        <a href="{% url 'kosik' %}">Košík</a>
-    </div>
-    <div class="icons">
-        <a class="icon-button" href="{% url 'spravy' %}">3</a>
-        <a class="icon-button" href="{% url 'kosik' %}">4</a>
-        <a class="icon-button" href="{% url 'profil' %}">6</a>
-    </div>
-</header>
+{% include 'struktura/nav.html' %}
+
+<!-- Hlavní obsah stránky -->
+<div class="content">
+    {% block content %}
+    <!-- Sem se bude vkládat specifický obsah pro každou stránku -->
+    {% endblock %}
+</div>
 
 <!-- Levý panel -->
 <div class="layout">
-    <div class="left-sidebar">
-        <div class="table">
-            <h2>Skupiny</h2>
-        </div>
-        <div class="table">
-            <h2>Historie</h2>
-        </div>
-        <div class="table">
-            <h2>Vaše vyrobené</h2>
-        </div>
-    </div>
+    {% include 'struktura/tabulky.html' %}
 
     <!-- Hlavní obsah -->
     <div class="main-content">
@@ -77,10 +53,8 @@
             <h2>Vyhodnocené</h2>
         </div>
 
-        <div class="note-pad">
-            <textarea id="note-text" placeholder="Zadejte poznámku"></textarea>
-            <button onclick="saveNote()">Uložit poznámku</button>
-            <div id="saved-notes"></div>
-        </div>
     </div>
 </div>
+
+<!-- Footer -->
+{% include 'struktura/footer.html' %}

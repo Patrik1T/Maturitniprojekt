@@ -1,11 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.contrib.auth.hashers import make_password
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from .forms import RegisterForm
-from .models import UserProfile
+from .forms import RegistrationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
@@ -14,6 +9,28 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
+import random
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import RegistrationForm
+from django.contrib.auth.models import User
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib import admin
+import stripe
+from django.conf import settings
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.shortcuts import render, redirect
+
+
+
+
+# Nastavení Stripe
+stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+
 
 
 
@@ -146,6 +163,45 @@ def piskvorky(request):
 def spravy(request):
     return render(request, 'spravy')
 
+def moodlelog(request):
+    # další logika pro zpracování přihlášení nebo dat
+    return render(request, 'moodlelog.html')
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Získání hodnot z formuláře
+            username = form.cleaned_data['username']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            profile_picture = form.cleaned_data['profile_picture']
+
+            # Vytvoření uživatele
+            user = User.objects.create_user(
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                password=password
+            )
+
+            # Nastavení profilového obrázku, pokud je součástí formuláře
+            if profile_picture:
+                user.profile.profile_picture = profile_picture
+                user.profile.save()
+
+            messages.success(request, "Úspěšně jste se zaregistrovali.")
+            return redirect('login')  # Přesměrování na přihlašovací stránku
+        else:
+            messages.error(request, "Formulář obsahuje chyby.")
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'register.html', {'form': form})
 
 
 def vytvor_test(request):
@@ -182,37 +238,6 @@ def vytvor_test(request):
 def generate_verification_code():
     return str(random.randint(100000, 999999))  # 6místný kód
 
-
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            # Získání údajů z formuláře
-            email = form.cleaned_data['email']
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-
-            # Generování a odeslání kódu na email
-            verification_code = generate_verification_code()
-
-            # Uložení kódu do session (bude ověřeno při registraci)
-            request.session['verification_code'] = verification_code
-
-            # Odeslání e-mailu s kódem
-            send_mail(
-                'Vaš registrační kód',
-                f'Vaš registrační kód je: {verification_code}',
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-                fail_silently=False,
-            )
-
-            # Přesměrování na stránku pro zadání kódu
-            return redirect('verify_code')
-    else:
-        form = RegistrationForm()
-
-    return render(request, 'users/register.html', {'form': form})
 
 
 # Funkce pro ověření kódu
@@ -255,3 +280,108 @@ def custom_login(request):
             return render(request, 'prihlasovacistranka.html', {'error': 'Neplatné přihlašovací údaje'})
     else:
         return render(request, 'prihlasovacistranka.html')
+
+    from django.db import models
+    from django.contrib.auth.models import User
+
+    class Profile(models.Model):
+        user = models.OneToOneField(User, on_delete=models.CASCADE)
+        picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+        age = models.IntegerField(null=True)
+        gender = models.CharField(max_length=1, choices=[('M', 'Muži'), ('F', 'Ženy')])
+
+        def __str__(self):
+            return f'{self.user.username} Profile'
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        cart = data.get('items', [])
+
+        # Vytvoření položek pro Checkout session
+        line_items = []
+        for item in cart:
+            line_items.append({
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': item['item'],
+                    },
+                    'unit_amount': item['price'] * 100,  # Cena v centách
+                },
+                'quantity': 1,
+            })
+
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=line_items,
+                mode='payment',
+                success_url='http://localhost:8000/success/',
+                cancel_url='http://localhost:8000/cancel/',
+            )
+            return JsonResponse({'id': checkout_session.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+# Endpointy pro úspěch a zrušení platby
+def success(request):
+    return render(request, 'success.html')
+
+def cancel(request):
+    return render(request, 'cancel.html')
+
+import stripe
+import json
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    try:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            items = data.get('items', [])
+
+            line_items = []
+            for item in items:
+                line_items.append({
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': item['item'],
+                        },
+                        'unit_amount': item['price'] * 100,  # Cena je v centech
+                    },
+                    'quantity': 1,
+                })
+
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=line_items,
+                mode='payment',
+                success_url=settings.FRONTEND_URL + '/success/',
+                cancel_url=settings.FRONTEND_URL + '/cancel/',
+            )
+
+            return JsonResponse({'id': session.id})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+    def submit_test(request):
+        if request.method == 'POST':
+            form = TestForm(request.POST, request.FILES)
+            if form.is_valid():
+                # Uložení testu do databáze
+                test = form.save()
+                # Přesměrování na stránku s potvrzením
+                return redirect('verejme_testy', test_id=test.id)
+        else:
+            form = TestForm()
+        return render(request, 'submit_test.html', {'form': form})

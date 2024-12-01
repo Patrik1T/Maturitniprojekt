@@ -1,0 +1,244 @@
+/* Hlavička */
+header {
+    background-color: #1E90FF;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-button {
+    width: 35px;
+    height: 35px;
+    background-color: #4682B4;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.icon-button:hover {
+    background-color: #5A9EDC;
+}
+
+/* Layout */
+.layout {
+    display: flex;
+    height: 100vh; /* Celková výška okna */
+}
+
+.left-sidebar {
+    flex: 0 0 250px; /* Levý panel má pevnou šířku */
+    background-color: #f4f4f4; /* Světlejší pozadí pro levý panel */
+    padding: 20px; /* Padding pro estetiku */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Jemný stín pro oddělení panelu */
+}
+
+.main-content {
+    flex-grow: 1; /* Hlavní obsah se roztáhne a zaplní zbytek */
+    padding: 20px;
+    overflow-y: auto; /* Aby se obsah dal rolovat, pokud je potřeba */
+}
+
+/* Tabulka */
+.table {
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    border: 2px solid #000; /* Černý okraj pro tabulku */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 18px;
+    margin: 0 0 10px;
+    color: #333;
+}
+
+/* Kalendář */
+.calendar {
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar table {
+    width: 100%; /* Tabulka zabere celou šířku kalendáře */
+    border-collapse: collapse;
+}
+
+.calendar th, .calendar td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.current-day {
+    background-color: #1E90FF;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+}
+
+.current-time {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Poznámky */
+.note-pad {
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #1E90FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #4682B4;
+}
+
+.saved-note {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.saved-note button {
+    background-color: #FF6347;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.saved-note button:hover {
+    background-color: #FF4500;
+}
+
+/* Footer */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: #004C99; /* Světlejší modrá */
+    color: white;
+    width: 100%; /* Ujistíme se, že footer je celou šířku okna */
+    position: absolute;
+    bottom: 0; /* Footer bude vždy u spodní části */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Jemný stín pro oddělení */
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+    flex: 1;
+    padding: 10px;
+}
+
+.footer-logo img {
+    width: 100px;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.footer-map iframe {
+    width: 100%;
+    height: 200px;
+    border: none;
+}
+
+/* Poznámky v rámci footeru */
+.notes-section {
+    background-color: #f1f1f1; /* Světlejší šedá */
+    padding: 15px;
+    border-radius: 8px;
+    height: 250px;
+    overflow-y: auto;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+}
+

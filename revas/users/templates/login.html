@@ -18,8 +18,8 @@
 
         .login-container {
             background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
+            padding: 40px;
+            border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
@@ -28,14 +28,14 @@
 
         h2 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         input, button {
             width: 100%;
             padding: 15px;
             margin: 10px 0;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 16px;
             transition: all 0.3s ease;
@@ -79,12 +79,12 @@
         }
 
         .social-buttons button {
-            padding: 10px;
+            padding: 12px;
             width: 45%;
             border: none;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
 
@@ -106,7 +106,64 @@
             background-color: #555;
         }
 
+        /* Kuličkové pozadí pro zaškrtávací políčka */
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            background-color: #fff;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-right: 10px;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: #1E90FF;
+            border-color: #1E90FF;
+        }
+
+        input[type="checkbox"]:checked::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        /* Zlepšení vzhledu textu vedle zaškrtávacích polí */
+        label {
+            color: #333;
+            font-size: 14px;
+            display: inline-block;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* Responsivní design pro mobilní zařízení */
+        @media (max-width: 480px) {
+            .login-container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .social-buttons button {
+                width: 80%;
+                margin-bottom: 10px;
+            }
+        }
     </style>
+
 </head>
 <body>
 
@@ -122,13 +179,15 @@
         </div>
         <div class="form-group">
             <input type="checkbox" name="remember_me"> <label for="remember_me">Zapamatovat si mě</label>
+            <br>
+            <input type="checkbox" name="robot_check"> <label for="robot_check">Nejsem robot</label>
         </div>
         <button type="submit">Přihlásit se</button>
     </form>
 
     <div class="social-buttons">
-        <button class="google-btn">Přihlásit se přes Google</button>
-        <button class="github-btn">Přihlásit se přes GitHub</button>
+        <button class="google-btn" onclick="window.location.href='/google_login'">Přihlásit se přes Google</button>
+        <button class="github-btn" onclick="window.location.href='/github_login'">Přihlásit se přes GitHub</button>
     </div>
 
     <p>Nemáte účet? <a href="{% url 'register' %}" class="link">Zaregistrujte se zde.</a></p>

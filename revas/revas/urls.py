@@ -15,10 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
 from users import views
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -71,7 +72,14 @@ urlpatterns = [
     path('vytvor_test/', views.vytvor_test, name='vytvor_test'),
 
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+    path('moodlelog/', views.moodlelog, name='moodlelog'),
+    path('auth/', include('social_django.urls', namespace='social')),
 
+    path('register/', views.register, name='register'),
 
     path('login/', views.LoginView.as_view(), name='login'),
-]
+
+    path('create-checkout-session/', views.create_checkout_session, name='create-checkout-session'),
+    path('success/', views.success, name='success'),
+    path('cancel/', views.cancel, name='cancel'),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

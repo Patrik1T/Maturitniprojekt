@@ -9,139 +9,124 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            color: #333;
+            background-color: #f4f4f4;
         }
 
         header {
-            background-color: #1E90FF;
+            background-color: #333;
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            height: 70px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            text-align: center;
         }
 
-        header .logo {
+        .logo {
             font-size: 24px;
             font-weight: bold;
         }
 
-        header .nav-links {
+        .nav-links {
             display: flex;
-            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
         }
 
-        header .nav-links a {
-            text-decoration: none;
+        .nav-links a {
             color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        header .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        header .icons a {
             text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .icons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+
+        .icons a {
             color: white;
-            font-size: 20px;
+            margin-left: 10px;
         }
 
         .main-content {
             display: flex;
-            gap: 20px;
+            justify-content: space-between;
             padding: 20px;
         }
 
         .left-sidebar {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 20%;
+            background-color: #fff;
             padding: 15px;
-            width: 200px;
-        }
-
-        .left-sidebar h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #1E90FF;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .main-section {
-            flex-grow: 1;
-        }
-
-        .main-section h1 {
-            font-size: 24px;
-            color: #1E90FF;
-            margin-bottom: 20px;
+            width: 75%;
         }
 
         .card-section {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
 
         .card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px;
+            width: 22%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: center;
-            margin: 20px;
-            width: 250px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
+        .card h3 {
+            margin-bottom: 10px;
         }
 
-        .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
+        .card p {
+            font-size: 16px;
+            color: #666;
         }
 
         .button {
-            background-color: #4CAF50;
+            background-color: #28a745;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            margin-top: 10px;
         }
 
         .button:hover {
-            background-color: #45a049;
+            background-color: #218838;
         }
 
-        .buy-button {
-            background-color: #FF6347;
+        .cart {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .buy-button:hover {
-            background-color: #e5533b;
+        .cart-items {
+            margin-bottom: 15px;
         }
 
         .footer {
+            background-color: #333;
+            color: white;
             text-align: center;
-            padding: 10px;
-            margin-top: 20px;
-            color: #555;
-            font-size: 14px;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
-
     </style>
 </head>
 <body>
@@ -172,38 +157,104 @@
     <div class="main-section">
         <div class="card-section">
             <div class="buttons">
-                <div class="card">
+                <!-- Karta Level 1 -->
+                <div class="card" id="card-1">
                     <h3>Level 1</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
+                    <p>Cena: $5</p>
+                    <button class="button" onclick="addToCart('Level 1', 5)">Více</button>
+                    <button class="button buy-button" onclick="addToCart('Level 1', 5)">Koupit</button>
                 </div>
-                <div class="card">
+
+                <!-- Karta Level 2 -->
+                <div class="card" id="card-2">
                     <h3>Level 2</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
+                    <p>Cena: $10</p>
+                    <button class="button" onclick="addToCart('Level 2', 10)">Více</button>
+                    <button class="button buy-button" onclick="addToCart('Level 2', 10)">Koupit</button>
                 </div>
-                <div class="card">
+
+                <!-- Karta Level 3 -->
+                <div class="card" id="card-3">
                     <h3>Level 3</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
+                    <p>Cena: $15</p>
+                    <button class="button" onclick="addToCart('Level 3', 15)">Více</button>
+                    <button class="button buy-button" onclick="addToCart('Level 3', 15)">Koupit</button>
                 </div>
-                <div class="card">
+
+                <!-- Karta Učitel -->
+                <div class="card" id="card-4">
                     <h3>Učitel</h3>
-                    <p>Náhodný text pro Kartu 1. Tento text se mění pro každou kartu.</p>
-                    <button class="button">Více</button>
-                    <button class="button buy-button">Koupit</button>
+                    <p>Cena: $20</p>
+                    <button class="button" onclick="addToCart('Učitel', 20)">Více</button>
+                    <button class="button buy-button" onclick="addToCart('Učitel', 20)">Koupit</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="cart">
+    <h3>Košík</h3>
+    <div class="cart-items" id="cart-items"></div>
+    <p id="total-price">Celková cena: $0</p>
+    <button class="button" id="checkout-button" onclick="checkout()">Pokračovat k platbě</button>
+</div>
+
 <div class="footer">
     <p>&copy; 2024 Testovací Web. Všechna práva vyhrazena.</p>
 </div>
 
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+// Array to store items added to cart
+let cart = [];
+
+// Function to add an item to the cart
+function addToCart(item, price) {
+    cart.push({ item, price });
+    updateCart();
+}
+
+// Function to update the cart display
+function updateCart() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = '';  // Clear previous items
+    let totalPrice = 0;
+
+    // Loop through the cart and display items
+    cart.forEach(item => {
+        const cartItem = document.createElement('p');
+        cartItem.textContent = `${item.item} - $${item.price}`;
+        cartItemsContainer.appendChild(cartItem);
+        totalPrice += item.price;
+    });
+
+    // Update the total price
+    const totalPriceElement = document.getElementById('total-price');
+    totalPriceElement.textContent = `Celková cena: $${totalPrice}`;
+}
+
+// Function to create a checkout session and redirect to Stripe Checkout
+function checkout() {
+    const totalAmount = cart.reduce((acc, item) => acc + item.price, 0);
+
+    fetch('/create-checkout-session/', {
+        method: 'POST',
+        body: JSON.stringify({ items: cart }),
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(session => {
+        const stripe = Stripe('your-public-key-here'); // Zadejte svůj veřejný Stripe klíč
+        stripe.redirectToCheckout({ sessionId: session.id });
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+
 </body>
 </html>
+

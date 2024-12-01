@@ -117,11 +117,22 @@
 
 <div class="container">
     <h1>Vytvořit test</h1>
+      <h2>Popisek k testu</h2>
 
     <div class="test-name">
         <label for="testName">Název testu:</label>
         <input type="text" id="testName" placeholder="Zadejte název testu" required>
     </div>
+
+    <!-- Obrázek testu (nahrání souboru) -->
+<label for="testImage">Obrázek testu (nahrát soubor):</label>
+<input type="file" id="testImage" accept="image/*">
+
+<!-- Popis testu (textarea pro více textu) -->
+<label for="testDescription">Popis testu:</label>
+<textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+
+  <h2>Tvoření testu</h2>
 
     <div class="timer">
         <label for="timer">Nastavit časovač (v minutách):</label>
@@ -148,8 +159,9 @@
         <div id="questionsContainer"></div>
         <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
         <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <h2>Typ uložení</h2>
+        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
         <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako soukromý test</button>
         <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
     </form>
 

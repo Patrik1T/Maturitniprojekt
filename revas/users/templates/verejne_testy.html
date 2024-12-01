@@ -187,12 +187,49 @@
             </div>
         </div>
 
+         <div class="main-content" id="testContainer">
+        <!-- Test cards will be added here -->
+    </div>
     </div>
 </div>
 
 <div class="footer">
     <p>&copy; 2024 Testovací Web</p>
 </div>
+    <script>
+        // Retrieve test data from localStorage
+        const storedTestData = localStorage.getItem('currentTestData');
+        if (storedTestData) {
+            const testData = JSON.parse(storedTestData);
+            displayTestCard(testData);
+        }
 
+        function displayTestCard(testData) {
+            const testContainer = document.getElementById('testContainer');
+
+            const testCard = document.createElement('div');
+            testCard.classList.add('test-card');
+            testCard.innerHTML = `
+                <h2>${testData.name}</h2>
+                <p><strong>Popis:</strong> ${testData.description}</p>
+                <div class="questions">
+                    <h3>Otázky:</h3>
+                    <ul>
+                        ${testData.questions.map(question => `
+                            <li>
+                                <strong>${question.text}</strong><br>
+                                <ul>
+                                    ${question.options.map(option => `<li>${option}</li>`).join('')}
+                                </ul>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <a href="#" class="button">Zobrazit test</a>
+            `;
+
+            testContainer.appendChild(testCard);
+        }
+    </script>
 </body>
 </html>

@@ -12,8 +12,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+import os
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# settings.py
+STRIPE_TEST_PUBLIC_KEY = 'your-public-key-here'
+STRIPE_TEST_SECRET_KEY = 'your-secret-key-here'
 
 
 # Quick-start development settings - unsuitable for production
@@ -135,8 +141,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-STATIC_URL = '/static/'
-STATICFILES_DIRS = []
+STATIC_URL = '/static/'  # URL pro přístup ke statickým souborům
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    "/var/www/static/",
+]
+
 
 
 
@@ -147,7 +157,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
+    'social_core.backends.oauth.OAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',
+    'path.to.backends.MoodleOAuth2',  # Zde odkazuj na tvůj vlastní backend
+    'social_core.backends.github.GithubOAuth2',
+    'myproject.social.backends.MoodleOAuth2',  # Vlastní backend
 )
+
+SOCIAL_AUTH_MOODLE_KEY = '<YOUR_CLIENT_ID>'
+SOCIAL_AUTH_MOODLE_SECRET = '<YOUR_CLIENT_SECRET>'
+SOCIAL_AUTH_MOODLE_SCOPE = ['openid', 'profile', 'email']
+SOCIAL_AUTH_MOODLE_EXTRA_DATA = ['first_name', 'last_name']
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+
 
 SITE_ID = 1
 
