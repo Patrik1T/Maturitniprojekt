@@ -3,297 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vytvořit test a hru Tetris</title>
+    <title>Tetris s otázkami</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        .question {
-            margin-bottom: 20px;
-        }
-
-        .answers input[type="radio"] {
-            margin-right: 10px;
-        }
-
-        .answers label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .add-question-btn, .submit-btn, .preview-btn, .end-test-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #1E90FF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .add-question-btn:hover, .submit-btn:hover, .preview-btn:hover, .end-test-btn:hover {
-            background-color: #104e8b;
-        }
-
-        .question-wrapper {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        #previewTest {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .test-section {
-            margin-bottom: 20px;
-        }
-
-        .results {
-            margin-top: 20px;
-        }
-
-        .timer-display {
-            margin-top: 20px;
-        }
-
-        /* Tetris style */
-        #tetrisCanvas {
-            border: 2px solid #000;
-            background-color: #f4f4f4;
-            display: none;
-        }
-
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #gameCanvas { border: 2px solid black; }
+        #nextTetrimino { margin-top: 20px; }
+        #questionPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid black; }
+        button { margin-top: 10px; }
+        #score { font-size: 20px; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>Vytvořit test a hru Tetris</h1>
-
-    <!-- Test Section -->
-     <h1>Vytvořit test</h1>
-      <h2>Popisek k testu</h2>
-
-    <div class="test-name">
-        <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    <canvas id="gameCanvas" width="300" height="600"></canvas>
+    <div id="score">Score: 0</div>
+    <div id="nextTetrimino">
+        <h3>Next:</h3>
+        <canvas id="nextCanvas" width="90" height="90"></canvas>
+    </div>
+    <div id="questionPopup">
+        <div id="questionText"></div>
+        <div id="answerOptions"></div>
     </div>
 
-    <!-- Obrázek testu (nahrání souboru) -->
-<label for="testImage">Obrázek testu (nahrát soubor):</label>
-<input type="file" id="testImage" accept="image/*">
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const nextCanvas = document.getElementById("nextCanvas");
+        const nextCtx = nextCanvas.getContext("2d");
 
-<!-- Popis testu (textarea pro více textu) -->
-<label for="testDescription">Popis testu:</label>
-<textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+        const rows = 20;
+        const cols = 10;
+        const blockSize = 30;
+        const gameBoard = Array.from({ length: rows }, () => Array(cols).fill(0));
 
-  <h2>Tvoření testu</h2>
+        const tetriminos = [
+            { color: "red", shape: [[1, 1, 1, 1]] }, // I
+            { color: "blue", shape: [[1, 1], [1, 1]] }, // O
+            { color: "green", shape: [[1, 1, 0], [0, 1, 1]] }, // S
+            { color: "orange", shape: [[0, 1, 1], [1, 1, 0]] }, // Z
+            { color: "purple", shape: [[1, 0, 0], [1, 1, 1]] }, // J
+            { color: "yellow", shape: [[0, 0, 1], [1, 1, 1]] }, // L
+            { color: "cyan", shape: [[0, 1, 0], [1, 1, 1]] }, // T
+        ];
 
-    <div class="timer">
-        <label for="timer">Nastavit časovač (v minutách):</label>
-        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
-        <label for="enableTimer">Povolit časovač</label>
-        <input type="checkbox" id="enableTimer">
-    </div>
+        const questions = [
+            { question: "Kolik je 5 + 3?", answers: ["8", "7", "9", "6"], correct: "8" },
+            { question: "Jaké je hlavní město ČR?", answers: ["Praha", "Brno", "Ostrava", "Plzeň"], correct: "Praha" },
+            { question: "Jaká je barva nebe za jasného dne?", answers: ["Modrá", "Zelená", "Červená", "Fialová"], correct: "Modrá" },
+        ];
 
-    <div class="grade-settings">
-        <h3>Počet bodů pro každou známku</h3>
-        <label for="grade1">Známka 1 (minimální body):</label>
-        <input type="number" id="grade1" min="1" value="90">
-        <label for="grade2">Známka 2 (minimální body):</label>
-        <input type="number" id="grade2" min="1" value="70">
-        <label for="grade3">Známka 3 (minimální body):</label>
-        <input type="number" id="grade3" min="1" value="50">
-        <label for="grade4">Známka 4 (minimální body):</label>
-        <input type="number" id="grade4" min="1" value="30">
-        <label for="grade5">Známka 5 (minimální body):</label>
-        <input type="number" id="grade5" min="1" value="0">
-    </div>
+        let score = 0;
+        let currentTetrimino;
+        let currentPos = { x: 3, y: 0 };
+        let gameInterval;
+        let gameOver = false;
+        let nextTetrimino;
+        let gamePaused = false; // Nová proměnná pro pozastavení hry
 
-    <form id="testForm">
-        <div id="questionsContainer"></div>
-        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
-        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <h2>Typ uložení</h2>
-        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
-        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
-    </form>
-
-    <form id="testForm">
-        <div id="questionsContainer"></div>
-        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
-        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <button type="button" class="submit-btn" onclick="submitTest()">Odeslat test</button>
-    </form>
-
-    <div id="previewTest" class="test-section">
-        <h2>Náhled testu</h2>
-        <div id="testContent"></div>
-    </div>
-
-    <div class="results" id="resultsSection" style="display:none;">
-        <h2>Výsledky testu</h2>
-        <p id="scoreDisplay"></p>
-        <p id="gradeDisplay"></p>
-    </div>
-
-    <!-- Tetris Game Section -->
-    <div id="tetrisSection" style="display: none;">
-        <h2>Hra Tetris</h2>
-        <canvas id="tetrisCanvas" width="300" height="600"></canvas>
-    </div>
-</div>
-
-<script>
-    let questionCount = 0;
-    let totalPoints = 0;
-    let correctAnswers = 0;
-
-    // Funkce pro přidání otázky
-    function addQuestion() {
-        questionCount++;
-        const questionTemplate = `
-        <div class="question-wrapper" id="question${questionCount}">
-            <div class="question">
-                <label for="question${questionCount}_text">Otázka ${questionCount}:</label>
-                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
-            </div>
-            <div class="answers">
-                <label><input type="radio" name="question${questionCount}_answer" value="1" required>
-                <input type="text" name="question${questionCount}_option1" placeholder="Odpověď 1" required></label>
-                <label><input type="radio" name="question${questionCount}_answer" value="2" required>
-                <input type="text" name="question${questionCount}_option2" placeholder="Odpověď 2" required></label>
-                <label><input type="radio" name="question${questionCount}_answer" value="3" required>
-                <input type="text" name="question${questionCount}_option3" placeholder="Odpověď 3" required></label>
-                <label><input type="radio" name="question${questionCount}_answer" value="4" required>
-                <input type="text" name="question${questionCount}_option4" placeholder="Odpověď 4" required></label>
-            </div>
-            <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
-        </div>`;
-        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
-    }
-
-    // Funkce pro smazání otázky
-    function deleteQuestion(questionId) {
-        const questionElement = document.getElementById(`question${questionId}`);
-        questionElement.remove();
-    }
-
-    // Funkce pro náhled testu
-    function previewTest() {
-        const testName = document.getElementById('testName').value;
-        const questions = getQuestions();
-
-        if (!testName || questions.length === 0) {
-            alert('Přidejte otázky a název testu');
-            return;
+        // Funkce pro kreslení herní plochy
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (gameBoard[r][c] !== 0) {
+                        ctx.fillStyle = gameBoard[r][c];
+                        ctx.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
         }
 
-        let testContent = `<h2>${testName}</h2><form id="previewForm">`;
+        // Funkce pro kreslení aktuálního tetrimína
+        function drawTetrimino() {
+            const shape = currentTetrimino.shape;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        ctx.fillStyle = currentTetrimino.color;
+                        ctx.fillRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+        }
 
-        questions.forEach((question, index) => {
-            testContent += `
-                <div class="question">
-                    <p>${question.text}</p>
-                    <div class="answers">
-                        ${question.options.map((option, i) => `
-                            <label>
-                                <input type="radio" name="question${index + 1}_answer" value="${i + 1}">
-                                ${option}
-                            </label>
-                        `).join('')}
-                    </div>
-                </div>`;
+        // Funkce pro kreslení dalšího tetrimína
+        function drawNextTetrimino() {
+            const shape = nextTetrimino.shape;
+            nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        nextCtx.fillStyle = nextTetrimino.color;
+                        nextCtx.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+        }
+
+        // Funkce pro rotaci tvaru
+        function rotateTetrimino() {
+            const shape = currentTetrimino.shape;
+            const rotatedShape = shape[0].map((_, index) => shape.map(row => row[index])).reverse(); // Rotace matice
+
+            // Zkontrolujeme, zda rotovaný tvar nepřekročí hranice a nevyjde mimo plochu
+            if (canMove(0, 0, rotatedShape)) {
+                currentTetrimino.shape = rotatedShape;
+            }
+        }
+
+        // Funkce pro kontrolu, jestli může tetrimino spadnout
+        function canMove(dx, dy, shape) {
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        const newX = currentPos.x + c + dx;
+                        const newY = currentPos.y + r + dy;
+
+                        if (newX < 0 || newX >= cols || newY >= rows || gameBoard[newY][newX] !== 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Funkce pro přidání tetrimina na herní plochu
+        function placeTetrimino() {
+            const shape = currentTetrimino.shape;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        gameBoard[currentPos.y + r][currentPos.x + c] = currentTetrimino.color;
+                    }
+                }
+            }
+        }
+
+        // Funkce pro odstranění úplně vyplněného řádku
+        function removeFullRows() {
+            let rowsRemoved = 0;
+            for (let r = rows - 1; r >= 0; r--) {
+                if (gameBoard[r].every(cell => cell !== 0)) {
+                    gameBoard.splice(r, 1);
+                    gameBoard.unshift(Array(cols).fill(0));
+                    rowsRemoved++;
+                    if (rowsRemoved > 0) {
+                        showQuestion();
+                    }
+                }
+            }
+        }
+
+        // Funkce pro vykreslení skóre
+        function updateScore() {
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        // Funkce pro zobrazení otázky
+        function showQuestion() {
+            gamePaused = true; // Pozastavení hry při zobrazení otázky
+
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            const questionTextElement = document.getElementById("questionText");
+            const answerOptionsElement = document.getElementById("answerOptions");
+            questionTextElement.textContent = randomQuestion.question;
+            answerOptionsElement.innerHTML = "";
+
+            randomQuestion.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => handleAnswer(answer, randomQuestion.correct);
+                answerOptionsElement.appendChild(button);
+            });
+
+            document.getElementById("questionPopup").style.display = "block";
+            clearInterval(gameInterval); // Zastavení hry
+        }
+
+        // Funkce pro zpracování odpovědi
+        function handleAnswer(answer, correctAnswer) {
+            if (answer === correctAnswer) {
+                score += 10;
+            }
+            updateScore();
+            document.getElementById("questionPopup").style.display = "none";
+            gamePaused = false; // Pokračování ve hře po odpovědi
+            startGame(); // Restartování hry po odpovědi
+        }
+
+        // Funkce pro spuštění nové hry
+        function startGame() {
+            currentTetrimino = nextTetrimino || tetriminos[Math.floor(Math.random() * tetriminos.length)];
+            nextTetrimino = tetriminos[Math.floor(Math.random() * tetriminos.length)];
+            currentPos = { x: 3, y: 0 };
+            drawNextTetrimino();
+            if (!gamePaused) {
+                gameInterval = setInterval(gameLoop, 500); // Hra běží každých 500 ms
+            }
+        }
+
+        // Hlavní herní smyčka
+        function gameLoop() {
+            if (gameOver || gamePaused) {
+                return; // Pokud je hra pozastavena nebo skončena, neprovádíme žádné akce
+            }
+
+            if (canMove(0, 1, currentTetrimino.shape)) {
+                currentPos.y++;
+            } else {
+                placeTetrimino();
+                removeFullRows();
+                if (currentPos.y <= 0) {
+                    gameOver = true;
+                    alert("Game Over!");
+                } else {
+                    startGame(); // Nový tvar po dokončení
+                }
+            }
+
+            drawBoard();
+            drawTetrimino();
+        }
+
+        // Ovládání hry
+        document.addEventListener("keydown", event => {
+            if (event.key === "ArrowLeft" && canMove(-1, 0, currentTetrimino.shape)) {
+                currentPos.x--;
+            } else if (event.key === "ArrowRight" && canMove(1, 0, currentTetrimino.shape)) {
+                currentPos.x++;
+            } else if (event.key === "ArrowDown" && canMove(0, 1, currentTetrimino.shape)) {
+                currentPos.y++;
+            } else if (event.key === "ArrowUp") { // Přidání otáčení při stisknutí šipky nahoru
+                rotateTetrimino();
+            }
         });
 
-        testContent += `<button type="button" onclick="submitTest()">Hotovo</button></form>`;
-        document.getElementById('testContent').innerHTML = testContent;
-        document.getElementById('previewTest').style.display = 'block';
-    }
-
-    // Funkce pro získání otázky
-    function getQuestions() {
-        const questions = [];
-        for (let i = 1; i <= questionCount; i++) {
-            const questionText = document.querySelector(`input[name="question${i}_text"]`).value;
-            const options = [];
-            for (let j = 1; j <= 4; j++) {
-                const optionText = document.querySelector(`input[name="question${i}_option${j}"]`).value;
-                options.push(optionText);
-            }
-            const answer = document.querySelector(`input[name="question${i}_answer"]:checked`)?.value;
-            if (questionText && answer) {
-                questions.push({
-                    text: questionText,
-                    options: options,
-                    correctAnswer: answer
-                });
-            }
-        }
-        return questions;
-    }
-
-    // Funkce pro odeslání testu
-    function submitTest() {
-        const questions = getQuestions();
-        questions.forEach((question, index) => {
-            const selectedAnswer = document.querySelector(`input[name="question${index + 1}_answer"]:checked`);
-            if (selectedAnswer && selectedAnswer.value === question.correctAnswer) {
-                correctAnswers++;
-            }
-        });
-
-        if (correctAnswers >= 3) {  // Pokud jsou alespoň 3 správné odpovědi, může začít hra
-            alert('Správně! Můžete začít hru Tetris.');
-            startTetrisGame();
-        } else {
-            alert('Některé odpovědi jsou špatně. Hra končí.');
-        }
-    }
-
-    // Funkce pro spuštění hry Tetris
-    function startTetrisGame() {
-        document.getElementById('tetrisSection').style.display = 'block';
-        document.getElementById('tetrisCanvas').style.display = 'block';
-
-        // Nastavení pro hru Tetris (v tuto chvíli pouze základní kód pro začátek)
-        const canvas = document.getElementById('tetrisCanvas');
-        const context = canvas.getContext('2d');
-
-        function drawTetris() {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = 'red';
-            context.fillRect(50, 50, 30, 30);  // Jen ukázka jednoho bloku
-        }
-
-        setInterval(drawTetris, 500);
-    }
-</script>
-
+        startGame();
+    </script>
 </body>
 </html>
+
 

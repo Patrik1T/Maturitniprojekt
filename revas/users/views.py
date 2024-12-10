@@ -107,8 +107,8 @@ def programovaci_test(request):
 def maraton(request):
     return render(request, 'maraton.html')
 
-def labyrint(request):
-    return render(request, 'labyrint.html')
+def Labyrint(request):
+    return render(request, 'Labyrint.html')
 
 def lov_pokladu(request):
     return render(request, 'lov_pokladu.html')

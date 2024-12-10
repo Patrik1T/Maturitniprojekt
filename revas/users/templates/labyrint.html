@@ -3,206 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bludiště vědomostí</title>
+    <title>Labyrint s otázkami</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #eaeaea;
-            overflow: hidden;
-        }
-
-        #gameArea {
-            width: 100vw;
-            height: 100vh;
-            background-color: #2e2e2e;
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
         }
-
+        #gameArea {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: repeat(10, 40px);
+            grid-template-rows: repeat(10, 40px);
+            gap: 2px;
+            background-color: #ccc;
+        }
+        .tile {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #333;
+        }
         .player {
-            width: 30px;
-            height: 30px;
-            background-color: #1e90ff;
-            border-radius: 50%;
+            background-color: red;
             position: absolute;
-            top: 50px;
-            left: 50px;
+            width: 40px;
+            height: 40px;
         }
-
-        .question {
-            position: absolute;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        .wall {
+            background-color: black;
         }
-
         .path {
-            width: 100px;
-            height: 30px;
-            background-color: #ffd700;
-            border-radius: 5px;
-            position: absolute;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            cursor: pointer;
+            background-color: white;
         }
-
-        #timer, #score {
-            position: absolute;
-            top: 10px;
-            color: white;
-            font-size: 20px;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 5px;
+        .question {
+            background-color: grey;
         }
-
-        #timer {
-            left: 10px;
-        }
-
-        #score {
-            right: 10px;
+        .exit {
+            background-color: green;
         }
     </style>
 </head>
 <body>
-<div id="gameArea">
-    <div class="player" id="player"></div>
+    <div id="gameArea"></div>
+    <div id="player" class="player"></div>
     <div id="timer">Čas: 60</div>
     <div id="score">Body: 0</div>
-</div>
 
-<script>
-    const gameArea = document.getElementById("gameArea");
-    const player = document.getElementById("player");
-    const timerElement = document.getElementById("timer");
-    const scoreElement = document.getElementById("score");
+    <script>
+        const gameArea = document.getElementById("gameArea");
+        const player = document.getElementById("player");
+        const timerElement = document.getElementById("timer");
+        const scoreElement = document.getElementById("score");
 
-    let questions = [
-        { question: "Kolik je 5 + 3?", options: ["8", "9"], correct: "8" },
-        { question: "Hlavní město Francie?", options: ["Paříž", "Lyon"], correct: "Paříž" },
-        { question: "Barva trávy?", options: ["Zelená", "Modrá"], correct: "Zelená" }
-    ];
+        let playerPosition = { x: 0, y: 0 };  // Počáteční pozice hráče
+        let score = 0;
+        let timeLeft = 60;
+        let gameInterval;
 
-    let playerPosition = { x: 50, y: 50 };
-    let score = 0;
-    let timeLeft = 60;
-    let currentQuestionIndex = 0;
+        // Data pro otázky
+        let questions = [
+            { question: "Kolik je 5 + 3?", options: ["8", "9"], correct: "8" },
+            { question: "Hlavní město Francie?", options: ["Paříž", "Lyon"], correct: "Paříž" },
+            { question: "Barva trávy?", options: ["Zelená", "Modrá"], correct: "Zelená" }
+        ];
 
-    function createQuestionNode(question, x, y) {
-        const questionDiv = document.createElement("div");
-        questionDiv.classList.add("question");
-        questionDiv.style.top = `${y}px`;
-        questionDiv.style.left = `${x}px`;
-        questionDiv.innerHTML = `
-            <p>${question.question}</p>
-            ${question.options.map(option => `<button onclick="answerQuestion('${option}')">${option}</button>`).join("")}
-        `;
-        gameArea.appendChild(questionDiv);
-        return questionDiv;
-    }
+        const gridSize = 10;
+        let grid = [];
+        let exitPosition = { x: 9, y: 9 }; // Exit je na pravém dolním rohu
 
-    function setupQuestions() {
-        questions.forEach((q, index) => {
-            const x = 150 + index * 200;
-            const y = 200 + (index % 2 === 0 ? 0 : 150);
-            q.node = createQuestionNode(q, x, y);
-        });
-    }
+        // Vytvoříme hrací plochu
+        function createGameArea() {
+            gameArea.innerHTML = '';
+            grid = [];
 
-    function movePlayer(direction) {
-        const speed = 10;
-        switch (direction) {
-            case "ArrowUp":
-                playerPosition.y -= speed;
-                break;
-            case "ArrowDown":
-                playerPosition.y += speed;
-                break;
-            case "ArrowLeft":
-                playerPosition.x -= speed;
-                break;
-            case "ArrowRight":
-                playerPosition.x += speed;
-                break;
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const tile = document.createElement('div');
+                    tile.classList.add('tile');
+                    tile.dataset.x = x;
+                    tile.dataset.y = y;
+                    gameArea.appendChild(tile);
+                    grid.push({ x, y, element: tile });
+
+                    // Začátek - červená kostka
+                    if (x === 0 && y === 0) {
+                        tile.classList.add('path');
+                    }
+                    // Exit - zelená kostka
+                    else if (x === exitPosition.x && y === exitPosition.y) {
+                        tile.classList.add('exit');
+                    }
+                    // Náhodně generujeme zdi, cesty a otázky
+                    else if (Math.random() < 0.2) {
+                        tile.classList.add('wall');
+                    }
+                    else if (Math.random() < 0.1) {
+                        tile.classList.add('question');
+                    }
+                    else {
+                        tile.classList.add('path');
+                    }
+                }
+            }
+
+            // Nastavení počáteční pozice hráče
+            player.style.left = `${playerPosition.x * 40}px`;
+            player.style.top = `${playerPosition.y * 40}px`;
         }
 
-        playerPosition.x = Math.max(0, Math.min(window.innerWidth - 30, playerPosition.x));
-        playerPosition.y = Math.max(0, Math.min(window.innerHeight - 30, playerPosition.y));
+        // Pohyb hráče
+        function movePlayer(direction) {
+            const newPos = { ...playerPosition };
 
-        player.style.left = `${playerPosition.x}px`;
-        player.style.top = `${playerPosition.y}px`;
-
-        checkCollision();
-    }
-
-    function checkCollision() {
-        const playerRect = player.getBoundingClientRect();
-        questions.forEach(q => {
-            const qNode = q.node;
-            const qRect = qNode.getBoundingClientRect();
-
-            if (
-                playerRect.left < qRect.right &&
-                playerRect.right > qRect.left &&
-                playerRect.top < qRect.bottom &&
-                playerRect.bottom > qRect.top
-            ) {
-                qNode.style.display = "block";
-            } else {
-                qNode.style.display = "none";
+            switch (direction) {
+                case "ArrowUp": newPos.y -= 1; break;
+                case "ArrowDown": newPos.y += 1; break;
+                case "ArrowLeft": newPos.x -= 1; break;
+                case "ArrowRight": newPos.x += 1; break;
             }
-        });
-    }
 
-    function answerQuestion(answer) {
-        const currentQuestion = questions[currentQuestionIndex];
-        if (answer === currentQuestion.correct) {
-            score += 10;
-            scoreElement.textContent = `Body: ${score}`;
-            currentQuestionIndex++;
-            if (currentQuestionIndex >= questions.length) {
+            if (isValidMove(newPos)) {
+                playerPosition = newPos;
+                player.style.left = `${playerPosition.x * 40}px`;
+                player.style.top = `${playerPosition.y * 40}px`;
+                checkExit();
+                checkQuestion(newPos);
+            }
+        }
+
+        // Kontrola, jestli je pohyb platný
+        function isValidMove(position) {
+            if (position.x < 0 || position.x >= gridSize || position.y < 0 || position.y >= gridSize) {
+                return false;
+            }
+            const tile = grid.find(t => t.x === position.x && t.y === position.y);
+            return tile && !tile.element.classList.contains('wall');
+        }
+
+        // Zkontrolujeme, jestli hráč dosáhl východu
+        function checkExit() {
+            if (playerPosition.x === exitPosition.x && playerPosition.y === exitPosition.y) {
+                clearInterval(gameInterval);
                 alert(`Gratulujeme! Vyhráli jste s ${score} body.`);
-                location.reload();
             }
-        } else {
-            alert("Špatná odpověď! Vracíme vás na start.");
-            resetGame();
         }
-    }
 
-    function resetGame() {
-        playerPosition = { x: 50, y: 50 };
-        player.style.left = `${playerPosition.x}px`;
-        player.style.top = `${playerPosition.y}px`;
-        score = 0;
-        scoreElement.textContent = `Body: ${score}`;
-        currentQuestionIndex = 0;
-    }
+        // Spuštění otázky
+        function handleQuestion(tile) {
+            const currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+            const answer = prompt(`${currentQuestion.question}\n${currentQuestion.options.join("\n")}`);
 
-    function startTimer() {
-        const interval = setInterval(() => {
-            timeLeft--;
-            timerElement.textContent = `Čas: ${timeLeft}`;
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                alert("Čas vypršel! Zkuste to znovu.");
-                location.reload();
+            if (answer === currentQuestion.correct) {
+                score += 10;
+                scoreElement.textContent = `Body: ${score}`;
+                tile.classList.remove('question');
+                tile.classList.add('path'); // Změna na bílou
+            } else {
+                alert("Špatná odpověď!");
             }
-        }, 1000);
-    }
+        }
 
-    document.addEventListener("keydown", (e) => movePlayer(e.key));
-    setupQuestions();
-    startTimer();
-</script>
+        // Kontrola, jestli hráč vstoupil na šedou kostku
+        function checkQuestion(position) {
+            const tile = grid.find(t => t.x === position.x && t.y === position.y);
+            if (tile && tile.element.classList.contains('question')) {
+                handleQuestion(tile.element);
+            }
+        }
+
+        // Startovací timer
+        function startTimer() {
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Čas: ${timeLeft}`;
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    alert("Čas vypršel! Zkuste to znovu.");
+                }
+            }, 1000);
+        }
+
+        // Zpracování stisknutí kláves
+        document.addEventListener("keydown", (e) => movePlayer(e.key));
+
+        // Nastavení a spuštění hry
+        createGameArea();
+        startTimer();
+    </script>
 </body>
 </html>
