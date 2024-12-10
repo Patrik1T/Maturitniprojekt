@@ -1,0 +1,124 @@
+body {
+    background: linear-gradient(135deg, #1E90FF, #87CEEB);
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #fff;
+}
+
+.form-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #0073e6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+.password-rules {
+    color: #333;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: left;
+}
+
+label {
+    text-align: left;
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.input-field.error {
+    border-color: red;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.social-buttons button {
+    padding: 12px;
+    width: 48%;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.google-btn, .moodle-btn {
+    background-color: #db4437; /* Google Red */
+    color: white;
+}
+
+.google-btn:hover, .moodle-btn:hover {
+    background-color: #c1351d; /* Darker red on hover */
+}
+
+.moodle-btn {
+    background-color: #00A400; /* Moodle Green */
+}
+
+.moodle-btn:hover {
+    background-color: #007700;
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .social-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .social-buttons button {
+        width: 80%;
+        margin-bottom: 10px;
+    }
+}

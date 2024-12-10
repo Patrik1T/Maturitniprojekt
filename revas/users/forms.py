@@ -3,7 +3,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 import re
+from .models import QuestionPair
 
+
+class QuestionPairForm(forms.ModelForm):
+    class Meta:
+        model = QuestionPair
+        fields = ['question_text', 'answer_text']
 
 
 class RegistrationForm(forms.Form):

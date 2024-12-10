@@ -1,85 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrace</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1E90FF, #87CEEB);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #fff;
-        }
 
-        .form-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            background-color: #0073e6;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #005bb5;
-        }
-
-        .error {
-            color: red;
-            font-size: 14px;
-        }
-
-        .password-rules {
-            color: #333;
-            font-size: 14px;
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        label {
-            text-align: left;
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .input-field.error {
-            border-color: red;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-    </style>
+    <!-- Načítání statického CSS souboru -->
+    <link rel="stylesheet" href="{% static 'style/registrace.css' %}">
 </head>
 <body>
 
@@ -97,18 +25,17 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
-       <div class="form-group">
-    <label for="id_username">Uživatelské jméno</label>
-    {{ form.username }}
-    {% if form.username.errors %}
-        <div class="error">
-            {% for error in form.username.errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
+        <div class="form-group">
+            <label for="id_username">Uživatelské jméno</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="error">
+                    {% for error in form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-    {% endif %}
-</div>
-
 
         <div class="form-group">
             <label for="id_last_name">Příjmení</label>
@@ -206,7 +133,13 @@
         <button type="submit">Registrovat</button>
     </form>
 
-    <p>Máte již účet? <a href="{% url 'login' %}">Přihlaste se zde</a></p>
+    <div class="social-buttons">
+        <!-- Přihlášení přes Moodle a Google -->
+        <button class="moodle-btn" onclick="window.location.href='/moodlelog'">Přihlásit se přes Moodle</button>
+        <button class="google-btn" onclick="window.location.href='/google_log'">Přihlásit se přes Google</button>
+    </div>
+
+    <p><a href="{% url 'login' %}">Přihlaste se zde</a> /t /t /t /t /t /t /t /t /t <a href="{% url 'register' %}">Zaregistrujte se zde</a></p>
 </div>
 
 </body>

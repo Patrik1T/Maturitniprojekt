@@ -4,51 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Přihlášení přes Google</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1E90FF, #87CEEB);
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #fff;
-        }
 
-        .login-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        h2 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .google-btn {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: none;
-            background-color: #db4437;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .google-btn:hover {
-            background-color: #c1351d;
-        }
-
-    </style>
+    <!-- Načítání externího CSS souboru -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/google.css' %}">
 </head>
 <body>
 
@@ -58,7 +17,7 @@
     <!-- Tlačítko pro přihlášení přes Google -->
     <button class="google-btn" onclick="window.location.href='https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&response_type=code&scope=openid%20profile%20email'">Přihlásit se přes Google</button>
 
-    <p>Nemáte účet? <a href="/register" class="link">Zaregistrujte se zde.</a></p>
+    <p><a href="{% url 'login' %}">Přihlaste se zde</a> /t /t /t /t /t /t /t <a href="{% url 'register' %}">Zaregistrujte se zde</a></p>
 </div>
 
 </body>

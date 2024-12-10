@@ -86,19 +86,20 @@
         }
 
         .test-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;  /* Vzdálenost mezi jednotlivými kategoriemi */
+}
 
-        .test-category {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            border: 3px solid black;
-            width: calc(50% - 20px);
-            box-sizing: border-box;
-        }
+.test-category {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    border: 3px solid black;
+    width: calc(50% - 20px);  /* Polovina šířky (s mezerami) */
+    box-sizing: border-box;
+}
+
 
         .test-category img {
             max-width: 100%;

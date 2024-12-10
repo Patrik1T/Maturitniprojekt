@@ -1,102 +1,115 @@
 let cards = [];
-let cardImages = [];
-let selectedCards = [];
+let flippedCards = [];
 let matchedCards = [];
-let totalPairs = 8;
-let flippedCount = 0;
-let canFlip = true;
+let score = 0;
+let pointsPerPair = 1;
+let timeRemaining = 60;
+let timerInterval;
 
-function preload() {
+function addPairInput() {
+    const pairInfoContainer = document.getElementById('pairInfoContainer');
+    const input1 = document.createElement('input');
+    const input2 = document.createElement('input');
 
-    for (let i = 0; i < totalPairs; i++) {
-        cardImages[i] = loadImage(`images/card${i + 1}.png`);
+    input1.type = 'text';
+    input1.placeholder = 'Zadejte otázku';
+    input2.type = 'text';
+    input2.placeholder = 'Zadejte odpověď';
+
+    pairInfoContainer.appendChild(input1);
+    pairInfoContainer.appendChild(input2);
+}
+
+function startGame() {
+    const numPairs = parseInt(document.getElementById('numPairs').value);
+    const pairInputs = document.querySelectorAll('#pairInfoContainer input');
+    let pairs = [];
+
+    // Vytváření párů (otázka a odpověď)
+    for (let i = 0; i < pairInputs.length; i += 2) {
+        if (pairInputs[i] && pairInputs[i + 1]) {
+            pairs.push([pairInputs[i].value.trim(), pairInputs[i + 1].value.trim()]);
+        }
     }
-}
 
-function setup() {
-    createCanvas(400, 400);
-    resetGame();
-}
+    // Vytváření karet
+    cards = [];
+    pairs.forEach((pair, index) => {
+        cards.push({ text: pair[0], flipped: false, pairId: index }); // Přidání otázky
+        cards.push({ text: pair[1], flipped: false, pairId: index }); // Přidání odpovědi
+    });
 
-function draw() {
-    background(200);
+    // Zamíchání karet
+    cards.sort(() => Math.random() - 0.5);
     drawCards();
+    startTimer();
 }
 
 function drawCards() {
-    let cardWidth = width / 4;
-    let cardHeight = height / 4;
+    const grid = document.getElementById('grid');
+    grid.innerHTML = ''; // Vyprázdní grid před každým vykreslením
 
-    for (let i = 0; i < cards.length; i++) {
-        let x = (i % 4) * cardWidth;
-        let y = floor(i / 4) * cardHeight;
+    cards.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card' + (card.flipped ? ' flipped' : '');
+        cardElement.textContent = card.flipped ? card.text : ''; // Zobrazí text pouze, pokud je karta otočená
+        cardElement.dataset.index = index;
 
-        if (cards[i].flipped || matchedCards.includes(i)) {
-            image(cardImages[cards[i].imageIndex], x, y, cardWidth, cardHeight);
-        } else {
-            fill(100);
-            rect(x, y, cardWidth, cardHeight);
-        }
-    }
+        cardElement.addEventListener('click', () => flipCard(index));
+
+        grid.appendChild(cardElement);
+    });
+
+    document.getElementById('score').innerText = `Skóre: ${score}`;
 }
 
-function mousePressed() {
-    if (canFlip) {
-        let cardWidth = width / 4;
-        let cardHeight = height / 4;
+function flipCard(index) {
+    // Zabráníme otočení karty, která je už otočená nebo když jsou už dvě karty otočené
+    if (cards[index].flipped || flippedCards.length === 2) return;
 
-        let i = floor(mouseX / cardWidth) + floor(mouseY / cardHeight) * 4;
+    cards[index].flipped = true;
+    flippedCards.push(index);
+    drawCards();
 
-        if (!cards[i].flipped && !matchedCards.includes(i)) {
-            cards[i].flipped = true;
-            selectedCards.push(i);
-            flippedCount++;
-
-            if (flippedCount === 2) {
-                canFlip = false;
-                checkMatch();
-            }
-        }
+    if (flippedCards.length === 2) {
+        checkMatch();
     }
 }
 
 function checkMatch() {
-    let firstCardIndex = selectedCards[0];
-    let secondCardIndex = selectedCards[1];
+    const [firstIndex, secondIndex] = flippedCards;
+    const firstCard = cards[firstIndex];
+    const secondCard = cards[secondIndex];
 
-    if (cards[firstCardIndex].imageIndex === cards[secondCardIndex].imageIndex) {
-        matchedCards.push(firstCardIndex);
-        matchedCards.push(secondCardIndex);
-    } else {
+    if (firstCard.pairId === secondCard.pairId) { // Pokud páry odpovídají
+        matchedCards.push(firstIndex, secondIndex);
+        score += pointsPerPair;
+    } else { // Pokud páry neodpovídají
         setTimeout(() => {
-            cards[firstCardIndex].flipped = false;
-            cards[secondCardIndex].flipped = false;
-            canFlip = true;
-        }, 1000);
+            firstCard.flipped = false;
+            secondCard.flipped = false;
+            drawCards();
+        }, 1000); // Karty se otočí zpět po 1 sekundě
     }
-    selectedCards = [];
-    flippedCount = 0;
+
+    flippedCards = []; // Vyprázdníme pole otočených karet
+
+    if (matchedCards.length === cards.length) {
+        clearInterval(timerInterval);
+        alert('Hra skončila! Vaše skóre: ' + score);
+    }
 }
 
-function resetGame() {
-    cards = [];
-    matchedCards = [];
-    selectedCards = [];
-    flippedCount = 0;
-    canFlip = true;
-
-    for (let i = 0; i < totalPairs; i++) {
-        cards.push({ imageIndex: i, flipped: false });
-        cards.push({ imageIndex: i, flipped: false });
-    }
-
-
-    shuffle(cards, true);
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert('Čas vypršel! Hra skončila.');
+        }
+    }, 1000);
 }
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = floor(random(i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
+function previewTest() {
+    startGame();
 }

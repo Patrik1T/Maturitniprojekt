@@ -55,46 +55,71 @@
 
     // Funkce pro smazání otázky
     function deleteQuestion(questionId) {
-        const questionElement = document.getElementById(`question${questionId}`);
-        questionElement.remove();
+    const questionElement = document.getElementById(`question${questionId}`);
+    questionElement.remove();
+
+    // Aktualizuj čísla otázek
+    questionCount--;
+    for (let i = questionId + 1; i <= questionCount; i++) {
+        const question = document.getElementById(`question${i}`);
+        const questionNumberLabel = question.querySelector('label');
+        questionNumberLabel.textContent = `Otázka ${i}:`;
+        question.id = `question${i}`; // Změní ID otázky
     }
+}
+
 
     // Funkce pro náhled testu
-    function previewTest() {
-        const testName = document.getElementById('testName').value;
-        const questions = getQuestions();
+   function previewTest() {
+    const testName = document.getElementById('testName').value;
+    const questions = getQuestions();
 
-        if (!testName || questions.length === 0) {
-            alert('Přidejte otázky a název testu');
-            return;
-        }
-
-        let testContent = `<h2>${testName}</h2><form id="previewForm">`;
-
-        questions.forEach((question, index) => {
-            testContent += `
-                <div class="question">
-                    <p>${question.text}</p>
-                    <div class="answers">
-                        ${question.options.map((option, i) => `
-                            <label>
-                                <input type="radio" name="question${index + 1}_answer" value="${i + 1}">
-                                ${option}
-                            </label>
-                        `).join('')}
-                    </div>
-                </div>`;
-        });
-
-        testContent += `<button type="button" onclick="submitTest()">Hotovo</button></form>`;
-        document.getElementById('testContent').innerHTML = testContent;
-        document.getElementById('previewTest').style.display = 'block';
-
-        // Spustí časovač pokud je povolen
-        if (document.getElementById('enableTimer').checked) {
-            startTimer();
-        }
+    if (!testName || questions.length === 0) {
+        alert('Přidejte otázky a název testu');
+        return;
     }
+
+    // Náhodné promíchání otázek
+    const shuffledQuestions = shuffleArray(questions);
+
+    let testContent = `<h2>${testName}</h2><form id="previewForm">`;
+
+    shuffledQuestions.forEach((question, index) => {
+        testContent += `
+            <div class="question" style="border: 2px solid black; padding: 10px; background-color: white;">
+                <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
+                <div class="answers">
+                    ${question.options.map((option, i) => `
+                        <label>
+                            <input type="radio" name="question${index + 1}_answer" value="${i + 1}">
+                            ${option}
+                        </label>
+                    `).join('')}
+                </div>
+                <p><strong>Počet bodů: </strong>${question.points}</p>
+            </div>`;
+    });
+
+    testContent += `<button type="button" onclick="submitTest()">Hotovo</button>`;
+    testContent += `<button type="button" onclick="restartTest()">Restartovat test</button></form>`;
+    document.getElementById('testContent').innerHTML = testContent;
+    document.getElementById('previewTest').style.display = 'block';
+
+    // Spustí časovač pokud je povolen
+    if (document.getElementById('enableTimer').checked) {
+        startTimer();
+    }
+}
+
+// Funkce pro náhodné promíchání otázek
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 
     // Funkce pro získání otázky
     function getQuestions() {
@@ -154,25 +179,32 @@
 
     // Funkce pro ukončení testu
     function endTest() {
-        alert('Test byl ukončen.');
+
     }
 
     // Funkce pro odeslání testu
-    function submitTest() {
-        let score = 0;
-        const questions = getQuestions();
-        questions.forEach((question, index) => {
-            const selectedAnswer = document.querySelector(`input[name="question${index + 1}_answer"]:checked`);
-            if (selectedAnswer && selectedAnswer.value === question.correctAnswer) {
-                score += question.points;
-            }
-        });
+   function submitTest() {
+    let score = 0;
+    const questions = getQuestions();
+    questions.forEach((question, index) => {
+        const selectedAnswer = document.querySelector(`input[name="question${index + 1}_answer"]:checked`);
+        if (selectedAnswer && selectedAnswer.value === question.correctAnswer) {
+            score += question.points;
+        }
+    });
 
-        const grade = calculateGrade(score);
-        document.getElementById('scoreDisplay').innerText = `Počet bodů: ${score}`;
-        document.getElementById('gradeDisplay').innerText = `Vaše známka: ${grade}`;
-        document.getElementById('resultsSection').style.display = 'block';
+    const grade = calculateGrade(score);
+    document.getElementById('scoreDisplay').innerText = `Počet bodů: ${score}`;
+    document.getElementById('gradeDisplay').innerText = `Vaše známka: ${grade}`;
+    document.getElementById('resultsSection').style.display = 'block';
+
+    // Ukončit časomíru, pokud byla povolena
+    if (document.getElementById('enableTimer').checked) {
+        clearInterval(timerInterval);
+        document.getElementById('timerDisplay').style.display = 'none';  // Skrytí časomíry
     }
+}
+
 
     // Funkce pro výpočet známky
     function calculateGrade(score) {
@@ -256,3 +288,40 @@ function saveAsHtml() {
     link.download = `${testName}.html`;
     link.click();
 }
+
+function restartTest() {
+    // Získání otázek
+    const questions = getQuestions();
+
+    // Náhodné promíchání otázek
+    const shuffledQuestions = shuffleArray(questions);
+
+    let testContent = `<h2>${document.getElementById('testName').value}</h2><form id="previewForm">`;
+
+    shuffledQuestions.forEach((question, index) => {
+        testContent += `
+            <div class="question" style="border: 2px solid black; padding: 10px; background-color: white;">
+                <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
+                <div class="answers">
+                    ${question.options.map((option, i) => `
+                        <label>
+                            <input type="radio" name="question${index + 1}_answer" value="${i + 1}">
+                            ${option}
+                        </label>
+                    `).join('')}
+                </div>
+                <p><strong>Počet bodů: </strong>${question.points}</p>
+            </div>`;
+    });
+
+    testContent += `<button type="button" onclick="submitTest()">Hotovo</button>`;
+    testContent += `<button type="button" onclick="restartTest()">Restartovat test</button></form>`;
+    document.getElementById('testContent').innerHTML = testContent;
+
+    // Pokud je časomíra povolena, restartuj ji
+    if (document.getElementById('enableTimer').checked) {
+        clearInterval(timerInterval);
+        startTimer();  // Restartuj časomíru
+    }
+}
+

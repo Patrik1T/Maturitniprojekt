@@ -24,7 +24,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import render, redirect
-
+from .models import Game, Player, QuestionPair
+from .forms import QuestionPairForm
 
 
 
@@ -374,14 +375,43 @@ def create_checkout_session(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-    def submit_test(request):
-        if request.method == 'POST':
-            form = TestForm(request.POST, request.FILES)
-            if form.is_valid():
-                # Uložení testu do databáze
-                test = form.save()
-                # Přesměrování na stránku s potvrzením
-                return redirect('verejme_testy', test_id=test.id)
-        else:
-            form = TestForm()
-        return render(request, 'submit_test.html', {'form': form})
+# Pohled pro vytvoření nové hry
+def create_game(request):
+    if request.method == "POST":
+        name = request.POST['name']
+        time_limit = int(request.POST['time_limit'])
+        points_per_pair = int(request.POST['points_per_pair'])
+        num_players = int(request.POST['num_players'])
+
+        game = Game.objects.create(
+            name=name,
+            time_limit=time_limit,
+            points_per_pair=points_per_pair,
+            num_players=num_players
+        )
+
+        # Přidání hráčů do hry
+        for i in range(num_players):
+            player_name = f"Player {i + 1}"
+            player = Player.objects.create(username=player_name)
+            game.players.add(player)
+
+        return redirect('game_detail', game_id=game.id)
+    return render(request, 'create_game.html')
+
+# Pohled pro zobrazení detailu hry
+def game_detail(request, game_id):
+    game = Game.objects.get(id=game_id)
+    question_pairs = QuestionPair.objects.all()
+    return render(request, 'game_detail.html', {'game': game, 'question_pairs': question_pairs})
+
+# Pohled pro přidání párů otázek a odpovědí
+def add_question_pair(request):
+    if request.method == 'POST':
+        form = QuestionPairForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('game_detail', game_id=form.instance.game.id)
+    else:
+        form = QuestionPairForm()
+    return render(request, 'add_question_pair.html', {'form': form})
