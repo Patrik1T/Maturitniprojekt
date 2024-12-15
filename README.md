@@ -3,7 +3,7 @@
 `Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě menších her.`
 
 ## Logo:
-[Revas.kra](..%2FUsers%2Fmegaagri%2FDesktop%2FRevas_projekt%2FRevas.kra)
+![Moje obrázek](logoRevas.jpg)
 
 ## Moje hlavní cíle, můj hlavní plán:
 ### 1. týden (15.9. – 22.9.): Plánování a Nastavení Projektu (100%)
