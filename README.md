@@ -1,4 +1,4 @@
-p# Aplikace Revas pro dělání testů
+# Aplikace Revas pro dělání testů
 ## Cíl projektu:
 `Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě menších her.`
 
@@ -6,7 +6,7 @@ p# Aplikace Revas pro dělání testů
 [Revas.kra](..%2FUsers%2Fmegaagri%2FDesktop%2FRevas_projekt%2FRevas.kra)
 
 ## Moje hlavní cíle, můj hlavní plán:
-###1. týden (15.9. – 22.9.): Plánování a Nastavení Projektu (100%)
+### 1. týden (15.9. – 22.9.): Plánování a Nastavení Projektu (100%)
 
 •	`Detailní specifikace aplikace (moduly: testy, platby, denní výzvy, veřejné sdílení). `(hotovo)
 
@@ -20,7 +20,7 @@ p# Aplikace Revas pro dělání testů
 
 •	`Přidání knihovny pro zpracování plateb (např. Stripe nebo PayPal SDK). `(hotovo)
 
-###2.–3. týden: Backendová Logika (100%)
+### 2.–3. týden: Backendová Logika (100%)
 
 •	`Vytvoření datových modelů: `
 
@@ -42,7 +42,7 @@ p# Aplikace Revas pro dělání testů
 
 •	`Testy backendové logiky (unit testy). ` ()
 
-###4.–5. týden: Frontendová Základní Struktura (100%)
+### 4.–5. týden: Frontendová Základní Struktura (100%)
 
 •	`Základní UI v Reactu: registrace, správa testů, zobrazení kalendáře. ` ()
 
@@ -52,7 +52,7 @@ p# Aplikace Revas pro dělání testů
 
 •	`Autentifikace uživatelů (Django). ` ()
 
-###6.–7. týden: Gamifikace a Pokročilé Herní Prvky (100%)
+### 6.–7. týden: Gamifikace a Pokročilé Herní Prvky (100%)
 
 •	- `Implementace postupování levelů: za úspěšné testy uživatel získá body nebo odměny. ` ()
 
@@ -62,7 +62,7 @@ p# Aplikace Revas pro dělání testů
 
 •	- `Propojení gamifikace s backendem (ukládání skóre, úspěchů a chyb). ` ()
 
-###8. týden: Veřejné Sdílení a Učební Materiály (0%)
+### 8. týden: Veřejné Sdílení a Učební Materiály (0%)
 
 •	`Implementace veřejného sdílení testů. Autor testu může rozhodnout, zda bude test přístupný veřejnosti. ` ()
 
@@ -70,7 +70,7 @@ p# Aplikace Revas pro dělání testů
 
 •	`Integrace kalendáře pro zobrazení naplánovaných testů a výzev. ` ()
 
-###9. týden: Platby a Prémiové Funkce (0%)
+### 9. týden: Platby a Prémiové Funkce (0%)
 
 •	`Integrace platební brány (Stripe, PayPal) pro nákup prémiových funkcí (např. extra herní prvky nebo personalizace UI). ` ()
 
@@ -78,7 +78,7 @@ p# Aplikace Revas pro dělání testů
 
 •	`Testování API pro zpracování plateb a napojení na uživatelské profily (zobrazení zakoupených výhod). ` ()
 
-###10. týden: Optimalizace a Integrace s Moodle (0%)
+### 10. týden: Optimalizace a Integrace s Moodle (0%)
 
 •	`Optimalizace výkonu aplikace (rychlost načítání, plynulost herních prvků). ` ()
 
@@ -86,7 +86,7 @@ p# Aplikace Revas pro dělání testů
 
 •	`Zabezpečení API a ochrana dat uživatelů (např. SSL, správné ošetření vstupů). ` ()
 
-###11.–12. týden: Nasazení a Finální Testování (0%)
+### 11.–12. týden: Nasazení a Finální Testování (0%)
 
 •	`Nasazení aplikace na produkční server (Heroku, DigitalOcean, AWS). ` ()
 
