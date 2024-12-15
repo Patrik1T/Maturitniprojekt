@@ -1,141 +1,131 @@
-  body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
+ /* Globální nastavení */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+h1, h2, h3 {
+    color: #333;
+}
 
-        .question {
-            margin-bottom: 20px;
-        }
-
-        .answers input[type="radio"] {
-            margin-right: 10px;
-        }
-
-        .answers label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .add-question-btn, .submit-btn, .delete-question-btn, .preview-btn, .end-test-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #1E90FF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .delete-question-btn {
-            background-color: #FF6347;
-        }
-
-        .end-test-btn {
-            background-color: #FFD700;
-        }
-
-        .add-question-btn:hover, .submit-btn:hover, .delete-question-btn:hover, .preview-btn:hover, .end-test-btn:hover {
-            background-color: #104e8b;
-        }
-
-        .delete-question-btn:hover {
-            background-color: #c44133;
-        }
-
-        .question-wrapper {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .test-name {
-            margin-bottom: 20px;
-        }
-
-        .test-name input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        #previewTest {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .test-section {
-            margin-bottom: 20px;
-        }
-
-        .timer {
-            margin-top: 20px;
-        }
-
-        .score {
-            margin-top: 20px;
-        }
-
-        .timer span {
-            font-weight: bold;
-        }
-
-        .results {
-            margin-top: 20px;
-        }
-
-        .game-container {
-    position: relative;
+input, textarea {
     width: 100%;
-    height: 500px;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
-    overflow: hidden;
+    border-radius: 5px;
 }
 
-.basket {
-    position: absolute;
-    bottom: 10px;
-    width: 100px;
-    height: 50px;
-    background-color: orange;
-    left: 50%;
-    transform: translateX(-50%);
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    color: white;
+    background-color: #1E90FF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
 }
 
-.falling-answer {
-    position: absolute;
-    top: 0;
-    width: 100px;
-    background-color: lightblue;
-    text-align: center;
-    border: 1px solid #000;
-    animation: fall linear;
+button:hover {
+    background-color: #104e8b;
 }
 
-@keyframes fall {
-    from {
-        top: 0;
-    }
-    to {
-        top: 100%;
-    }
+button.finish-test-btn {
+    background-color: #FFD700;
+}
+
+button.finish-test-btn:hover {
+    background-color: #e6c200;
+}
+
+.test-section {
+    margin-top: 20px;
+}
+
+.results, .timer-display {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #555;
+}
+
+.grade-settings label, .timer label {
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+#successContainer {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: green;
+    color: white;
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+.correct {
+    color: green;
+    font-weight: bold;
+}
+
+.partially-correct {
+    color: yellow;
+    font-weight: bold;
+}
+
+.wrong {
+    color: red;
+    font-weight: bold;
+}
+
+.selected {
+    background-color: lightgray;
+}
+
+.question-preview {
+    border: 2px solid #4CAF50; /* Zelené ohraničení */
+    padding: 15px;
+    margin-bottom: 15px; /* Vzdálenost mezi otázkami */
+    border-radius: 8px; /* Zaoblené rohy */
+    background-color: #f9f9f9; /* Světle šedé pozadí */
+}
+
+.question-preview p {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.answers-preview {
+    margin-top: 10px;
+}
+
+.answers-preview label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.answers-preview input[type="checkbox"] {
+    margin-right: 10px;
 }

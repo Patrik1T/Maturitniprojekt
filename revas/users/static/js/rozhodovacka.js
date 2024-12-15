@@ -1,4 +1,4 @@
-  let questionCount = 0;
+let questionCount = 0;
         let timerInterval;
         let totalTime = 0;
         let timeRemaining = 0;
@@ -277,7 +277,7 @@ function previewTest() {
         <button type="button" onclick="restartTest()">Restartovat test</button>
     `;
 
-    // Vloží obsah do náhledu testu
+    // Vložíme generovaný obsah do náhledu testu
     document.getElementById('testContent').innerHTML = previewHTML;
     document.getElementById('previewTest').style.display = 'block';
 
@@ -286,6 +286,7 @@ function previewTest() {
         startTimer();
     }
 }
+
 
 
 
