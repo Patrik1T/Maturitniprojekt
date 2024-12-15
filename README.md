@@ -1,4 +1,5 @@
-# Aplikace Revas pro dělání testů
+# Revas
+# Aplikace pro dělání testů
 ## Cíl projektu:
 `Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě menších her.`
 
@@ -86,7 +87,7 @@
 
 •	`Zabezpečení API a ochrana dat uživatelů (např. SSL, správné ošetření vstupů). ` ()
 
-### 11.–12. týden: Nasazení a Finální Testování (0%)
+### 11.–12. týden: Upravení stylů, menších chyb, nedostatků a Finální Testování (0%)
 
 •	`Nasazení aplikace na produkční server (Heroku, DigitalOcean, AWS). ` ()
 
@@ -94,26 +95,36 @@
 
 •	`Nakreslení všech animací a obrázků.  ` ()
 
-•	`Udělání prezentace  a video prezentace o projektu. ` ()
+### 11.–12. týden: Dokumentace a příprava na prezentaci projektu (0%)
+
+•	`Udělání dokumentace v Latexu. ` ()
+
+•	`Udělání video prezentace o projektu. ` ()
 
 
 ## Používané technologie:
 
+`Pycharm: Pro napsání celého kódu pro mou aplikaci. `
+
 `Backend (Django): Pro autentifikaci uživatelů, správu testů, export do Moodle a zpracování plateb (např. Stripe nebo PayPal). `
 
-`Frontend (Javascript): Pro tvorbu interaktivního uživatelského rozhraní s integrací P5.js pro herní prvky. `
+`Frontend (django/css): Pro tvorbu interaktivního uživatelského rozhraní s integrací P5.js pro herní prvky. `
+
+`Javascript: Pro fuunkcionalitu klasických otázek a odpovědí. `
 
 `P5.js: Pro vizualizace a gamifikaci testů. `
 
 `FullCalendar.js: Pro zobrazení plánovaných testů v kalendáři. `
 
-`Django REST Framework: Pro vytváření API.`
+`Django REST Framework: Pro vytváření API pro nahrávání souborů na Moodle.`
 
 `Stripe/PayPal SDK: Pro implementaci platebních funkcí. `
 
-`MySQL: Databáze pro ukládání uživatelských statistik, testů a transakcí. `
+`MySQL: Databáze pro ukládání uživatelských statistik, testů. `
 
 `Photoshop: pro nakreslení a nanimování některých funkcí a her. `
+
+`Latex: pro dokumentaci celého projektu. `
 
 ## Konkurence
 `Existuje několik open-source projektů zaměřených na tvorbu kvízových aplikací, které mi sloužili jako základ pro můj projekt nebo jako inspirace: 
@@ -138,7 +149,7 @@ mawoka-myblock/ClassQuiz: ClassQuiz is a quiz-application like Kahoot!, but open
 
 ### Moodle API a export testů:
 
-•	moosh: Moosh je nástroj pro správu Moodle z příkazové řádky, což by ti mohlo pomoci při exportu testů do Moodle. I když je více zaměřen na administraci Moodle, můžeš tento projekt využít jako základ pro práci s Moodle API.
+•	moosh: Moosh je nástroj pro správu Moodle z příkazové řádky, což by mi mohlo pomoci při exportu testů do Moodle. I když je více zaměřen na administraci Moodle, můžu tento projekt využít jako základ pro práci s Moodle API.
 tmuras/moosh: Moosh (github.com)
 
 ### Instalace
