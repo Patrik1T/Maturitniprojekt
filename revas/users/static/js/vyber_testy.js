@@ -493,3 +493,136 @@ function showTestResults() {
 
 // Příklad jak zavolat tuto funkci při kliknutí na tlačítko "Ukázat test"
 document.querySelector('.preview-btn').addEventListener('click', showTestResults);
+
+
+function saveAsMoodleXML() {
+    const testName = document.getElementById('testName').value;
+    const questions = gatherQuestions(); // Funkce pro získání otázek
+
+    if (!testName || questions.length === 0) {
+        alert("Zadejte název testu a alespoň jednu otázku.");
+        return;
+    }
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+    <quiz>
+        <name>${testName}</name>
+        <questions>`;
+
+    questions.forEach((question, index) => {
+        xmlContent += `
+            <question type="multichoice">
+                <name>
+                    <text>Otázka ${index + 1}: ${question.text}</text>
+                </name>
+                <questiontext format="html">
+                    <text>${question.text}</text>
+                </questiontext>
+                <answer fraction="100">
+                    <text>${question.options[question.correctOption - 1]}</text>
+                    <feedback>
+                        <text>Správně!</text>
+                    </feedback>
+                </answer>
+        `;
+
+        // Přidání ostatních možností odpovědí
+        question.options.forEach((option, i) => {
+            if (i !== question.correctOption - 1) {
+                xmlContent += `
+                    <answer fraction="0">
+                        <text>${option}</text>
+                        <feedback>
+                            <text>Špatně!</text>
+                        </feedback>
+                    </answer>
+                `;
+            }
+        });
+
+        xmlContent += `
+            </question>
+        `;
+    });
+
+    xmlContent += `
+        </questions>
+    </quiz>
+    `;
+
+    // Vytvoření souboru XML a jeho stažení
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${testName}.xml`; // Název souboru
+    a.click();
+    URL.revokeObjectURL(url); // Uvolnění objektu URL
+}
+
+
+function saveAsHtml() {
+    const testName = document.getElementById('testName').value;
+    const questions = gatherQuestions(); // Funkce pro získání otázek
+
+    if (!testName || questions.length === 0) {
+        alert("Zadejte název testu a alespoň jednu otázku.");
+        return;
+    }
+
+    let htmlContent = `
+        <!DOCTYPE html>
+        <html lang="cs">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${testName}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .question { margin-bottom: 20px; }
+                .question h3 { margin: 10px 0; }
+                .answers { margin-left: 20px; }
+            </style>
+        </head>
+        <body>
+        <h1>${testName}</h1>
+        <div id="testContent">
+    `;
+
+    questions.forEach((question, index) => {
+        htmlContent += `
+            <div class="question">
+                <h3>Otázka ${index + 1}: ${question.text}</h3>
+                <div class="answers">
+        `;
+
+        question.options.forEach((option, i) => {
+            htmlContent += `
+                <label>
+                    <input type="checkbox" disabled ${question.correctOption === i + 1 ? 'checked' : ''}>
+                    ${option}
+                </label><br>
+            `;
+        });
+
+        htmlContent += `
+                </div>
+            </div>
+        `;
+    });
+
+    htmlContent += `
+        </div>
+        </body>
+        </html>
+    `;
+
+    // Vytvoření souboru HTML a jeho stažení
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${testName}.html`; // Název souboru
+    a.click();
+    URL.revokeObjectURL(url); // Uvolnění objektu URL
+}
