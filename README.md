@@ -117,19 +117,19 @@
 
 ## Konkurence
 `Existuje několik open-source projektů zaměřených na tvorbu kvízových aplikací, které mi sloužili jako základ pro můj projekt nebo jako inspirace: `
-1.	###Quiz Flask App:
+1.	### Quiz Flask App:
 `Jedná se o open-source aplikaci postavenou na Pythonu a Flasku s MySQL databází. Umožňuje vytváření a spravování kvízů, nabízí náhodný výběr otázek, zaznamenávání odpovědí uživatelů a okamžité skórování. Tento projekt je dobře strukturovaný a snadno přizpůsobitelný různým vzdělávacím účelům(
 simboli/quiz-flask-app: An open-source web app for creating and taking quizzes with ease. (github.com)
 ). `
-2.	###Flask Quiz App by thepasterover:
+2.	### Flask Quiz App by thepasterover:
 `Tato aplikace je také postavena na Flasku a nabízí funkce jako registraci, přihlašování, opakování testů, a zobrazení výsledků okamžitě po dokončení testu. Aplikace využívá SQLite pro rychlý výkon a HTML/CSS pro frontend(
 thepasterover/flask-quiz-app: A Quiz App built using Flask Library and Custom HTML-CSS. (github.com)
 ). `
-3.	###ClassQuiz:
+3.	### ClassQuiz:
 `Tento projekt je zaměřen na interaktivní učení ve stylu Kahoot! Je open-source a umožňuje učitelům vytvářet kvízy, které mohou studenti hrát na dálku proti sobě. Nabízí kompletní dokumentaci pro vlastní hostování a je dobře přizpůsobený pro použití ve vzdělávacím prostředí(
 mawoka-myblock/ClassQuiz: ClassQuiz is a quiz-application like Kahoot!, but open-source. (github.com)
 ). `
-4.	###Moodle API a export testů:
+4.	### Moodle API a export testů:
 •	moosh: Moosh je nástroj pro správu Moodle z příkazové řádky, což by ti mohlo pomoci při exportu testů do Moodle. I když je více zaměřen na administraci Moodle, můžeš tento projekt využít jako základ pro práci s Moodle API.
 tmuras/moosh: Moosh (github.com)
 
