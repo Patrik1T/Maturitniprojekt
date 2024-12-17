@@ -198,3 +198,39 @@
     function endTest() {
         alert('Test byl ukončen');
     }
+
+   function addAnoNeQuestion() {
+    const container = document.getElementById('questionsContainer');
+
+    // Vytvořit div pro otázku
+    const questionDiv = document.createElement('div');
+    questionDiv.classList.add('question');
+
+    // Vytvořit textové pole pro otázku
+    const questionLabel = document.createElement('label');
+    questionLabel.textContent = 'Otázka:';
+    const questionInput = document.createElement('input');
+    questionInput.type = 'text';
+    questionInput.placeholder = 'Zadejte otázku';
+    questionInput.required = true;
+
+    // Checkbox pro "pravda" (Ano/Ne)
+    const truthDiv = document.createElement('div');
+    truthDiv.classList.add('truth-section');
+    const truthLabel = document.createElement('label');
+    truthLabel.textContent = 'Je odpověď pravda?';
+
+    const truthCheckbox = document.createElement('input');
+    truthCheckbox.type = 'checkbox';
+    truthCheckbox.classList.add('truth-checkbox');
+
+    // Sestavení prvků do DOM
+    truthDiv.appendChild(truthCheckbox);
+    truthDiv.appendChild(truthLabel);
+
+    questionDiv.appendChild(questionLabel);
+    questionDiv.appendChild(questionInput);
+    questionDiv.appendChild(truthDiv);
+
+    container.appendChild(questionDiv);
+}
