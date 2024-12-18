@@ -1,64 +1,254 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pexeso Hra</title>
-    <link rel="stylesheet" href="{% static 'style/pexeso.css' %}?v=1.0">
-    <script src="{% static 'js/pexes.js' %}"></script>
+    <title>Pexeso: Otázky a Odpovědi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .button-container {
+            margin: 20px;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            user-select: none;
+        }
+        .card.flipped {
+            background-color: #fff;
+        }
+        .card.matched {
+            background-color: #7cfc00;
+        }
+        .hidden {
+            display: none;
+        }
+        .score {
+            font-size: 24px;
+        }
+        input[type="text"] {
+            margin: 5px;
+            padding: 5px;
+        }
+        .pairs-list {
+            margin-top: 20px;
+        }
+        .pair-item {
+            margin-bottom: 10px;
+        }
+        .pair-item button {
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Pexeso Hra</h1>
+    <h1>Pexeso: Otázky a Odpovědi</h1>
 
-    <!-- Formulář pro vytvoření testu -->
-    <section>
-        <h2>Vytvořit test</h2>
-        <form id="testForm">
-            <label for="testName">Název testu:</label>
-            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    <!-- Formulář pro přidání otázek a odpovědí -->
+    <div class="button-container">
+        <input type="text" id="question" placeholder="Zadejte otázku" />
+        <input type="text" id="answer" placeholder="Zadejte odpověď" />
+        <button onclick="addPair()">Přidat pár</button>
+        <button onclick="startGame()">Začít hru</button>
+    </div>
 
-            <label for="testDescription">Popis testu:</label>
-            <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+    <!-- Seznam přidaných párů s možností jejich odstranění -->
+    <div class="pairs-list" id="pairsList"></div>
 
-            <!-- Počet párů -->
-            <label for="numPairs">Počet párů (2, 4, 6, 8, ...):</label>
-            <input type="number" id="numPairs" value="8" min="1" max="12" required>
+    <!-- Zobrazení skóre -->
+    <div id="score" class="score">Skóre: 0</div>
 
-            <!-- Tlačítko pro přidání párů -->
-            <button type="button" onclick="addPairInput()">Přidat pár</button>
+    <!-- Hra pexeso -->
+    <div id="gameBoard" class="game-board hidden"></div>
 
-            <!-- Sekce pro přidávání párů -->
-            <div id="pairInfoContainer"></div>
+    <!-- Hlášení o skončení hry -->
+    <div id="endMessage" class="hidden">
+        <h2>Hra skončila!</h2>
+        <p>Vaše skóre je: <span id="finalScore"></span></p>
+        <button onclick="resetGame()">Nová hra</button>
+    </div>
 
-            <!-- Ukázka -->
-            <button type="button" onclick="previewTest()">Ukázka testu</button>
-        </form>
-    </section>
+    <script>
+        const questionInput = document.getElementById("question");
+        const answerInput = document.getElementById("answer");
+        const gameBoardDiv = document.getElementById("gameBoard");
+        const scoreDiv = document.getElementById("score");
+        const endMessage = document.getElementById("endMessage");
+        const finalScoreSpan = document.getElementById("finalScore");
+        const pairsListDiv = document.getElementById("pairsList");
 
-    <!-- Sekce pro nastavení hry -->
-    <section>
-        <h2>Nastavení hry</h2>
-        <div>
-            <label for="timeLimit">Časový limit (v sekundách):</label>
-            <input type="number" id="timeLimit" value="60" min="1" required>
-        </div>
-        <div>
-            <label for="pointsPerPair">Body za nalezení páru:</label>
-            <input type="number" id="pointsPerPair" value="1" min="1" required>
-        </div>
-    </section>
+        let pairs = [];
+        let flippedCards = [];
+        let score = 0;
+        let gameActive = false;
 
-    <!-- Pexeso hra -->
-    <section>
-        <div class="score" id="score"></div>
-        <div class="grid" id="grid"></div>
-    </section>
+        // Funkce pro přidání páru otázek a odpovědí
+        function addPair() {
+            const question = questionInput.value.trim();
+            const answer = answerInput.value.trim();
 
-</div>
+            if (question && answer) {
+                pairs.push({ question, answer });
+                updatePairsList();
+                questionInput.value = "";
+                answerInput.value = "";
+            } else {
+                alert("Zadejte prosím otázku a odpověď.");
+            }
+        }
 
+        // Funkce pro aktualizaci seznamu přidaných párů
+        function updatePairsList() {
+            pairsListDiv.innerHTML = '';
+            pairs.forEach((pair, index) => {
+                const pairDiv = document.createElement("div");
+                pairDiv.classList.add("pair-item");
+                pairDiv.innerHTML = `${pair.question} - ${pair.answer}
+                    <button onclick="removePair(${index})">Odstranit</button>`;
+                pairsListDiv.appendChild(pairDiv);
+            });
+        }
+
+        // Funkce pro odstranění specifického páru
+        function removePair(index) {
+            pairs.splice(index, 1);
+            updatePairsList();
+        }
+
+        // Funkce pro zahájení hry
+        function startGame() {
+            if (pairs.length < 2) {
+                alert("Pro spuštění hry je potřeba alespoň 1 pár!");
+                return;
+            }
+
+            gameActive = true;
+            score = 0;
+            flippedCards = [];
+            gameBoardDiv.innerHTML = '';
+            gameBoardDiv.classList.remove("hidden");
+            endMessage.classList.add("hidden");
+            scoreDiv.textContent = `Skóre: ${score}`;
+
+            // Vytvoření karet pro pexeso (dvojice otázek a odpovědí)
+            const cards = [];
+            pairs.forEach(pair => {
+                cards.push({ content: pair.question, type: 'question' });
+                cards.push({ content: pair.answer, type: 'answer' });
+            });
+
+            // Zamíchání karet
+            shuffle(cards);
+
+            // Vytvoření karet na herní desce
+            cards.forEach((card, index) => {
+                const cardDiv = document.createElement("div");
+                cardDiv.classList.add("card");
+                cardDiv.dataset.index = index;
+                cardDiv.dataset.content = card.content;
+                cardDiv.dataset.type = card.type;
+                cardDiv.addEventListener("click", flipCard);
+                gameBoardDiv.appendChild(cardDiv);
+            });
+        }
+
+        // Funkce pro otočení karty
+        function flipCard(event) {
+            if (!gameActive || flippedCards.length === 2) {
+                return;
+            }
+
+            const card = event.target;
+            if (card.classList.contains("flipped") || card.classList.contains("matched")) {
+                return;
+            }
+
+            card.classList.add("flipped");
+            card.textContent = card.dataset.content;
+
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        // Funkce pro kontrolu, zda jsou dvě otočené karty správně spárované
+        function checkMatch() {
+            const [firstCard, secondCard] = flippedCards;
+
+            if (firstCard.dataset.content === secondCard.dataset.content) {
+                // Správný pár
+                firstCard.classList.add("matched");
+                secondCard.classList.add("matched");
+                score += 10;
+                scoreDiv.textContent = `Skóre: ${score}`;
+                flippedCards = [];
+                if (document.querySelectorAll(".matched").length === document.querySelectorAll(".card").length) {
+                    endGame();
+                }
+            } else {
+                // Nesprávný pár, skrytí karet
+                setTimeout(() => {
+                    firstCard.classList.remove("flipped");
+                    secondCard.classList.remove("flipped");
+                    firstCard.textContent = '';
+                    secondCard.textContent = '';
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        // Funkce pro zamíchání políčka
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Funkce pro dokončení hry
+        function endGame() {
+            gameActive = false;
+            finalScoreSpan.textContent = score;
+            endMessage.classList.remove("hidden");
+        }
+
+        // Funkce pro resetování hry
+        function resetGame() {
+            pairs = [];
+            score = 0;
+            gameActive = false;
+            flippedCards = [];
+            gameBoardDiv.classList.add("hidden");
+            endMessage.classList.add("hidden");
+            scoreDiv.textContent = `Skóre: ${score}`;
+            updatePairsList();
+        }
+    </script>
 </body>
 </html>
+

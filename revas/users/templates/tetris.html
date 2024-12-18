@@ -5,20 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris s otázkami</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #gameCanvas { border: 2px solid black; }
-        #nextTetrimino { margin-top: 20px; }
+        body { font-family: Arial, sans-serif; text-align: center; display: flex; justify-content: center; align-items: flex-start; }
+        #gameArea { display: flex; }
+        #gameCanvas { border: 2px solid black; background-size: 30px 30px; background-image: linear-gradient(0deg, transparent 29px, #ccc 30px), linear-gradient(90deg, transparent 29px, #ccc 30px); }
+        #nextTetriminoContainer { margin-left: 20px; }
+        #nextTetrimino { display: flex; flex-direction: column; align-items: center; }
+        #futureTetriminos { display: flex; flex-direction: column; margin-top: 20px; }
         #questionPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid black; }
         button { margin-top: 10px; }
-        #score { font-size: 20px; }
+        #score { font-size: 20px; text-align: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="300" height="600"></canvas>
-    <div id="score">Score: 0</div>
-    <div id="nextTetrimino">
-        <h3>Next:</h3>
-        <canvas id="nextCanvas" width="90" height="90"></canvas>
+    <div id="gameArea">
+        <div id="leftContainer">
+            <canvas id="nextCanvas" width="90" height="90"></canvas>
+        </div>
+        <div id="centerContainer">
+            <canvas id="gameCanvas" width="300" height="720"></canvas>
+            <div id="score">Score: 0</div>
+        </div>
+        <div id="nextTetriminoContainer">
+            <div id="nextTetrimino">
+                <h3>Next:</h3>
+                <canvas id="nextCanvas1" width="90" height="90"></canvas>
+                <canvas id="nextCanvas2" width="90" height="90"></canvas>
+            </div>
+        </div>
     </div>
     <div id="questionPopup">
         <div id="questionText"></div>
@@ -30,8 +43,12 @@
         const ctx = canvas.getContext("2d");
         const nextCanvas = document.getElementById("nextCanvas");
         const nextCtx = nextCanvas.getContext("2d");
+        const nextCanvas1 = document.getElementById("nextCanvas1");
+        const nextCtx1 = nextCanvas1.getContext("2d");
+        const nextCanvas2 = document.getElementById("nextCanvas2");
+        const nextCtx2 = nextCanvas2.getContext("2d");
 
-        const rows = 20;
+        const rows = 24;  // Zvětšení výšky hry
         const cols = 10;
         const blockSize = 30;
         const gameBoard = Array.from({ length: rows }, () => Array(cols).fill(0));
@@ -55,12 +72,14 @@
         let score = 0;
         let currentTetrimino;
         let currentPos = { x: 3, y: 0 };
-        let gameInterval;
         let gameOver = false;
         let nextTetrimino;
-        let gamePaused = false; // Nová proměnná pro pozastavení hry
+        let futureTetriminos = [];
+        let gamePaused = false;
+        const dropInterval = 1000;  // Fixní interval pro pád tvarů (každý 1000ms)
+        let lastDropTime = 0;
+        let gameIntervalId;
 
-        // Funkce pro kreslení herní plochy
         function drawBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let r = 0; r < rows; r++) {
@@ -73,7 +92,6 @@
             }
         }
 
-        // Funkce pro kreslení aktuálního tetrimína
         function drawTetrimino() {
             const shape = currentTetrimino.shape;
             for (let r = 0; r < shape.length; r++) {
@@ -81,37 +99,39 @@
                     if (shape[r][c] !== 0) {
                         ctx.fillStyle = currentTetrimino.color;
                         ctx.fillRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize);
+                        ctx.strokeStyle = "#000";  // Okraje pro tvary
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize); // Okraje
                     }
                 }
             }
         }
 
-        // Funkce pro kreslení dalšího tetrimína
-        function drawNextTetrimino() {
-            const shape = nextTetrimino.shape;
-            nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+        function drawNextTetrimino(context, tetrimino) {
+            const shape = tetrimino.shape;
+            context.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
             for (let r = 0; r < shape.length; r++) {
                 for (let c = 0; c < shape[r].length; c++) {
                     if (shape[r][c] !== 0) {
-                        nextCtx.fillStyle = nextTetrimino.color;
-                        nextCtx.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                        context.fillStyle = tetrimino.color;
+                        context.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                        context.strokeStyle = "#000";  // Okraje pro tvary
+                        context.lineWidth = 2;
+                        context.strokeRect(c * blockSize, r * blockSize, blockSize, blockSize); // Okraje
                     }
                 }
             }
         }
 
-        // Funkce pro rotaci tvaru
         function rotateTetrimino() {
             const shape = currentTetrimino.shape;
-            const rotatedShape = shape[0].map((_, index) => shape.map(row => row[index])).reverse(); // Rotace matice
+            const rotatedShape = shape[0].map((_, index) => shape.map(row => row[index])).reverse();
 
-            // Zkontrolujeme, zda rotovaný tvar nepřekročí hranice a nevyjde mimo plochu
             if (canMove(0, 0, rotatedShape)) {
                 currentTetrimino.shape = rotatedShape;
             }
         }
 
-        // Funkce pro kontrolu, jestli může tetrimino spadnout
         function canMove(dx, dy, shape) {
             for (let r = 0; r < shape.length; r++) {
                 for (let c = 0; c < shape[r].length; c++) {
@@ -128,7 +148,6 @@
             return true;
         }
 
-        // Funkce pro přidání tetrimina na herní plochu
         function placeTetrimino() {
             const shape = currentTetrimino.shape;
             for (let r = 0; r < shape.length; r++) {
@@ -140,7 +159,6 @@
             }
         }
 
-        // Funkce pro odstranění úplně vyplněného řádku
         function removeFullRows() {
             let rowsRemoved = 0;
             for (let r = rows - 1; r >= 0; r--) {
@@ -155,14 +173,12 @@
             }
         }
 
-        // Funkce pro vykreslení skóre
         function updateScore() {
             document.getElementById("score").textContent = `Score: ${score}`;
         }
 
-        // Funkce pro zobrazení otázky
         function showQuestion() {
-            gamePaused = true; // Pozastavení hry při zobrazení otázky
+            gamePaused = true;
 
             const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
             const questionTextElement = document.getElementById("questionText");
@@ -178,55 +194,59 @@
             });
 
             document.getElementById("questionPopup").style.display = "block";
-            clearInterval(gameInterval); // Zastavení hry
+            clearInterval(gameIntervalId);
         }
 
-        // Funkce pro zpracování odpovědi
         function handleAnswer(answer, correctAnswer) {
             if (answer === correctAnswer) {
                 score += 10;
             }
             updateScore();
             document.getElementById("questionPopup").style.display = "none";
-            gamePaused = false; // Pokračování ve hře po odpovědi
-            startGame(); // Restartování hry po odpovědi
+            gamePaused = false;
+            startGame();
         }
 
-        // Funkce pro spuštění nové hry
         function startGame() {
             currentTetrimino = nextTetrimino || tetriminos[Math.floor(Math.random() * tetriminos.length)];
-            nextTetrimino = tetriminos[Math.floor(Math.random() * tetriminos.length)];
+            nextTetrimino = futureTetriminos[0] || tetriminos[Math.floor(Math.random() * tetriminos.length)];
+            futureTetriminos = [futureTetriminos[1], tetriminos[Math.floor(Math.random() * tetriminos.length)]];
+
             currentPos = { x: 3, y: 0 };
-            drawNextTetrimino();
+            drawNextTetrimino(nextCtx1, nextTetrimino);
+            drawNextTetrimino(nextCtx2, futureTetriminos[1]);
+
             if (!gamePaused) {
-                gameInterval = setInterval(gameLoop, 500); // Hra běží každých 500 ms
+                gameIntervalId = setInterval(gameLoop, dropInterval);  // Fixní interval pro pád tvarů
             }
         }
 
-        // Hlavní herní smyčka
         function gameLoop() {
             if (gameOver || gamePaused) {
-                return; // Pokud je hra pozastavena nebo skončena, neprovádíme žádné akce
+                return;
             }
 
-            if (canMove(0, 1, currentTetrimino.shape)) {
-                currentPos.y++;
-            } else {
-                placeTetrimino();
-                removeFullRows();
-                if (currentPos.y <= 0) {
-                    gameOver = true;
-                    alert("Game Over!");
+            const now = Date.now();
+            if (now - lastDropTime > dropInterval) {
+                if (canMove(0, 1, currentTetrimino.shape)) {
+                    currentPos.y++;
                 } else {
-                    startGame(); // Nový tvar po dokončení
+                    placeTetrimino();
+                    removeFullRows();
+                    if (currentPos.y <= 0) {
+                        gameOver = true;
+                        alert("Game Over!");
+                    } else {
+                        startGame();
+                    }
                 }
+                lastDropTime = now;  // Aktualizace času pro další pád
             }
 
             drawBoard();
             drawTetrimino();
         }
 
-        // Ovládání hry
         document.addEventListener("keydown", event => {
             if (event.key === "ArrowLeft" && canMove(-1, 0, currentTetrimino.shape)) {
                 currentPos.x--;
@@ -234,7 +254,7 @@
                 currentPos.x++;
             } else if (event.key === "ArrowDown" && canMove(0, 1, currentTetrimino.shape)) {
                 currentPos.y++;
-            } else if (event.key === "ArrowUp") { // Přidání otáčení při stisknutí šipky nahoru
+            } else if (event.key === "ArrowUp") {
                 rotateTetrimino();
             }
         });
@@ -243,5 +263,8 @@
     </script>
 </body>
 </html>
+
+
+
 
 
