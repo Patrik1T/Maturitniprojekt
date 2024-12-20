@@ -1,74 +1,244 @@
-{% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Spojení otázek a odpovědí</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .add-btn {
+            margin: 10px 0;
+        }
+        .pair-container {
+            margin-bottom: 20px;
+        }
+        .pair {
+            margin: 5px 0;
+        }
+        .draggable-container {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+        .draggable {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .test-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .test-item {
+            width: 45%;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+        }
+        .test-item p {
+            margin: 5px;
+        }
+        .line {
+            position: absolute;
+            background-color: black;
+            height: 2px;
+            z-index: -1;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
 
-<link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
-<script src="{% static 'js/spojovacka.js.js' %}"></script>
-
-{% block content %}
 <div class="container">
-    <h1>Vytvořit test</h1>
-    <h2>Popisek k testu</h2>
+    <h1>Vytvoření Testu - Spojení otázek a odpovědí</h1>
 
-    <div class="test-name">
-        <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    <div class="pair-container">
+        <h2>Vytvořte páry otázky a odpovědi</h2>
+        <label for="question">Otázka:</label>
+        <input type="text" id="question" placeholder="Zadejte otázku">
+        <br>
+        <label for="answer">Odpověď:</label>
+        <input type="text" id="answer" placeholder="Zadejte odpověď">
+        <br>
+        <button class="add-btn" onclick="addPair()">Přidat pár</button>
     </div>
 
-    <!-- Obrázek testu (nahrání souboru) -->
-    <label for="testImage">Obrázek testu (nahrát soubor):</label>
-    <input type="file" id="testImage" accept="image/*">
-
-    <!-- Popis testu (textarea pro více textu) -->
-    <label for="testDescription">Popis testu:</label>
-    <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-
-    <h2>Tvoření testu</h2>
-
-    <div class="timer">
-        <label for="timer">Nastavit časovač (v minutách):</label>
-        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
-        <label for="enableTimer">Povolit časovač</label>
-        <input type="checkbox" id="enableTimer">
+    <div id="pairsList">
+        <!-- Seznam párů otázek a odpovědí -->
     </div>
 
-    <div class="grade-settings">
-        <h3>Počet bodů pro každou známku</h3>
-        <label for="grade1">Známka 1 (minimální body):</label>
-        <input type="number" id="grade1" min="1" value="90">
-        <label for="grade2">Známka 2 (minimální body):</label>
-        <input type="number" id="grade2" min="1" value="70">
-        <label for="grade3">Známka 3 (minimální body):</label>
-        <input type="number" id="grade3" min="1" value="50">
-        <label for="grade4">Známka 4 (minimální body):</label>
-        <input type="number" id="grade4" min="1" value="30">
-        <label for="grade5">Známka 5 (minimální body):</label>
-        <input type="number" id="grade5" min="1" value="0">
+    <button class="add-btn" onclick="startTest()">Vyzkoušet test</button>
+
+    <div id="testSection" style="display: none;">
+        <h2>Test: Spojte správné páry</h2>
+        <div class="test-container">
+            <div id="questions" class="test-item"></div>
+            <div id="answers" class="test-item"></div>
+        </div>
+        <button class="add-btn" onclick="checkTest()">Odeslat odpovědi</button>
     </div>
 
-    <form id="testForm">
-        <div id="questionsContainer"></div>
-        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
-        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <h2>Typ uložení</h2>
-        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
-        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
-    </form>
-
-    <div id="previewTest" class="test-section">
-        <h2>Náhled testu</h2>
-        <div id="testContent"></div>
-        <button type="button" class="end-test-btn" onclick="endTest()">Ukončit test</button>
+    <div id="resultSection" class="result-container" style="display: none;">
+        <h3>Výsledky testu:</h3>
+        <p id="testResult"></p>
     </div>
 
-    <div class="results" id="resultsSection" style="display:none;">
-        <h2>Výsledky testu</h2>
-        <p id="scoreDisplay"></p>
-        <p id="gradeDisplay"></p>
-    </div>
-
-    <div class="timer-display" id="timerDisplay" style="display:none;">
-        <p>Čas zbývající: <span id="timerCount"></span></p>
-    </div>
 </div>
-{% endblock %}
+
+<script>
+    let pairs = [];
+    let currentQuestion = null;
+    let currentAnswer = null;
+    let connections = [];
+
+    // Funkce pro přidání páru otázek a odpovědí
+    function addPair() {
+        const questionText = document.getElementById('question').value;
+        const answerText = document.getElementById('answer').value;
+
+        if (questionText && answerText) {
+            pairs.push({ question: questionText, answer: answerText });
+
+            // Zobrazit vytvořené páry
+            const pairDiv = document.createElement('div');
+            pairDiv.classList.add('pair');
+            pairDiv.innerHTML = `<strong>Otázka:</strong> ${questionText} <strong>Odpověď:</strong> ${answerText}`;
+            document.getElementById('pairsList').appendChild(pairDiv);
+
+            // Vyčistit inputy
+            document.getElementById('question').value = '';
+            document.getElementById('answer').value = '';
+        } else {
+            alert('Vyplňte prosím otázku a odpověď!');
+        }
+    }
+
+    // Funkce pro zahájení testu
+    function startTest() {
+        if (pairs.length < 1) {
+            alert('Musíte přidat alespoň jeden pár!');
+            return;
+        }
+
+        // Náhodně zamíchej páry
+        const shuffledPairs = [...pairs].sort(() => Math.random() - 0.5);
+
+        // Přiřadit otázky a odpovědi do sekce testu
+        const questionsContainer = document.getElementById('questions');
+        const answersContainer = document.getElementById('answers');
+        questionsContainer.innerHTML = '';
+        answersContainer.innerHTML = '';
+
+        shuffledPairs.forEach(pair => {
+            const questionElement = document.createElement('div');
+            questionElement.classList.add('draggable');
+            questionElement.textContent = pair.question;
+            questionElement.setAttribute('data-type', 'question');
+            questionElement.setAttribute('data-pair', pair.answer);
+            questionElement.onclick = handleClick;
+
+            const answerElement = document.createElement('div');
+            answerElement.classList.add('draggable');
+            answerElement.textContent = pair.answer;
+            answerElement.setAttribute('data-type', 'answer');
+            answerElement.setAttribute('data-pair', pair.question);
+            answerElement.onclick = handleClick;
+
+            questionsContainer.appendChild(questionElement);
+            answersContainer.appendChild(answerElement);
+        });
+
+        // Ukázat sekci testu
+        document.getElementById('testSection').style.display = 'block';
+        document.getElementById('pairsList').style.display = 'none';
+    }
+
+    // Funkce pro kliknutí na otázku nebo odpověď
+    function handleClick(event) {
+        const element = event.target;
+        const type = element.getAttribute('data-type');
+        const pair = element.getAttribute('data-pair');
+
+        if (type === 'question') {
+            if (currentQuestion && currentAnswer) {
+                // Pokud jsou už oba vybrané, resetuj
+                resetSelection();
+            }
+            currentQuestion = element;
+            element.style.backgroundColor = '#ffcccb'; // Zvýraznění vybrané otázky
+        } else if (type === 'answer') {
+            if (currentQuestion) {
+                // Pokud byla vybrána otázka, spoj ji s odpovědí
+                if (pair === currentQuestion.textContent) {
+                    // Pokud je odpověď správná
+                    drawLine(currentQuestion, element);
+                } else {
+                    alert('Špatná odpověď!');
+                }
+                resetSelection();
+            }
+        }
+    }
+
+    // Funkce pro nakreslení čáry mezi otázkou a odpovědí
+    function drawLine(questionElement, answerElement) {
+        const questionRect = questionElement.getBoundingClientRect();
+        const answerRect = answerElement.getBoundingClientRect();
+
+        const line = document.createElement('div');
+        line.classList.add('line');
+        document.body.appendChild(line);
+
+        const startX = questionRect.left + questionRect.width / 2;
+        const startY = questionRect.top + questionRect.height / 2;
+        const endX = answerRect.left + answerRect.width / 2;
+        const endY = answerRect.top + answerRect.height / 2;
+
+        const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+        line.style.width = `${length}px`;
+        line.style.transform = `rotate(${angle}deg)`;
+        line.style.left = `${startX}px`;
+        line.style.top = `${startY}px`;
+    }
+
+    // Funkce pro resetování výběru
+    function resetSelection() {
+        if (currentQuestion) {
+            currentQuestion.style.backgroundColor = ''; // Resetování barvy otázky
+        }
+        currentQuestion = null;
+        currentAnswer = null;
+    }
+
+    // Funkce pro odeslání odpovědí a vyhodnocení testu
+    function checkTest() {
+        // Předběžné vyhodnocení, zda byly všechny otázky správně spojené
+        const lines = document.querySelectorAll('.line');
+        if (lines.length === pairs.length) {
+            alert('Všechny páry jsou správně spojeny!');
+        } else {
+            alert('Některé páry nejsou správně spojeny.');
+        }
+    }
+</script>
+
+</body>
+</html>
 

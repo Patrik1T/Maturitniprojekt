@@ -17,9 +17,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
-        <option value="HTML File" />
         <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -154,7 +154,22 @@
       <workItem from="1732802783940" duration="5254000" />
       <workItem from="1732869202840" duration="20449000" />
       <workItem from="1732955103958" duration="18712000" />
-      <workItem from="1733042704514" duration="14600000" />
+      <workItem from="1733042704514" duration="16594000" />
+      <workItem from="1733167280262" duration="1289000" />
+      <workItem from="1733239991242" duration="4827000" />
+      <workItem from="1733324587273" duration="2470000" />
+      <workItem from="1733497129266" duration="779000" />
+      <workItem from="1733677667619" duration="2936000" />
+      <workItem from="1733758688896" duration="3046000" />
+      <workItem from="1733849001459" duration="15768000" />
+      <workItem from="1734196211213" duration="1704000" />
+      <workItem from="1734265083293" duration="23957000" />
+      <workItem from="1734357453438" duration="3587000" />
+      <workItem from="1734464152000" duration="3514000" />
+      <workItem from="1734534094561" duration="14411000" />
+      <workItem from="1734617437193" duration="3268000" />
+      <workItem from="1734631579331" duration="1202000" />
+      <workItem from="1734681542301" duration="22836000" />
     </task>
     <servers />
   </component>

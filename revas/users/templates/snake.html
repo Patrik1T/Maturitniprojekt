@@ -9,8 +9,8 @@
             font-family: Arial, sans-serif;
         }
         .game-container {
-            width: 600px;
-            height: 400px;
+            width: 400px;
+            height: 300px;
             background-color: #f0f0f0;
             margin: 0 auto;
             position: relative;
@@ -36,260 +36,317 @@
             text-align: center;
             margin-top: 20px;
         }
+        .answer-list {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .answer-list div {
+            padding: 10px;
+            background-color: #e0e0e0;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #startGameButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
- <h1>Vytvořit test</h1>
-      <h2>Popisek k testu</h2>
 
-    <div class="test-name">
-        <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu" required>
-    </div>
+<div class="question-container">
+    <h2 id="questionText">Zde se zobrazí otázka</h2>
+    <div id="answers"></div>
+</div>
 
-    <!-- Obrázek testu (nahrání souboru) -->
-<label for="testImage">Obrázek testu (nahrát soubor):</label>
-<input type="file" id="testImage" accept="image/*">
+<div class="game-container" id="gameContainer">
+    <!-- Hra začne tady -->
+</div>
 
-<!-- Popis testu (textarea pro více textu) -->
-<label for="testDescription">Popis testu:</label>
-<textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+<!-- Formulář pro zadání nových otázek a odpovědí -->
+<div id="questionForm">
+    <h3>Přidejte novou otázku</h3>
+    <label for="question">Otázka:</label>
+    <input type="text" id="question" placeholder="Napište otázku" />
+    <br />
+    <label for="answer1">Odpověď 1:</label>
+    <input type="text" id="answer1" placeholder="První odpověď" />
+    <br />
+    <label for="answer2">Odpověď 2:</label>
+    <input type="text" id="answer2" placeholder="Druhá odpověď" />
+    <br />
+    <label for="answer3">Odpověď 3:</label>
+    <input type="text" id="answer3" placeholder="Třetí odpověď" />
+    <br />
+    <label for="correctAnswer">Správná odpověď (1-3):</label>
+    <input type="number" id="correctAnswer" min="1" max="3" />
+    <br />
+    <button onclick="addQuestion()">Přidat otázku</button>
+</div>
 
-  <h2>Tvoření testu</h2>
+<div class="answer-list" id="questionList">
+    <!-- Seznam otázek bude zde -->
+</div>
 
-    <div class="timer">
-        <label for="timer">Nastavit časovač (v minutách):</label>
-        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
-        <label for="enableTimer">Povolit časovač</label>
-        <input type="checkbox" id="enableTimer">
-    </div>
+<button id="startGameButton" onclick="startGameFromList()">Spustit hru</button>
 
-    <div class="grade-settings">
-        <h3>Počet bodů pro každou známku</h3>
-        <label for="grade1">Známka 1 (minimální body):</label>
-        <input type="number" id="grade1" min="1" value="90">
-        <label for="grade2">Známka 2 (minimální body):</label>
-        <input type="number" id="grade2" min="1" value="70">
-        <label for="grade3">Známka 3 (minimální body):</label>
-        <input type="number" id="grade3" min="1" value="50">
-        <label for="grade4">Známka 4 (minimální body):</label>
-        <input type="number" id="grade4" min="1" value="30">
-        <label for="grade5">Známka 5 (minimální body):</label>
-        <input type="number" id="grade5" min="1" value="0">
-    </div>
+<script>
+    let snake = [{ x: 50, y: 50 }];
+    let score = 0;
+    let direction = 'RIGHT';
+    let gameInterval;
+    let questionIndex = 0;
+    let questions = [];
+    let snakeSize = 1;
+    let correctAnswerIndex = -1;
+    let gameOver = false;
+    let dots = [];
+    let answeredQuestions = 0;
 
-    <form id="testForm">
-        <div id="questionsContainer"></div>
-        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
-        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <h2>Typ uložení</h2>
-        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
-        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
-    </form>
-    <div class="question-container">
-        <h2 id="questionText">Zde se zobrazí otázka</h2>
-        <div id="answers"></div>
-    </div>
+    // Funkce pro přidání nové otázky a odpovědí
+    function addQuestion() {
+        const questionText = document.getElementById('question').value;
+        const answer1 = document.getElementById('answer1').value;
+        const answer2 = document.getElementById('answer2').value;
+        const answer3 = document.getElementById('answer3').value;
+        const correctAnswer = parseInt(document.getElementById('correctAnswer').value) - 1;
 
-    <div class="game-container" id="gameContainer">
-        <!-- Hra začne tady -->
-    </div>
+        if (questionText && answer1 && answer2 && answer3 && correctAnswer >= 0 && correctAnswer <= 2) {
+            // Přidání otázky a odpovědí do pole
+            questions.push({
+                question: questionText,
+                answers: [answer1, answer2, answer3],
+                correct: correctAnswer,
+                colors: ['red', 'blue', 'green'] // Barvy pro odpovědi (můžeš měnit dle potřeby)
+            });
 
-    <!-- Formulář pro zadání nových otázek a odpovědí -->
-    <div id="questionForm">
-        <h3>Přidejte novou otázku</h3>
-        <label for="question">Otázka:</label>
-        <input type="text" id="question" placeholder="Napište otázku" />
-        <br />
-        <label for="answer1">Odpověď 1:</label>
-        <input type="text" id="answer1" placeholder="První odpověď" />
-        <br />
-        <label for="answer2">Odpověď 2:</label>
-        <input type="text" id="answer2" placeholder="Druhá odpověď" />
-        <br />
-        <label for="answer3">Odpověď 3:</label>
-        <input type="text" id="answer3" placeholder="Třetí odpověď" />
-        <br />
-        <label for="correctAnswer">Správná odpověď (1-3):</label>
-        <input type="number" id="correctAnswer" min="1" max="3" />
-        <br />
-        <button onclick="addQuestion()">Přidat otázku</button>
-    </div>
+            alert('Otázka byla přidána!');
+            document.getElementById('question').value = '';
+            document.getElementById('answer1').value = '';
+            document.getElementById('answer2').value = '';
+            document.getElementById('answer3').value = '';
+            document.getElementById('correctAnswer').value = '';
 
-    <script>
-        let snake = [{ x: 50, y: 50 }];
-        let food = [];
-        let score = 0;
-        let speed = 200;
-        let direction = 'RIGHT';
-        let gameInterval;
-        let questionIndex = 0;
-        let questions = [];
-        let snakeSize = 1;
-        let correctAnswerIndex = -1;
-        let gameOver = false;
-
-        // Funkce pro přidání nové otázky a odpovědí
-        function addQuestion() {
-            const questionText = document.getElementById('question').value;
-            const answer1 = document.getElementById('answer1').value;
-            const answer2 = document.getElementById('answer2').value;
-            const answer3 = document.getElementById('answer3').value;
-            const correctAnswer = parseInt(document.getElementById('correctAnswer').value) - 1;
-
-            if (questionText && answer1 && answer2 && answer3 && correctAnswer >= 0 && correctAnswer <= 2) {
-                // Přidání otázky a odpovědí do pole
-                questions.push({
-                    question: questionText,
-                    answers: [answer1, answer2, answer3],
-                    correct: correctAnswer,
-                    colors: ['red', 'blue', 'green'] // Barvy pro odpovědi (můžeš měnit dle potřeby)
-                });
-
-                alert('Otázka byla přidána!');
-                document.getElementById('question').value = '';
-                document.getElementById('answer1').value = '';
-                document.getElementById('answer2').value = '';
-                document.getElementById('answer3').value = '';
-                document.getElementById('correctAnswer').value = '';
-
-                // Pokud máme otázky, spusť hru
-                if (questions.length > 0 && !gameInterval) {
-                    startGame();
-                }
-            } else {
-                alert('Vyplňte všechna pole správně.');
-            }
+            // Aktualizace seznamu otázek
+            updateQuestionList();
+        } else {
+            alert('Vyplňte všechna pole správně.');
         }
+    }
 
-        // Inicializace hry
-        function startGame() {
+    // Aktualizace seznamu otázek
+    function updateQuestionList() {
+        const questionList = document.getElementById('questionList');
+        questionList.innerHTML = '';
+
+        questions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.textContent = q.question;
+            questionDiv.addEventListener('click', () => {
+                questionIndex = index;
+                showQuestion();
+            });
+
+            // Vytvoření seznamu odpovědí k otázce
+            const answersDiv = document.createElement('div');
+            q.answers.forEach((answer, idx) => {
+                const answerDiv = document.createElement('div');
+                answerDiv.textContent = answer;
+                answerDiv.style.backgroundColor = q.colors[idx];
+                answersDiv.appendChild(answerDiv);
+            });
+
+            questionDiv.appendChild(answersDiv);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Smazat';
+            deleteButton.addEventListener('click', (event) => {
+                questions.splice(index, 1);
+                updateQuestionList();
+                event.stopPropagation(); // Zabráníme propagačnímu kliknutí
+            });
+            questionDiv.appendChild(deleteButton);
+            questionList.appendChild(questionDiv);
+        });
+
+        // Zobrazíme tlačítko pro spuštění hry, pokud máme alespoň jednu otázku
+        const startButton = document.getElementById('startGameButton');
+        if (questions.length > 0) {
+            startButton.style.display = 'block';
+        } else {
+            startButton.style.display = 'none';
+        }
+    }
+
+    // Inicializace hry
+    function startGameFromList() {
+        if (questions.length > 0) {
             score = 0;
             snake = [{ x: 50, y: 50 }];
             snakeSize = 1;
             direction = 'RIGHT';
             gameOver = false;
-            questionIndex = 0;
+            dots = []; // Resetování teček
+            answeredQuestions = 0; // Reset počtu odpovědí
             showQuestion();
-            gameInterval = setInterval(updateGame, speed);
+            gameInterval = setInterval(updateGame, 200);
         }
+    }
 
-        // Zobrazení otázky a odpovědí
-        function showQuestion() {
-            const question = questions[questionIndex];
-            document.getElementById('questionText').textContent = question.question;
-            const answersDiv = document.getElementById('answers');
-            answersDiv.innerHTML = '';
-            question.answers.forEach((answer, idx) => {
-                const color = question.colors[idx];
-                const answerDiv = document.createElement('div');
-                answerDiv.textContent = answer;
-                answerDiv.style.backgroundColor = color;
-                answerDiv.style.padding = '10px';
-                answerDiv.style.margin = '5px';
-                answerDiv.style.cursor = 'pointer';
-                answerDiv.setAttribute('data-index', idx);
-                answerDiv.addEventListener('click', checkAnswer);
-                answersDiv.appendChild(answerDiv);
-            });
-            correctAnswerIndex = question.correct;
-            generateFood(); // Generování náhodných teček
-        }
-
-        // Funkce pro generování náhodných teček
-        function generateFood() {
-            const gameContainer = document.getElementById('gameContainer');
-            food = [];
-            const question = questions[questionIndex];
-            question.colors.forEach((color, idx) => {
-                const dot = document.createElement('div');
-                dot.style.left = `${Math.random() * (gameContainer.offsetWidth - 10)}px`;
-                dot.style.top = `${Math.random() * (gameContainer.offsetHeight - 10)}px`;
-                dot.style.backgroundColor = color;
-                dot.classList.add('dot');
-                dot.setAttribute('data-index', idx);
-                gameContainer.appendChild(dot);
-                food.push(dot);
-            });
-        }
-
-        // Kontrola odpovědi
-        function checkAnswer(event) {
-            const selectedAnswer = parseInt(event.target.getAttribute('data-index'));
-            if (selectedAnswer === correctAnswerIndex) {
-                score += 1;
-                snakeSize += 1;
-                alert("Správně! Získal jsi bod.");
-                nextQuestion();
-            } else {
-                gameOver = true;
-                alert("Špatně! Prohrál jsi.");
-                clearInterval(gameInterval);
-            }
-        }
-
-        // Přejít na další otázku
-        function nextQuestion() {
-            questionIndex++;
-            if (questionIndex < questions.length) {
-                showQuestion();
-            } else {
-                alert("Gratulujeme, vyhrál jsi!");
-                clearInterval(gameInterval);
-            }
-        }
-
-        // Funkce pro pohyb hada
-        function updateGame() {
-            if (gameOver) return;
-
-            const head = { ...snake[0] };
-            if (direction === 'RIGHT') head.x += 10;
-            if (direction === 'LEFT') head.x -= 10;
-            if (direction === 'UP') head.y -= 10;
-            if (direction === 'DOWN') head.y += 10;
-
-            // Kolize se zdi nebo s vlastním tělem
-            if (head.x < 0 || head.x >= 600 || head.y < 0 || head.y >= 400 || collisionWithSnake(head)) {
-                gameOver = true;
-                alert("Prohrál jsi! Dotkl ses zdi nebo těla.");
-                clearInterval(gameInterval);
-            }
-
-            snake.unshift(head);
-            if (snake.length > snakeSize) {
-                snake.pop();
-            }
-
-            renderGame();
-        }
-
-        // Kolize s vlastním tělem
-        function collisionWithSnake(head) {
-            return snake.some(segment => segment.x === head.x && segment.y === head.y);
-        }
-
-        // Zobrazení hada
-        function renderGame() {
-            const gameContainer = document.getElementById('gameContainer');
-            gameContainer.innerHTML = '';
-            snake.forEach(segment => {
-                const snakeElement = document.createElement('div');
-                snakeElement.style.left = `${segment.x}px`;
-                snakeElement.style.top = `${segment.y}px`;
-                snakeElement.classList.add('snake');
-                gameContainer.appendChild(snakeElement);
-            });
-        }
-
-        // Klávesové ovládání hada
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
-            if (event.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
-            if (event.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
-            if (event.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
+    // Zobrazení otázky a odpovědí
+    function showQuestion() {
+        const question = questions[questionIndex];
+        document.getElementById('questionText').textContent = question.question;
+        const answersDiv = document.getElementById('answers');
+        answersDiv.innerHTML = '';
+        question.answers.forEach((answer, idx) => {
+            const color = question.colors[idx];
+            const answerDiv = document.createElement('div');
+            answerDiv.textContent = answer;
+            answerDiv.style.backgroundColor = color;
+            answerDiv.style.padding = '10px';
+            answerDiv.style.margin = '5px';
+            answerDiv.style.cursor = 'pointer';
+            answerDiv.setAttribute('data-index', idx);
+            answerDiv.addEventListener('click', checkAnswer);
+            answersDiv.appendChild(answerDiv);
         });
-    </script>
+        correctAnswerIndex = question.correct;
+        generateFood(); // Vytvoříme jídlo (tečky)
+    }
+
+    // Funkce pro generování náhodných teček
+    function generateFood() {
+        const gameContainer = document.getElementById('gameContainer');
+        const question = questions[questionIndex];
+
+        // Ujistíme se, že každá odpověď má tečku
+        question.colors.forEach((color, idx) => {
+            const dot = document.createElement('div');
+            dot.style.left = `${Math.random() * (gameContainer.offsetWidth - 10)}px`;
+            dot.style.top = `${Math.random() * (gameContainer.offsetHeight - 10)}px`;
+            dot.style.backgroundColor = color;
+            dot.classList.add('dot');
+            dot.setAttribute('data-index', idx);
+            gameContainer.appendChild(dot);
+            dots.push(dot); // Uchováme referenci na tečky
+        });
+    }
+
+    // Kontrola odpovědi při kontaktu s tečkou
+    function checkAnswer(event) {
+        const selectedAnswer = parseInt(event.target.getAttribute('data-index'));
+        if (selectedAnswer === correctAnswerIndex) {
+            score += 1;
+            alert("Správně! Získal jsi bod.");
+        } else {
+            alert("Špatně! Zkus to znovu.");
+        }
+        answeredQuestions++;
+        nextQuestion();
+    }
+
+    // Přejít na další otázku
+    function nextQuestion() {
+        if (answeredQuestions >= questions.length) {
+            alert("Gratulujeme, vyhrál jsi!");
+            clearInterval(gameInterval);
+        } else {
+            questionIndex = (questionIndex + 1) % questions.length; // Posun na další otázku
+            showQuestion();
+        }
+    }
+
+    // Funkce pro pohyb hada
+    function updateGame() {
+        if (gameOver) return;
+
+        const head = { ...snake[0] };
+        if (direction === 'RIGHT') head.x += 10;
+        if (direction === 'LEFT') head.x -= 10;
+        if (direction === 'UP') head.y -= 10;
+        if (direction === 'DOWN') head.y += 10;
+
+        // Kolize se zdi nebo s vlastním tělem
+        if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 300 || collisionWithSnake(head)) {
+            gameOver = true;
+            alert("Prohrál jsi! Dotkl ses zdi nebo těla.");
+            clearInterval(gameInterval);
+        }
+
+        // Kontrola, zda had snědl tečku
+        checkForFood(head);
+
+        snake.unshift(head);
+        if (snake.length > snakeSize) {
+            snake.pop();
+        }
+
+        renderGame();
+    }
+
+    // Kolize s vlastním tělem
+    function collisionWithSnake(head) {
+        return snake.some(segment => segment.x === head.x && segment.y === head.y);
+    }
+
+    // Kontrola, zda had snědl tečku
+    function checkForFood(head) {
+        dots.forEach((dot, index) => {
+            const dotRect = dot.getBoundingClientRect();
+            const snakeHeadRect = { x: head.x, y: head.y, width: 10, height: 10 };
+
+            if (
+                snakeHeadRect.x < dotRect.x + dotRect.width &&
+                snakeHeadRect.x + snakeHeadRect.width > dotRect.x &&
+                snakeHeadRect.y < dotRect.y + dotRect.height &&
+                snakeHeadRect.y + snakeHeadRect.height > dotRect.y
+            ) {
+                // Had snědl tečku
+                const dotIndex = parseInt(dot.getAttribute('data-index'));
+                if (dotIndex === correctAnswerIndex) {
+                    alert("Správně! Byla to správná odpověď.");
+                    score++;
+                } else {
+                    alert("Špatně! Byla to nesprávná odpověď.");
+                }
+                dot.remove(); // Odstraníme tečku
+                dots = dots.filter(d => d !== dot); // Odstraníme referenci z pole
+            }
+        });
+    }
+
+    // Zobrazení hada
+    function renderGame() {
+        const gameContainer = document.getElementById('gameContainer');
+        gameContainer.innerHTML = '';
+        // Udržujeme tečky na mapě
+        dots.forEach(dot => gameContainer.appendChild(dot));
+        snake.forEach(segment => {
+            const snakeElement = document.createElement('div');
+            snakeElement.style.left = `${segment.x}px`;
+            snakeElement.style.top = `${segment.y}px`;
+            snakeElement.classList.add('snake');
+            gameContainer.appendChild(snakeElement);
+        });
+    }
+
+    // Klávesové ovládání hada
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
+        if (event.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
+        if (event.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
+        if (event.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
+    });
+</script>
+
 </body>
 </html>
+
+
+
