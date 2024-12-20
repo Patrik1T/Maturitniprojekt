@@ -1,208 +1,300 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testy</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">
+    <title>Kámen, Nůžky, Papír s otázkami</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1E90FF;
-            margin: 0;
-            padding: 0;
+            text-align: center;
         }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: white;
-            height: 70px;
-            padding: 0 20px;
-            position: relative;
+        #questionInput, #answerInput, #attemptsInput {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
         }
-        .logo {
-            position: absolute;
-            left: 20px;
-            top: 10px;
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 50%;
-        }
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-        .nav-links a {
-            text-decoration: none;
-            color: black;
-            background-color: #d3d3d3;
+        #addQuestionBtn, #startGameBtn, #nextRoundBtn {
             padding: 10px 20px;
-            border-radius: 5px;
-        }
-        .icons {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        .icon {
-            width: 30px;
-            height: 30px;
-            background-color: grey;
-            border-radius: 50%;
-        }
-        .cart-logo {
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 50%;
-        }
-        .second-logo {
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-            border-radius: 50%;
-        }
-        .left-sidebar {
-            position: absolute;
-            top: 80px;
-            left: 0;
-            width: 200px;
-            background-color: white;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .table {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        .table h2 {
-            margin: 0;
-            color: black;
-        }
-        .main-content {
-            margin-left: 220px;
-            margin-top: 80px;
-            padding: 20px;
-        }
-        .test-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px; /* Vytvoří mezery mezi sekcemi */
-        }
-        .test-category {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        .test-category h2 {
-            margin: 0;
-            color: black;
-        }
-        .button {
-            background-color: #4CAF50; /* Zelené pozadí */
+            font-size: 16px;
+            margin: 10px;
+            background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
-            margin: 5px 0;
-            display: block; /* Zaručí, že tlačítka budou pod sebou */
-            text-align: center; /* Centrumje text */
-            text-decoration: none; /* Odstraní podtržení */
+        }
+        #addQuestionBtn:hover, #startGameBtn:hover, #nextRoundBtn:hover {
+            background-color: #45a049;
+        }
+        .game-button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #questionArea, #resultArea {
+            margin-top: 20px;
+        }
+        .questionItem {
+            margin: 10px;
+        }
+        .answerItem {
+            margin: 5px;
+        }
+        #scoreDisplay {
+            font-size: 18px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo"></div>
-    <div class="nav-links">
-        <a href="{% url 'page6' %}">Testy</a>
-        <a href="{% url 'page7' %}">Veřejné testy</a>
-        <a href="{% url 'page8' %}">Uložené testy</a>
-    </div>
-    <div class="icons">
-        <div class="icon">🔔</div>
-        <div class="icon">✉️</div>
-        <a href="#"><div class="cart-logo"></div></a>
-        <a href="#"><div class="second-logo"></div></a>
-    </div>
-</header>
+    <h1>Kámen, Nůžky, Papír s otázkami</h1>
 
-<div class="left-sidebar">
-    <div class="table">
-        <h2>Skupiny</h2>
-    </div>
-    <div class="table">
-        <h2>Historie</h2>
-    </div>
-    <div class="table">
-        <h2>Vaše vyrobené</h2>
-    </div>
-</div>
-
-<div class="main-content">
-    <div class="test-section">
-        <div class="test-category">
-            <h2>Testy</h2>
-            <div class="main-table">
-                <a class="button" href="{% url 'page11' %}">Test 1</a>
-            </div>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page12' %}">Test 2</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page12' %}">Test 3</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page14' %}">Test 4</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page15' %}">Test 5</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page16' %}">Test 6</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page17' %}">Test 7</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
+    <!-- Příprava otázek a odpovědí -->
+    <div id="inputArea">
+        <h3>Přidat otázky a odpovědi</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" /><br>
+        <div id="answersInput">
+            <input type="text" id="answerInput" placeholder="Zadejte odpověď" />
+            <button onclick="addAnswer()">Přidat odpověď</button>
         </div>
-
-        <div class="test-category">
-            <h2>Herní testy</h2>
-            <a class="button" href="{% url 'page18' %}">Herní Test 1</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page19' %}">Herní Test 2</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 3</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 4</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 5</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 6</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-            <a class="button" href="{% url 'page11' %}">Herní Test 7</a>
-            <p>Popis</p>
-            <p>öbrazky</p>
-        </div>
+        <div id="answersList"></div>
+        <button id="addQuestionBtn" onclick="addQuestion()">Přidat otázku</button><br>
+        <label for="attemptsInput">Počet pokusů proti programu:</label>
+        <input type="number" id="attemptsInput" value="3" min="1" /><br>
+        <button id="startGameBtn" onclick="startGame()">Spustit hru</button>
     </div>
-</div>
 
+    <div id="questionArea">
+        <h3>Otázky a odpovědi:</h3>
+        <div id="questionsList"></div>
+    </div>
+
+    <!-- Hra -->
+    <div id="gameArea" style="display: none;">
+        <button class="game-button" onclick="playRound('rock')">Kámen</button>
+        <button class="game-button" onclick="playRound('paper')">Papír</button>
+        <button class="game-button" onclick="playRound('scissors')">Nůžky</button>
+        <div id="resultArea" class="result"></div>
+        <button id="continueBtn" style="display: none;" onclick="continueAnswering()">Pokračovat v odpovědích</button>
+    </div>
+
+    <div id="scoreDisplay" style="display: none;">
+        <p>Výhry: <span id="wins">0</span> | Ztráty: <span id="losses">0</span> | Zbývající pokusy: <span id="attempts">0</span></p>
+    </div>
+
+    <div id="finalQuestionArea"></div>
+
+    <script>
+        let questions = [];
+        let currentAnswers = [];
+        let currentRound = 0;
+        let userWins = 0;
+        let userLosses = 0;
+        let remainingAttempts = 0;
+        let currentQuestionIndex = 0;
+        let answerCorrect = false;
+        let userChoseToPlay = false;
+
+        function addAnswer() {
+            const answerInput = document.getElementById("answerInput").value.trim();
+            if (answerInput) {
+                currentAnswers.push({ text: answerInput, isCorrect: false });
+                displayAnswers();
+                document.getElementById("answerInput").value = '';
+            } else {
+                alert("Vyplňte odpověď.");
+            }
+        }
+
+        function displayAnswers() {
+            const answersList = document.getElementById("answersList");
+            answersList.innerHTML = '';
+            currentAnswers.forEach((answer, index) => {
+                const answerItem = document.createElement("div");
+                answerItem.classList.add("answerItem");
+                answerItem.innerHTML = `
+                    <input type="radio" name="correctAnswer" onclick="setCorrectAnswer(${index})" ${answer.isCorrect ? 'checked' : ''} />
+                    ${answer.text}
+                    <button onclick="removeAnswer(${index})">Odstranit</button>
+                `;
+                answersList.appendChild(answerItem);
+            });
+        }
+
+        function setCorrectAnswer(index) {
+            currentAnswers.forEach((answer, i) => answer.isCorrect = i === index);
+        }
+
+        function removeAnswer(index) {
+            currentAnswers.splice(index, 1);
+            displayAnswers();
+        }
+
+        function addQuestion() {
+            const question = document.getElementById("questionInput").value.trim();
+            const correctAnswer = currentAnswers.find(answer => answer.isCorrect);
+            if (question && correctAnswer) {
+                questions.push({ question, answers: [...currentAnswers] });
+                displayQuestions();
+                document.getElementById("questionInput").value = '';
+                currentAnswers = [];
+                displayAnswers();
+            } else {
+                alert("Vyplňte otázku a označte správnou odpověď.");
+            }
+        }
+
+        function displayQuestions() {
+            const questionsList = document.getElementById("questionsList");
+            questionsList.innerHTML = '';
+            questions.forEach((item, index) => {
+                const questionItem = document.createElement("div");
+                questionItem.classList.add("questionItem");
+                questionItem.innerHTML = `
+                    <strong>${item.question}</strong><br>
+                    ${item.answers.map((ans, i) => `${i + 1}. ${ans.text} ${ans.isCorrect ? '(správná)' : ''}`).join('<br>')}
+                    <br>
+                    <button onclick="editQuestion(${index})">Upravit</button>
+                    <button onclick="deleteQuestion(${index})">Smazat</button>
+                `;
+                questionsList.appendChild(questionItem);
+            });
+        }
+
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            displayQuestions();
+        }
+
+        function editQuestion(index) {
+            const question = questions[index];
+            document.getElementById("questionInput").value = question.question;
+            currentAnswers = [...question.answers];
+            displayAnswers();
+            deleteQuestion(index);
+        }
+
+        function startGame() {
+            remainingAttempts = parseInt(document.getElementById("attemptsInput").value, 10);
+            if (isNaN(remainingAttempts) || remainingAttempts < 1) {
+                alert("Zadejte platný počet pokusů.");
+                return;
+            }
+            document.getElementById("gameArea").style.display = "block";
+            document.getElementById("scoreDisplay").style.display = "block";
+            document.getElementById("attempts").innerText = remainingAttempts;
+
+            startQuestionSequence();
+        }
+
+        function startQuestionSequence() {
+            if (questions.length === 0) {
+                document.getElementById("finalQuestionArea").innerHTML = "Žádné otázky nejsou dostupné.";
+                return;
+            }
+
+            askNextQuestion();
+        }
+
+        function askNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                document.getElementById("finalQuestionArea").innerHTML = "Všechny otázky byly zodpovězeny.";
+                return;
+            }
+
+            const selectedQuestion = questions[currentQuestionIndex];
+            const questionHTML = `
+                <h3>${selectedQuestion.question}</h3>
+                ${selectedQuestion.answers.map((answer, index) => `
+                    <button onclick="checkAnswer(${currentQuestionIndex}, ${index})">${answer.text}</button>
+                `).join('')}
+                <br>
+                <button onclick="askToPlayGame()">Chceš hrát Kámen, Nůžky, Papír?</button>
+            `;
+            document.getElementById("finalQuestionArea").innerHTML = questionHTML;
+        }
+
+        function askToPlayGame() {
+            userChoseToPlay = confirm("Chceš si zahrát Kámen, Nůžky, Papír?");
+            if (userChoseToPlay) {
+                startRockPaperScissors();
+            } else {
+                answerCorrect = true; // Zodpověděl otázku správně automaticky
+                askNextQuestion();
+            }
+        }
+
+        function startRockPaperScissors() {
+            currentRound = 0;
+            userWins = 0;
+            userLosses = 0;
+            document.getElementById("continueBtn").style.display = "none";
+        }
+
+        function playRound(playerChoice) {
+            const choices = ['rock', 'paper', 'scissors'];
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+            let result = '';
+            if (playerChoice === computerChoice) {
+                result = 'Remíza!';
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper') ||
+                (playerChoice === 'paper' && computerChoice === 'rock')
+            ) {
+                result = 'Vyhrál jsi!';
+                userWins++;
+            } else {
+                result = 'Prohrál jsi!';
+                userLosses++;
+            }
+
+            currentRound++;
+
+            document.getElementById("resultArea").innerHTML = `
+                Počítač: ${computerChoice.toUpperCase()}<br>
+                Ty: ${playerChoice.toUpperCase()}<br>${result}
+            `;
+
+            if (currentRound === 3) {
+                if (userWins >= 2) {
+                    answerCorrect = true;
+                    document.getElementById("continueBtn").style.display = "block";
+                } else {
+                    answerCorrect = false;
+                    document.getElementById("continueBtn").style.display = "block";
+                }
+            }
+        }
+
+        function continueAnswering() {
+            if (answerCorrect) {
+                // Pokud bylo odpovědně správně
+                currentQuestionIndex++;
+                askNextQuestion();
+            } else {
+                // Pokud bylo odpovědně špatně
+                document.getElementById("finalQuestionArea").innerHTML = "Špatná odpověď!";
+                currentQuestionIndex++;
+                askNextQuestion();
+            }
+        }
+
+        function checkAnswer(questionIndex, answerIndex) {
+            const question = questions[questionIndex];
+            const selectedAnswer = question.answers[answerIndex];
+            if (selectedAnswer.isCorrect) {
+                document.getElementById("finalQuestionArea").innerHTML = "Správná odpověď!";
+            } else {
+                document.getElementById("finalQuestionArea").innerHTML = "Špatná odpověď.";
+            }
+        }
+    </script>
 </body>
 </html>

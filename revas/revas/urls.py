@@ -50,6 +50,7 @@ urlpatterns = [
     path('programovaci_test/', views.programovaci_test, name='programovaci_test'),
     path('psaci_testy/', views.psaci_testy, name='psaci_testy'),
 
+
     path('spojovacka/', views.spojovacka, name='spojovacka'),
     path('tabulka/', views.tabulka, name='tabulka'),
     path('testy/', views.testy, name='testy'),
@@ -66,11 +67,10 @@ urlpatterns = [
     path('tetris/', views.tetris, name='tetris'),
     path('nahoda/', views.nahoda, name='nahoda'),
     path('vyber_testy/', views.vyber_testy, name='vyber_testy'),
-    path('spravy/', views.spravy, name='spravy'),
-
-    path('piskvorky/', views.piskvorky, name='piskvorky'),
     path('vytvor_test/', views.vytvor_test, name='vytvor_test'),
 
+
+    path('spravy/', views.spravy, name='spravy'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('moodlelog/', views.moodlelog, name='moodlelog'),
     path('auth/', include('social_django.urls', namespace='social')),
@@ -78,6 +78,9 @@ urlpatterns = [
     path('register/', views.register, name='register'),
 
     path('login/', views.LoginView.as_view(), name='login'),
+
+
+
 
     path('create-checkout-session/', views.create_checkout_session, name='create-checkout-session'),
     path('success/', views.success, name='success'),

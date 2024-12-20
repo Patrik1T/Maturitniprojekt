@@ -165,8 +165,11 @@ def spravy(request):
     return render(request, 'spravy')
 
 def moodlelog(request):
-    # další logika pro zpracování přihlášení nebo dat
     return render(request, 'moodlelog.html')
+
+def kamen_nuzky_papir(request):
+    return render(request, 'kamen_nuzky_papir')
+
 
 
 def register(request):
