@@ -32,7 +32,7 @@ urlpatterns = [
 
                   # Přihlášení a autentifikace přes GitHub a Google
                   path('auth/', include('social_django.urls', namespace='social')),
-                  
+
 
                   # Další vlastní cesty
                   path('github_log/', views.github_log, name='github_log'),

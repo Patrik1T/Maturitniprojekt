@@ -7,11 +7,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
         .game-container {
-            width: 400px;
-            height: 300px;
-            background-color: #f0f0f0;
+            width: 200px; /* Zmenšení šířky mapy */
+            height: 150px; /* Zmenšení výšky mapy */
+            background-color: #e8e8e8;
             margin: 0 auto;
             position: relative;
             border: 2px solid black;
@@ -26,15 +29,13 @@
             height: 10px;
             background-color: green;
         }
-        .dot {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
         #questionForm {
             text-align: center;
             margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
         }
         .answer-list {
             margin-top: 20px;
@@ -42,9 +43,15 @@
         }
         .answer-list div {
             padding: 10px;
-            background-color: #e0e0e0;
+            background-color: #007BFF; /* Modrá barva pro odpovědi */
             margin: 5px;
             cursor: pointer;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .answer-list div:hover {
+            background-color: #0056b3; /* Tmavší modrá při najetí */
         }
         #startGameButton {
             display: none;
@@ -54,6 +61,32 @@
             color: white;
             border: none;
             cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        #startGameButton:hover {
+            background-color: #45a049;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -105,7 +138,6 @@
     let snakeSize = 1;
     let correctAnswerIndex = -1;
     let gameOver = false;
-    let dots = [];
     let answeredQuestions = 0;
 
     // Funkce pro přidání nové otázky a odpovědí
@@ -121,8 +153,7 @@
             questions.push({
                 question: questionText,
                 answers: [answer1, answer2, answer3],
-                correct: correctAnswer,
-                colors: ['red', 'blue', 'green'] // Barvy pro odpovědi (můžeš měnit dle potřeby)
+                correct: correctAnswer
             });
 
             alert('Otázka byla přidána!');
@@ -157,7 +188,6 @@
             q.answers.forEach((answer, idx) => {
                 const answerDiv = document.createElement('div');
                 answerDiv.textContent = answer;
-                answerDiv.style.backgroundColor = q.colors[idx];
                 answersDiv.appendChild(answerDiv);
             });
 
@@ -191,54 +221,31 @@
             snakeSize = 1;
             direction = 'RIGHT';
             gameOver = false;
-            dots = []; // Resetování teček
             answeredQuestions = 0; // Reset počtu odpovědí
             showQuestion();
             gameInterval = setInterval(updateGame, 200);
         }
     }
 
-    // Zobrazení otázky a odpovědí
     function showQuestion() {
         const question = questions[questionIndex];
         document.getElementById('questionText').textContent = question.question;
         const answersDiv = document.getElementById('answers');
         answersDiv.innerHTML = '';
         question.answers.forEach((answer, idx) => {
-            const color = question.colors[idx];
             const answerDiv = document.createElement('div');
             answerDiv.textContent = answer;
-            answerDiv.style.backgroundColor = color;
             answerDiv.style.padding = '10px';
             answerDiv.style.margin = '5px';
             answerDiv.style.cursor = 'pointer';
             answerDiv.setAttribute('data-index', idx);
-            answerDiv.addEventListener('click', checkAnswer);
+            answerDiv.addEventListener('click', checkAnswer); // Odpověď se kontroluje při kliknutí
             answersDiv.appendChild(answerDiv);
         });
         correctAnswerIndex = question.correct;
-        generateFood(); // Vytvoříme jídlo (tečky)
     }
 
-    // Funkce pro generování náhodných teček
-    function generateFood() {
-        const gameContainer = document.getElementById('gameContainer');
-        const question = questions[questionIndex];
-
-        // Ujistíme se, že každá odpověď má tečku
-        question.colors.forEach((color, idx) => {
-            const dot = document.createElement('div');
-            dot.style.left = `${Math.random() * (gameContainer.offsetWidth - 10)}px`;
-            dot.style.top = `${Math.random() * (gameContainer.offsetHeight - 10)}px`;
-            dot.style.backgroundColor = color;
-            dot.classList.add('dot');
-            dot.setAttribute('data-index', idx);
-            gameContainer.appendChild(dot);
-            dots.push(dot); // Uchováme referenci na tečky
-        });
-    }
-
-    // Kontrola odpovědi při kontaktu s tečkou
+    // Funkce pro kontrolu odpovědi
     function checkAnswer(event) {
         const selectedAnswer = parseInt(event.target.getAttribute('data-index'));
         if (selectedAnswer === correctAnswerIndex) {
@@ -247,6 +254,7 @@
         } else {
             alert("Špatně! Zkus to znovu.");
         }
+        snakeSize++; // Zvětšení hada po každé odpovědi (i při špatné odpovědi)
         answeredQuestions++;
         nextQuestion();
     }
@@ -258,8 +266,16 @@
             clearInterval(gameInterval);
         } else {
             questionIndex = (questionIndex + 1) % questions.length; // Posun na další otázku
-            showQuestion();
+            showQuestion(); // Zobrazí novou otázku
+            resetGameField(); // Resetuje hrací pole
         }
+    }
+
+    // Resetování hracího pole (odstranění starých objektů)
+    function resetGameField() {
+        const gameContainer = document.getElementById('gameContainer');
+        gameContainer.innerHTML = ''; // Odstraníme všechny objekty z hracího pole
+        renderGame(); // Znovu vykreslíme hada
     }
 
     // Funkce pro pohyb hada
@@ -273,14 +289,11 @@
         if (direction === 'DOWN') head.y += 10;
 
         // Kolize se zdi nebo s vlastním tělem
-        if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 300 || collisionWithSnake(head)) {
+        if (head.x < 0 || head.x >= 200 || head.y < 0 || head.y >= 150 || collisionWithSnake(head)) {
             gameOver = true;
             alert("Prohrál jsi! Dotkl ses zdi nebo těla.");
             clearInterval(gameInterval);
         }
-
-        // Kontrola, zda had snědl tečku
-        checkForFood(head);
 
         snake.unshift(head);
         if (snake.length > snakeSize) {
@@ -295,58 +308,26 @@
         return snake.some(segment => segment.x === head.x && segment.y === head.y);
     }
 
-    // Kontrola, zda had snědl tečku
-    function checkForFood(head) {
-        dots.forEach((dot, index) => {
-            const dotRect = dot.getBoundingClientRect();
-            const snakeHeadRect = { x: head.x, y: head.y, width: 10, height: 10 };
-
-            if (
-                snakeHeadRect.x < dotRect.x + dotRect.width &&
-                snakeHeadRect.x + snakeHeadRect.width > dotRect.x &&
-                snakeHeadRect.y < dotRect.y + dotRect.height &&
-                snakeHeadRect.y + snakeHeadRect.height > dotRect.y
-            ) {
-                // Had snědl tečku
-                const dotIndex = parseInt(dot.getAttribute('data-index'));
-                if (dotIndex === correctAnswerIndex) {
-                    alert("Správně! Byla to správná odpověď.");
-                    score++;
-                } else {
-                    alert("Špatně! Byla to nesprávná odpověď.");
-                }
-                dot.remove(); // Odstraníme tečku
-                dots = dots.filter(d => d !== dot); // Odstraníme referenci z pole
-            }
-        });
-    }
-
     // Zobrazení hada
     function renderGame() {
         const gameContainer = document.getElementById('gameContainer');
         gameContainer.innerHTML = '';
-        // Udržujeme tečky na mapě
-        dots.forEach(dot => gameContainer.appendChild(dot));
         snake.forEach(segment => {
-            const snakeElement = document.createElement('div');
-            snakeElement.style.left = `${segment.x}px`;
-            snakeElement.style.top = `${segment.y}px`;
-            snakeElement.classList.add('snake');
-            gameContainer.appendChild(snakeElement);
+            const snakeSegment = document.createElement('div');
+            snakeSegment.style.left = segment.x + 'px';
+            snakeSegment.style.top = segment.y + 'px';
+            snakeSegment.classList.add('snake');
+            gameContainer.appendChild(snakeSegment);
         });
     }
 
-    // Klávesové ovládání hada
-    document.addEventListener('keydown', function(event) {
+    // Řízení pohybu hada
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
+        if (event.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
         if (event.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
         if (event.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
-        if (event.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
-        if (event.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
     });
 </script>
-
 </body>
 </html>
-
-
-

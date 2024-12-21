@@ -75,19 +75,25 @@
     </div>
 
     <!-- Hra -->
-    <div id="gameArea" style="display: none;">
-        <button class="game-button" onclick="playRound('rock')">Kámen</button>
-        <button class="game-button" onclick="playRound('paper')">Papír</button>
-        <button class="game-button" onclick="playRound('scissors')">Nůžky</button>
-        <div id="resultArea" class="result"></div>
-        <button id="continueBtn" style="display: none;" onclick="continueAnswering()">Pokračovat v odpovědích</button>
-    </div>
+   <div id="gameArea" style="display: none;">
+    <button class="game-button" onclick="playRound('rock')">Kámen</button>
+    <button class="game-button" onclick="playRound('paper')">Papír</button>
+    <button class="game-button" onclick="playRound('scissors')">Nůžky</button>
+    <div id="resultArea" class="result"></div>
+    <button id="continueBtn" style="display: none;" onclick="continueAnswering()">Pokračovat v odpovědích</button>
+</div>
+
 
     <div id="scoreDisplay" style="display: none;">
         <p>Výhry: <span id="wins">0</span> | Ztráty: <span id="losses">0</span> | Zbývající pokusy: <span id="attempts">0</span></p>
     </div>
 
-    <div id="finalQuestionArea"></div>
+    <div id="finalQuestionArea">
+        <h3>Otázka se zobrazí zde.</h3>
+        <div id="answersSection"></div>
+        <button id="playGameBtn" style="display: none;" onclick="askToPlayGame()">Hrát Kámen, Nůžky, Papír</button>
+        <button id="skipQuestionBtn" style="display: none;" onclick="skipQuestion()">Přeskočit otázku</button>
+    </div>
 
     <script>
         let questions = [];
@@ -98,7 +104,6 @@
         let remainingAttempts = 0;
         let currentQuestionIndex = 0;
         let answerCorrect = false;
-        let userChoseToPlay = false;
 
         function addAnswer() {
             const answerInput = document.getElementById("answerInput").value.trim();
@@ -197,104 +202,182 @@
                 document.getElementById("finalQuestionArea").innerHTML = "Žádné otázky nejsou dostupné.";
                 return;
             }
-
             askNextQuestion();
         }
 
         function askNextQuestion() {
             if (currentQuestionIndex >= questions.length) {
-                document.getElementById("finalQuestionArea").innerHTML = "Všechny otázky byly zodpovězeny.";
+                endTest();
                 return;
             }
 
             const selectedQuestion = questions[currentQuestionIndex];
-            const questionHTML = `
+            const answersSection = document.getElementById("answersSection");
+            answersSection.innerHTML = `
                 <h3>${selectedQuestion.question}</h3>
                 ${selectedQuestion.answers.map((answer, index) => `
                     <button onclick="checkAnswer(${currentQuestionIndex}, ${index})">${answer.text}</button>
                 `).join('')}
-                <br>
-                <button onclick="askToPlayGame()">Chceš hrát Kámen, Nůžky, Papír?</button>
             `;
-            document.getElementById("finalQuestionArea").innerHTML = questionHTML;
-        }
-
-        function askToPlayGame() {
-            userChoseToPlay = confirm("Chceš si zahrát Kámen, Nůžky, Papír?");
-            if (userChoseToPlay) {
-                startRockPaperScissors();
-            } else {
-                answerCorrect = true; // Zodpověděl otázku správně automaticky
-                askNextQuestion();
-            }
-        }
-
-        function startRockPaperScissors() {
-            currentRound = 0;
-            userWins = 0;
-            userLosses = 0;
-            document.getElementById("continueBtn").style.display = "none";
-        }
-
-        function playRound(playerChoice) {
-            const choices = ['rock', 'paper', 'scissors'];
-            const computerChoice = choices[Math.floor(Math.random() * 3)];
-
-            let result = '';
-            if (playerChoice === computerChoice) {
-                result = 'Remíza!';
-            } else if (
-                (playerChoice === 'rock' && computerChoice === 'scissors') ||
-                (playerChoice === 'scissors' && computerChoice === 'paper') ||
-                (playerChoice === 'paper' && computerChoice === 'rock')
-            ) {
-                result = 'Vyhrál jsi!';
-                userWins++;
-            } else {
-                result = 'Prohrál jsi!';
-                userLosses++;
-            }
-
-            currentRound++;
-
-            document.getElementById("resultArea").innerHTML = `
-                Počítač: ${computerChoice.toUpperCase()}<br>
-                Ty: ${playerChoice.toUpperCase()}<br>${result}
-            `;
-
-            if (currentRound === 3) {
-                if (userWins >= 2) {
-                    answerCorrect = true;
-                    document.getElementById("continueBtn").style.display = "block";
-                } else {
-                    answerCorrect = false;
-                    document.getElementById("continueBtn").style.display = "block";
-                }
-            }
-        }
-
-        function continueAnswering() {
-            if (answerCorrect) {
-                // Pokud bylo odpovědně správně
-                currentQuestionIndex++;
-                askNextQuestion();
-            } else {
-                // Pokud bylo odpovědně špatně
-                document.getElementById("finalQuestionArea").innerHTML = "Špatná odpověď!";
-                currentQuestionIndex++;
-                askNextQuestion();
-            }
+            document.getElementById("playGameBtn").style.display = "inline";
+            document.getElementById("skipQuestionBtn").style.display = "inline";
         }
 
         function checkAnswer(questionIndex, answerIndex) {
             const question = questions[questionIndex];
             const selectedAnswer = question.answers[answerIndex];
             if (selectedAnswer.isCorrect) {
+                answerCorrect = true;
                 document.getElementById("finalQuestionArea").innerHTML = "Správná odpověď!";
+                currentQuestionIndex++;
+                askNextQuestion();
             } else {
+                answerCorrect = false;
                 document.getElementById("finalQuestionArea").innerHTML = "Špatná odpověď.";
+                currentQuestionIndex++;
+                askNextQuestion();
             }
         }
+
+        function skipQuestion() {
+            answerCorrect = false;
+            currentQuestionIndex++;
+            askNextQuestion();
+        }
+
+function askToPlayGame() {
+    if (remainingAttempts <= 0) {
+        document.getElementById("finalQuestionArea").innerHTML += "<br>Nemáš už žádné pokusy na hru. Otázka je označena jako špatná!";
+        incorrectAnswers++;
+        currentQuestionIndex++;
+        askNextQuestion();
+        return;
+    }
+
+    remainingAttempts--;
+    document.getElementById("attempts").innerText = remainingAttempts;
+
+    // Zobrazíme tlačítka pro hru Kámen, Nůžky, Papír
+    document.getElementById("gameArea").style.display = "block";
+    document.getElementById("resultArea").innerHTML = "Začínáme hru Kámen, Nůžky, Papír! Vyber možnost:";
+}
+
+
+function startRockPaperScissors() {
+    // Skrýt tlačítko pro pokračování odpovědí
+    document.getElementById("continueBtn").style.display = "none";
+
+    userWins = 0;
+    userLosses = 0;
+    const winningScore = 3;
+    document.getElementById("resultArea").innerHTML = `
+        <p>Začínáme hru Kámen, Nůžky, Papír! První na ${winningScore} bodů vyhrává.</p>
+        <p>Zbývající pokusy: ${remainingAttempts}</p>
+    `;
+    document.getElementById("gameArea").style.display = "block";
+}
+
+
+function playRound(playerChoice) {
+    const choices = ['rock', 'paper', 'scissors'];
+    const computerChoice = choices[Math.floor(Math.random() * 3)];
+    let result = '';
+
+    if (playerChoice === computerChoice) {
+        result = 'Remíza!';
+    } else if (
+        (playerChoice === 'rock' && computerChoice === 'scissors') ||
+        (playerChoice === 'scissors' && computerChoice === 'paper') ||
+        (playerChoice === 'paper' && computerChoice === 'rock')
+    ) {
+        result = 'Vyhrál jsi kolo!';
+        userWins++;
+    } else {
+        result = 'Prohrál jsi kolo!';
+        userLosses++;
+    }
+
+    document.getElementById("resultArea").innerHTML = `
+        Počítač: ${computerChoice.toUpperCase()}<br>
+        Ty: ${playerChoice.toUpperCase()}<br>${result}<br>
+        Body: Ty (${userWins}) - Počítač (${userLosses})
+        <p>Zbývající pokusy: ${remainingAttempts}</p>
+    `;
+
+    if (userWins === 3 || userLosses === 3) {
+        const isWin = userWins === 3;
+        document.getElementById("resultArea").innerHTML += `
+            <br>${isWin ? 'Vyhrál jsi hru!' : 'Prohrál jsi hru.'} Otázka je označena jako ${isWin ? 'správná' : 'špatná'}.
+        `;
+        if (isWin) {
+            correctAnswers++;
+        } else {
+            incorrectAnswers++;
+        }
+        currentQuestionIndex++;
+        document.getElementById("gameArea").style.display = "none";
+        askNextQuestion();
+    }
+}
+
+
+
+function askNextQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+        showResults();
+        return;
+    }
+
+    shuffleQuestions();
+
+    const selectedQuestion = questions[currentQuestionIndex];
+    const questionHTML = `
+        <h3>${selectedQuestion.question}</h3>
+        ${selectedQuestion.answers.map((answer, index) => `
+            <button onclick="checkAnswer(${currentQuestionIndex}, ${index})">${answer.text}</button>
+        `).join('')}
+        <br>
+        <button onclick="askToPlayGame()">Zahrát Kámen, Nůžky, Papír</button>
+    `;
+
+    document.getElementById("finalQuestionArea").innerHTML = questionHTML;
+}
+
+function showResults() {
+    document.getElementById("finalQuestionArea").innerHTML = `
+        <h2>Výsledky testu:</h2>
+        <p>Správné odpovědi: ${correctAnswers}</p>
+        <p>Špatné odpovědi: ${incorrectAnswers}</p>
+        <p>Zbývající pokusy: ${remainingAttempts}</p>
+        <button onclick="restartTest()">Restartovat test</button>
+    `;
+}
+
+
+function restartTest() {
+    currentQuestionIndex = 0;
+    correctAnswers = 0;
+    incorrectAnswers = 0;
+    remainingAttempts = parseInt(document.getElementById("attemptsInput").value, 10);
+    document.getElementById("resultArea").innerHTML = "";
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("scoreDisplay").style.display = "block";
+    document.getElementById("attempts").innerText = remainingAttempts;
+    askNextQuestion();
+}
+
+
+function shuffleQuestions() {
+    questions = questions.sort(() => Math.random() - 0.5);
+}
+
+function updateScoreDisplay() {
+    document.getElementById("wins").innerText = correctAnswers;
+    document.getElementById("losses").innerText = incorrectAnswers;
+    document.getElementById("attempts").innerText = remainingAttempts;
+}
+
     </script>
+
 </body>
 </html>
