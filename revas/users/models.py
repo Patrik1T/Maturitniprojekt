@@ -12,8 +12,9 @@ class Question(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField()
-    gender = models.CharField(max_length=10)
+    age = models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=[('M', 'Muži'), ('F', 'Ženy')], null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
 
     def __str__(self):
         return self.user.username

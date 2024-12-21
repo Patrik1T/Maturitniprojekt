@@ -1,51 +1,29 @@
-from django.shortcuts import render
 from django.http import HttpResponse
-from .forms import RegistrationForm
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.conf import settings
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib import messages
+from django.contrib.auth import authenticate
 import random
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import RegistrationForm
-from django.contrib.auth.models import User
-from django.db import models
-from django.contrib.auth.models import User
-from django.contrib import admin
-import stripe
-from django.conf import settings
-from django.shortcuts import render
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
-from django.shortcuts import render, redirect
 from .models import Game, Player, QuestionPair
 from .forms import QuestionPairForm
-
-
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.contrib import messages
+from .forms import RegistrationForm
+from .models import UserProfile
 
 # Nastavení Stripe
-stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+# stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
 
-
-
-
+#modely hlavních stránek
 def main_page(request):
     return render(request, 'main_page.html')
 
-def ano_ne(request):
-    return render(request, 'ano_ne.html')
-
-def dvere_hra(request):
-    return render(request, 'dvere_hra.html')
-
 def github_log(request):
     return render(request, 'github_log.html')
+
+def moodlelog(request):
+    return render(request, 'moodlelog.html')
 
 def google_log(request):
     return render(request, 'google_log.html')
@@ -53,41 +31,8 @@ def google_log(request):
 def hlavni_stranka(request):
     return render(request, 'hlavni_stranka.html')
 
-def klikaci_hra(request):
-    return render(request, 'klikaci_hra.html')
-
 def kosik(request):
     return render(request, 'kosik.html')
-
-def kosiky(request):
-    return render(request, 'kosiky.html')
-
-def kviz(request):
-    return render(request, 'kviz.html')
-
-def login(request):
-    return render(request, 'login.html')
-
-def piskvorky(request):
-    return render(request, 'piskvorky.html')
-
-def pexeso(request):
-    return render(request, 'pexeso.html')
-
-def prihlasovacistranka(request):
-    return render(request, 'prihlasovacistranka.html')
-
-def profil(request):
-    return render(request, 'profil.html')
-
-def psaci_testy(request):
-    return render(request, 'psaci_testy.html')
-
-def spojovacka(request):
-    return render(request, 'spojovacka.html')
-
-def tabulka(request):
-    return render(request, 'tabulka.html')
 
 def testy(request):
     return render(request, 'testy.html')
@@ -98,6 +43,32 @@ def ulozene_testy(request):
 def verejne_testy(request):
     return render(request, 'verejne_testy.html')
 
+def login(request):
+    return render(request, 'login.html')
+
+def prihlasovacistranka(request):
+    return render(request, 'prihlasovacistranka.html')
+
+def profil(request):
+    return render(request, 'profil.html')
+
+def spravy(request):
+    return render(request, 'spravy.html')
+
+
+#testy
+def kosiky(request):
+    return render(request, 'kosiky.html')
+
+def psaci_testy(request):
+    return render(request, 'psaci_testy.html')
+
+def spojovacka(request):
+    return render(request, 'spojovacka.html')
+
+def tabulka(request):
+    return render(request, 'tabulka.html')
+
 def vytvor_test(request):
     return render(request, 'vytvor_test.html')
 
@@ -107,14 +78,22 @@ def programovaci_test(request):
 def maraton(request):
     return render(request, 'maraton.html')
 
+def Multi_test(request):
+    return render(request, 'Multi_test.html')
+
+def ano_ne(request):
+    return render(request, 'ano_ne.html')
+
+
+#herní testy
+def pexeso(request):
+    return render(request, 'pexeso.html')
+
 def Labyrint(request):
     return render(request, 'Labyrint.html')
 
 def lov_pokladu(request):
     return render(request, 'lov_pokladu.html')
-
-def Multi_test(request):
-    return render(request, 'Multi_test.html')
 
 def flappy_bird(request):
     return render(request, 'flappy_bird.html')
@@ -124,21 +103,6 @@ def obesenec(request):
 
 def klikaci(request):
     return render(request, 'klikaci.html')
-
-def nakup(request):
-    return render(request, 'nakup.html')
-
-def logout(request):
-    return render(request, 'logout.html')
-
-def vice(request):
-    return render(request, 'vice.html')
-
-def sparovaci_stranka_moodle(request):
-    return render(request, 'sparovaci_stranka_moodle.html')
-
-def sparovaci_stranka_github(request):
-    return render(request, 'sparovaci_stranka_github.html')
 
 def snake(request):
     return render(request, 'snake.html')
@@ -152,23 +116,17 @@ def labyrint(request):
 def tetris(request):
     return render(request, 'tetris.html')
 
-def nahoda(request):
-    return render(request, 'nahoda.html')
-
 def vyber_testy(request):
     return render(request, 'vyber_testy.html')
 
-def piskvorky(request):
-    return render(request, 'piskvorky')
-
-def spravy(request):
-    return render(request, 'spravy')
-
-def moodlelog(request):
-    return render(request, 'moodlelog.html')
-
 def kamen_nuzky_papir(request):
     return render(request, 'kamen_nuzky_papir')
+
+def dvere_hra(request):
+    return render(request, 'dvere_hra.html')
+
+def klikaci_hra(request):
+    return render(request, 'klikaci_hra.html')
 
 
 
@@ -176,13 +134,20 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            # Získání hodnot z formuláře
+            # Získání dat z formuláře
             username = form.cleaned_data['username']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
+            age = form.cleaned_data['age']
+            gender = form.cleaned_data['gender']
             profile_picture = form.cleaned_data['profile_picture']
+
+            # Kontrola, zda email už existuje
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Tento email je již registrován. Přihlaste se místo toho.")
+                return redirect('login')
 
             # Vytvoření uživatele
             user = User.objects.create_user(
@@ -193,13 +158,19 @@ def register(request):
                 password=password
             )
 
-            # Nastavení profilového obrázku, pokud je součástí formuláře
-            if profile_picture:
-                user.profile.profile_picture = profile_picture
-                user.profile.save()
+            # Vytvoření uživatelského profilu
+            user_profile = UserProfile.objects.create(
+                user=user,
+                age=age,
+                gender=gender,
+                profile_picture=profile_picture
+            )
 
-            messages.success(request, "Úspěšně jste se zaregistrovali.")
-            return redirect('login')  # Přesměrování na přihlašovací stránku
+            # Automatické přihlášení uživatele
+            login(request, user)
+
+            # Přesměrování na hlavní stránku
+            return redirect('hlavni_stranka')
         else:
             messages.error(request, "Formulář obsahuje chyby.")
     else:
@@ -239,37 +210,6 @@ def vytvor_test(request):
 
     return render(request, 'vytvor_test.html')
 
-def generate_verification_code():
-    return str(random.randint(100000, 999999))  # 6místný kód
-
-
-
-# Funkce pro ověření kódu
-def verify_code(request):
-    if request.method == 'POST':
-        entered_code = request.POST.get('verification_code')
-
-        # Ověření, zda zadaný kód odpovídá kódu v session
-        if entered_code == request.session.get('verification_code'):
-            # Uložení nového uživatele do databáze
-            user = User.objects.create_user(
-                username=request.session.get('username'),
-                email=request.session.get('email'),
-                password=request.session.get('password')
-            )
-
-            # Přihlášení uživatele
-            login(request, user)
-            messages.success(request, 'Úspěšná registrace!')
-            return redirect('profile')  # Přesměrování na profilovou stránku
-        else:
-            messages.error(request, 'Neplatný kód.')
-
-    return render(request, 'users/verify_code.html')
-
-class LoginView(LoginView):
-    template_name = 'prihlasovacistranka.html'
-
 
 def custom_login(request):
     if request.method == 'POST':
@@ -298,6 +238,49 @@ def custom_login(request):
             return f'{self.user.username} Profile'
 
 
+# Pohled pro vytvoření nové hry
+def create_game(request):
+    if request.method == "POST":
+        name = request.POST['name']
+        time_limit = int(request.POST['time_limit'])
+        points_per_pair = int(request.POST['points_per_pair'])
+        num_players = int(request.POST['num_players'])
+
+        game = Game.objects.create(
+            name=name,
+            time_limit=time_limit,
+            points_per_pair=points_per_pair,
+            num_players=num_players
+        )
+
+        # Přidání hráčů do hry
+        for i in range(num_players):
+            player_name = f"Player {i + 1}"
+            player = Player.objects.create(username=player_name)
+            game.players.add(player)
+
+        return redirect('game_detail', game_id=game.id)
+    return render(request, 'create_game.html')
+
+# Pohled pro zobrazení detailu hry
+def game_detail(request, game_id):
+    game = Game.objects.get(id=game_id)
+    question_pairs = QuestionPair.objects.all()
+    return render(request, 'game_detail.html', {'game': game, 'question_pairs': question_pairs})
+
+# Pohled pro přidání párů otázek a odpovědí
+def add_question_pair(request):
+    if request.method == 'POST':
+        form = QuestionPairForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('game_detail', game_id=form.instance.game.id)
+    else:
+        form = QuestionPairForm()
+    return render(request, 'add_question_pair.html', {'form': form})
+
+
+"""
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == "POST":
@@ -376,45 +359,4 @@ def create_checkout_session(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-# Pohled pro vytvoření nové hry
-def create_game(request):
-    if request.method == "POST":
-        name = request.POST['name']
-        time_limit = int(request.POST['time_limit'])
-        points_per_pair = int(request.POST['points_per_pair'])
-        num_players = int(request.POST['num_players'])
-
-        game = Game.objects.create(
-            name=name,
-            time_limit=time_limit,
-            points_per_pair=points_per_pair,
-            num_players=num_players
-        )
-
-        # Přidání hráčů do hry
-        for i in range(num_players):
-            player_name = f"Player {i + 1}"
-            player = Player.objects.create(username=player_name)
-            game.players.add(player)
-
-        return redirect('game_detail', game_id=game.id)
-    return render(request, 'create_game.html')
-
-# Pohled pro zobrazení detailu hry
-def game_detail(request, game_id):
-    game = Game.objects.get(id=game_id)
-    question_pairs = QuestionPair.objects.all()
-    return render(request, 'game_detail.html', {'game': game, 'question_pairs': question_pairs})
-
-# Pohled pro přidání párů otázek a odpovědí
-def add_question_pair(request):
-    if request.method == 'POST':
-        form = QuestionPairForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('game_detail', game_id=form.instance.game.id)
-    else:
-        form = QuestionPairForm()
-    return render(request, 'add_question_pair.html', {'form': form})
+"""

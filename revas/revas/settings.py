@@ -17,9 +17,12 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-# settings.py
-STRIPE_TEST_PUBLIC_KEY = 'your-public-key-here'
-STRIPE_TEST_SECRET_KEY = 'your-secret-key-here'
+
+
+
+# příprava na platby
+#STRIPE_TEST_PUBLIC_KEY = 'your-public-key-here'
+#STRIPE_TEST_SECRET_KEY = 'your-secret-key-here'
 
 
 # Quick-start development settings - unsuitable for production
@@ -117,13 +120,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Nastavení pro odesílání e-mailů
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Například pro Gmail
-EMAIL_PORT = 587  # SMTP port
-EMAIL_USE_TLS = True  # Používání TLS
-EMAIL_HOST_USER = 'tvuj_email@gmail.com'  # Tvá emailová adresa
-EMAIL_HOST_PASSWORD = 'tvé_emailové_heslo'  # Tvé heslo nebo app password
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'  # Například pro Gmail
+#EMAIL_PORT = 587  # SMTP port
+#EMAIL_USE_TLS = True  # Používání TLS
+#EMAIL_HOST_USER = 'tvuj_email@gmail.com'  # Tvá emailová adresa
+#EMAIL_HOST_PASSWORD = 'tvé_emailové_heslo'  # Tvé heslo nebo app password
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
@@ -144,7 +147,6 @@ USE_TZ = True
 STATIC_URL = '/static/'  # URL pro přístup ke statickým souborům
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    "/var/www/static/",
 ]
 
 
@@ -158,17 +160,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
     'social_core.backends.oauth.OAuth2',
-    'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.google.GoogleOAuth2',
-    'path.to.backends.MoodleOAuth2',  # Zde odkazuj na tvůj vlastní backend
+    'django.contrib.auth.backends.ModelBackend',
+    'path.to.backends.MoodleOAuth2',  # Zde odkazuj na vlastní backend
     'social_core.backends.github.GithubOAuth2',
     'myproject.social.backends.MoodleOAuth2',  # Vlastní backend
+
 )
 
-SOCIAL_AUTH_MOODLE_KEY = '<YOUR_CLIENT_ID>'
-SOCIAL_AUTH_MOODLE_SECRET = '<YOUR_CLIENT_SECRET>'
-SOCIAL_AUTH_MOODLE_SCOPE = ['openid', 'profile', 'email']
-SOCIAL_AUTH_MOODLE_EXTRA_DATA = ['first_name', 'last_name']
+#SOCIAL_AUTH_MOODLE_KEY = '<YOUR_CLIENT_ID>'
+#SOCIAL_AUTH_MOODLE_SECRET = '<YOUR_CLIENT_SECRET>'
+#SOCIAL_AUTH_MOODLE_SCOPE = ['openid', 'profile', 'email']
+#SOCIAL_AUTH_MOODLE_EXTRA_DATA = ['first_name', 'last_name']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
@@ -184,11 +187,11 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<tvůj google client id>'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<tvůj google client secret>'
+#SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<tvůj google client id>'
+#SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<tvůj google client secret>'
 
-SOCIAL_AUTH_GITHUB_KEY = '<tvůj github client id>'
-SOCIAL_AUTH_GITHUB_SECRET = '<tvůj github client secret>'
+#SOCIAL_AUTH_GITHUB_KEY = '<tvůj github client id>'
+#SOCIAL_AUTH_GITHUB_SECRET = '<tvůj github client secret>'
 
 
 LOGIN_REDIRECT_URL = 'main_page'
@@ -198,3 +201,7 @@ ALLOWED_HOSTS = []
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'example.com']
 
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
