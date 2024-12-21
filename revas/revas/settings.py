@@ -18,7 +18,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+LOGIN_REDIRECT_URL = '/'
 
 # příprava na platby
 #STRIPE_TEST_PUBLIC_KEY = 'your-public-key-here'
@@ -53,7 +54,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'social_django',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
@@ -158,20 +162,13 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = (
-    'allauth.account.auth_backends.AuthenticationBackend',
-    'social_core.backends.oauth.OAuth2',
-    'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-    'path.to.backends.MoodleOAuth2',  # Zde odkazuj na vlastní backend
-    'social_core.backends.github.GithubOAuth2',
-    'myproject.social.backends.MoodleOAuth2',  # Vlastní backend
-
+    'allauth.account.auth_backends.AuthenticationBackend',  # Tento backend pro Allauth
+    'social_core.backends.google.GoogleOAuth2',  # Google OAuth2
+    'social_core.backends.github.GithubOAuth2',  # GitHub OAuth2
+    'django.contrib.auth.backends.ModelBackend',  # Základní přihlášení přes Django
 )
 
-#SOCIAL_AUTH_MOODLE_KEY = '<YOUR_CLIENT_ID>'
-#SOCIAL_AUTH_MOODLE_SECRET = '<YOUR_CLIENT_SECRET>'
-#SOCIAL_AUTH_MOODLE_SCOPE = ['openid', 'profile', 'email']
-#SOCIAL_AUTH_MOODLE_EXTRA_DATA = ['first_name', 'last_name']
+
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
@@ -187,11 +184,13 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
-#SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<tvůj google client id>'
-#SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<tvůj google client secret>'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '<tvůj google client id>'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '<tvůj google client secret>'
+SOCIAL_AUTH_GOOGLE_CALLBACK_URL = 'http://127.0.0.1:8000/hlavni_stranka/'
 
-#SOCIAL_AUTH_GITHUB_KEY = '<tvůj github client id>'
-#SOCIAL_AUTH_GITHUB_SECRET = '<tvůj github client secret>'
+SOCIAL_AUTH_GITHUB_KEY = 'Ov23li2whfTy60o4FriD'
+SOCIAL_AUTH_GITHUB_SECRET = '137d70f0e9d8b455d039780c52dd5aa5298c8358'
+SOCIAL_AUTH_GITHUB_CALLBACK_URL = 'http://127.0.0.1:8000/hlavni_stranka/'
 
 
 LOGIN_REDIRECT_URL = 'main_page'

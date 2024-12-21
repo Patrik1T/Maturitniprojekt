@@ -20,61 +20,59 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
-
+from social_django import views as social_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
+                  path('admin/', admin.site.urls),
+                  path('users/', include('users.urls')),
 
+                  # hlavní stránky aplikace
+                  path('accounts/', include('allauth.urls')),
+                  path('', views.main_page, name='main_page'),
 
-    #hlavní stránky aplikace
-    path('accounts/', include('allauth.urls')),
-    path('', views.main_page, name='main_page'),
-    path('github_log/', views.github_log, name='github_log'),
-    path('google_log/', views.google_log, name='google_log'),
-    path('kosik/', views.kosik, name='kosik'),
-    path('login/', views.login, name='login'),
-    path('prihlasovacistranka/', views.prihlasovacistranka, name='prihlasovacistranka'),
-    path('profil/', views.profil, name='profil'),
-    path('testy/', views.testy, name='testy'),
-    path('ulozene_testy/', views.ulozene_testy, name='ulozene_testy'),
-    path('verejne_testy/', views.verejne_testy, name='verejne_testy'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
-    path('moodlelog/', views.moodlelog, name='moodlelog'),
-    path('auth/', include('social_django.urls', namespace='social')),
-    path('register/', views.register, name='register'),
-    path('login/', views.custom_login, name='login'),
-    path('hlavni_stranka/', views.hlavni_stranka, name='hlavni_stranka'),
-    path('spravy/', views.spravy, name='spravy'),
+                  # Přihlášení a autentifikace přes GitHub a Google
+                  path('auth/', include('social_django.urls', namespace='social')),
+                  
 
+                  # Další vlastní cesty
+                  path('github_log/', views.github_log, name='github_log'),
+                  path('google_log/', views.google_log, name='google_log'),
+                  path('kosik/', views.kosik, name='kosik'),
+                  path('login/', views.login, name='login'),
+                  path('prihlasovacistranka/', views.prihlasovacistranka, name='prihlasovacistranka'),
+                  path('profil/', views.profil, name='profil'),
+                  path('testy/', views.testy, name='testy'),
+                  path('ulozene_testy/', views.ulozene_testy, name='ulozene_testy'),
+                  path('verejne_testy/', views.verejne_testy, name='verejne_testy'),
+                  path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+                  path('moodlelog/', views.moodlelog, name='moodlelog'),
+                  path('register/', views.register, name='register'),
+                  path('hlavni_stranka/', views.hlavni_stranka, name='hlavni_stranka'),
+                  path('spravy/', views.spravy, name='spravy'),
 
-    #stránky testů aplikace
-    path('vyber_testy/', views.vyber_testy, name='vyber_testy'),
-    path('maraton/', views.maraton, name='maraton'),
-    path('Multi_test/', views.Multi_test, name='Multi_test'),
-    path('programovaci_test/', views.programovaci_test, name='programovaci_test'),
-    path('psaci_testy/', views.psaci_testy, name='psaci_testy'),
-    path('ano_ne/', views.ano_ne, name='ano_ne'),
-    path('spojovacka/', views.spojovacka, name='spojovacka'),
-    path('tabulka/', views.tabulka, name='tabulka'),
+                  # Stránky testů aplikace
+                  path('vyber_testy/', views.vyber_testy, name='vyber_testy'),
+                  path('maraton/', views.maraton, name='maraton'),
+                  path('Multi_test/', views.Multi_test, name='Multi_test'),
+                  path('programovaci_test/', views.programovaci_test, name='programovaci_test'),
+                  path('psaci_testy/', views.psaci_testy, name='psaci_testy'),
+                  path('ano_ne/', views.ano_ne, name='ano_ne'),
+                  path('spojovacka/', views.spojovacka, name='spojovacka'),
+                  path('tabulka/', views.tabulka, name='tabulka'),
 
+                  # Stránky herních testů aplikace
+                  path('lov_pokladu/', views.lov_pokladu, name='lov_pokladu'),
+                  path('Labyrint/', views.Labyrint, name='Labyrint'),
+                  path('obesenec/', views.obesenec, name='obesenec'),
+                  path('pexeso/', views.pexeso, name='pexeso'),
+                  path('klikaci_hra/', views.klikaci_hra, name='klikaci_hra'),
+                  path('snake/', views.snake, name='snake'),
+                  path('tetris/', views.tetris, name='tetris'),
+                  path('vytvor_test/', views.vytvor_test, name='vytvor_test'),
+                  path('dvere_hra/', views.dvere_hra, name='dvere_hra'),
+                  path('flappy_bird/', views.flappy_bird, name='flappy_bird'),
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-    #stránky herních testů aplikace
-    path('lov_pokladu/', views.lov_pokladu, name='lov_pokladu'),
-    path('Labyrint/', views.Labyrint, name='Labyrint'),
-    path('obesenec/', views.obesenec, name='obesenec'),
-    path('pexeso/', views.pexeso, name='pexeso'),
-    path('klikaci_hra/', views.klikaci_hra, name='klikaci_hra'),
-    path('snake/', views.snake, name='snake'),
-    path('tetris/', views.tetris, name='tetris'),
-    path('vytvor_test/', views.vytvor_test, name='vytvor_test'),
-    path('dvere_hra/', views.dvere_hra, name='dvere_hra'),
-    path('flappy_bird/', views.flappy_bird, name='flappy_bird'),
-
-
-
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
