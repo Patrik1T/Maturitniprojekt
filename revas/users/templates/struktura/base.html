@@ -5,10 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responzivní layout</title>
+    <title>{% block title %}Výchozí název stránky{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
-<script src="{% static 'js/zapisnik.js' %}"></script>
+    <script src="{% static 'js/kalendar.js' %}"></script>
+    <script src="{% static 'js/zapisnik.js' %}"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
     {% include 'struktura/nav.html' %}
@@ -20,26 +21,16 @@
                 {% include 'struktura/tabulky.html' %}
             </div>
 
-
-                
-                </div>
+            <!-- Hlavní obsah -->
+            <div class="col-lg-10 col-md-8 col-sm-12 p-3">
+                {% block content %}
+                <!-- Obsah stránky bude vložen zde -->
+                {% endblock %}
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white py-3 mt-auto">
-        <div class="container">
-            <div class="footer-notes">
-                <h2>Poznámky</h2>
-                <textarea id="note-input" placeholder="Zadejte poznámku"></textarea>
-                <button class="btn-save" onclick="saveNote()">Uložit</button>
-                <div id="saved-notes">
-                    <!-- Dynamicky přidané poznámky -->
-                </div>
-            </div>
-        </div>
-    </footer>
-
+    {% include 'struktura/footer.html' %}
 </body>
 </html>
+

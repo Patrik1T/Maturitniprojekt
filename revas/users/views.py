@@ -11,6 +11,11 @@ from django.contrib.auth import login
 from django.contrib import messages
 from .forms import RegistrationForm
 from .models import UserProfile
+from django.shortcuts import redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect
 
 # Nastavení Stripe
 # stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
@@ -130,53 +135,60 @@ def klikaci_hra(request):
 
 
 
+from django.shortcuts import render, redirect
+from .forms import RegistrationForm
+from django.contrib.auth.models import User
+from django.contrib import messages
+
 def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST, request.FILES)
+    if request.method == "POST":
+        form = RegistrationForm(request.POST, request.FILES)  # Načítáme POST a případně soubory (pro profilový obrázek)
         if form.is_valid():
-            # Získání dat z formuláře
-            username = form.cleaned_data['username']
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            age = form.cleaned_data['age']
-            gender = form.cleaned_data['gender']
-            profile_picture = form.cleaned_data['profile_picture']
-
-            # Kontrola, zda email už existuje
-            if User.objects.filter(email=email).exists():
-                messages.error(request, "Tento email je již registrován. Přihlaste se místo toho.")
-                return redirect('login')
-
-            # Vytvoření uživatele
+            # Uložíme uživatele
             user = User.objects.create_user(
-                username=username,
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                password=password
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password'],
+                email=form.cleaned_data['email'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
             )
 
-            # Vytvoření uživatelského profilu
-            user_profile = UserProfile.objects.create(
-                user=user,
-                age=age,
-                gender=gender,
-                profile_picture=profile_picture
-            )
+            # Pokud je vyplněný profilový obrázek, uložíme ho
+            if form.cleaned_data.get('profile_picture'):
+                profile = UserProfile.objects.create(
+                    user=user,
+                    age=form.cleaned_data['age'],
+                    gender=form.cleaned_data['gender'],
+                    profile_picture=form.cleaned_data['profile_picture']
+                )
+            else:
+                profile = UserProfile.objects.create(
+                    user=user,
+                    age=form.cleaned_data['age'],
+                    gender=form.cleaned_data['gender']
+                )
 
-            # Automatické přihlášení uživatele
-            login(request, user)
-
-            # Přesměrování na hlavní stránku
-            return redirect('hlavni_stranka')
+            messages.success(request, "Registrace byla úspěšná!")
+            return redirect('login')  # Po úspěšné registraci přesměrujeme na stránku pro přihlášení
         else:
-            messages.error(request, "Formulář obsahuje chyby.")
+            # Pokud formulář není validní, vrátíme zpět s chybami
+            messages.error(request, "Vyplňte prosím všechny údaje správně.")
     else:
         form = RegistrationForm()
 
     return render(request, 'register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('main_page')  # Přesměrování na hlavní stránku po přihlášení
+    else:
+        form = AuthenticationForm()
+    return render(request, 'prihlasovacistranka', {'form': form})
 
 
 def vytvor_test(request):

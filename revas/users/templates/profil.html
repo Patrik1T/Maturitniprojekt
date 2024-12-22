@@ -1,27 +1,12 @@
-{% load static %}
+{% extends "struktura/base.html" %}
 
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osobní Údaje</title>
-    <link rel="stylesheet" href="{% static 'style/profil.css' %}?v=1.0">
-    <script src="{% static 'js/kalendar.js' %}"></script>
-    <script src="{% static 'js/zapisnik.js' %}"></script>
-</head>
-<body>
-    <!-- Hlavička -->
-    {% include 'struktura/nav.html' %}
+{% block title %}
+Moje konkrétní stránka
+{% endblock %}
 
-    <div class="layout">
-        <!-- Levý panel -->
-        {% include 'struktura/tabulky.html' %}
+{% block content %}
 
-        <!-- Hlavní obsah -->
-        <div class="main-content">
-            {% block content %}
-            <h1>Osobní údaje</h1>
+<h1>Osobní údaje</h1>
 
             <div class="info-box">
                 <h2>Profil</h2>
@@ -84,11 +69,6 @@
                     </tbody>
                 </table>
             </div>
-            {% endblock %}
-        </div>
-    </div>
 
-    <!-- Footer -->
-    {% include 'struktura/footer.html' %}
-</body>
-</html>
+
+{% endblock %}

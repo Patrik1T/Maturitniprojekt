@@ -1,4 +1,4 @@
- /* Globální nastavení */
+/* Globální nastavení */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -28,6 +28,7 @@ input, textarea {
     border-radius: 5px;
 }
 
+/* Tlačítka */
 button {
     display: block;
     width: 100%;
@@ -52,10 +53,78 @@ button.finish-test-btn:hover {
     background-color: #e6c200;
 }
 
-.test-section {
-    margin-top: 20px;
+/* Vzhled časovače */
+.timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
+.timer label {
+    font-weight: bold;
+}
+
+.timer input {
+    width: 60px;
+}
+
+/* Nastavení pro odpovědi a otázky */
+.question-preview {
+    border: 2px solid #4CAF50; /* Zelené ohraničení */
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: space-between;
+}
+
+.question-preview p {
+    font-size: 18px;
+    font-weight: bold;
+    flex: 1;
+}
+
+.question-preview .points {
+    flex: 0 0 50px;
+    text-align: right;
+    margin-left: 15px;
+}
+
+.answers-preview {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.answers-preview label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.answers-preview input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.answers-preview .remove-btn {
+    margin-left: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.answers-preview .remove-btn:hover {
+    background-color: darkred;
+}
+
+/* Styl pro zaškrtávací políčko */
+.selected {
+    background-color: lightgray;
+}
+
+/* Vzhled pro zobrazení výsledků */
 .results, .timer-display {
     margin-top: 20px;
     font-size: 1.1em;
@@ -64,12 +133,6 @@ button.finish-test-btn:hover {
 
 .grade-settings label, .timer label {
     font-weight: bold;
-}
-
-.error-message {
-    color: red;
-    font-size: 0.9em;
-    margin-top: 5px;
 }
 
 #successContainer {
@@ -85,6 +148,7 @@ button.finish-test-btn:hover {
     font-size: 16px;
 }
 
+/* Zelené, žluté a červené odpovědi */
 .correct {
     color: green;
     font-weight: bold;
@@ -98,34 +162,4 @@ button.finish-test-btn:hover {
 .wrong {
     color: red;
     font-weight: bold;
-}
-
-.selected {
-    background-color: lightgray;
-}
-
-.question-preview {
-    border: 2px solid #4CAF50; /* Zelené ohraničení */
-    padding: 15px;
-    margin-bottom: 15px; /* Vzdálenost mezi otázkami */
-    border-radius: 8px; /* Zaoblené rohy */
-    background-color: #f9f9f9; /* Světle šedé pozadí */
-}
-
-.question-preview p {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.answers-preview {
-    margin-top: 10px;
-}
-
-.answers-preview label {
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-
-.answers-preview input[type="checkbox"] {
-    margin-right: 10px;
 }

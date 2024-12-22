@@ -1,14 +1,12 @@
-{% load static %}
-{% block content %}
-<link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
-<script src="{% static 'js/kalendar.js' %}"></script>
-<script src="{% static 'js/zapisnik.js' %}"></script>
+{% extends "struktura/base.html" %}
 
-<!-- Hlavička -->
-{% include 'struktura/nav.html' %}
+{% block title %}
+Moje konkrétní stránka
+{% endblock %}
+
+{% block content %}
 
 <div class="card-section">
-{% include 'struktura/tabulky.html' %}
     <div class="card" id="card-1">
         <h3>Level 1</h3>
         <p>Cena: $5</p>
@@ -44,7 +42,5 @@
     <p id="total-price">Celková cena: $0</p>
     <button class="button" id="checkout-button" onclick="checkout()">Pokračovat k platbě</button>
 </div>
-    <!-- Footer -->
-{% include 'struktura/footer.html' %}
-{% endblock %}
 
+{% endblock %}

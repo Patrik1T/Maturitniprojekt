@@ -4,15 +4,12 @@
         let timeRemaining = 0;
 
 function saveTest(location) {
-    // Kód pro uložení testu sem patří, budu děl v djangu.
-    // Například se test uloží do databáze nebo souboru v závislosti na parametru 'location'.
 
-    // Zde přidáme logiku pro úspěšné uložení
     if (location === 'profil') {
-        // Představme si, že test je úspěšně uložen do profilu
+
         showSuccessMessage('Test byl úspěšně uložen v aplikaci.');
     } else if (location === 'verejne_testy') {
-        // Představme si, že test je úspěšně uložen jako veřejný test
+
         showSuccessMessage('Test byl úspěšně uložen jako veřejný test.');
     }
 }
@@ -486,70 +483,71 @@ function restartTest() {
 
 
 
-
-
 function saveAsHtml() {
-    const testName = document.getElementById('testName').value;
-    const questions = gatherQuestions(); // Funkce pro získání otázek
+    const content = document.getElementById('testContent').innerHTML; // Získá obsah náhledu
+    const testName = document.getElementById('testName').value || 'test'; // Použije název testu nebo výchozí název
 
-    if (!testName || questions.length === 0) {
-        alert("Zadejte název testu a alespoň jednu otázku.");
-        return;
-    }
-
-    let htmlContent = `
+    // Vytvoří kompletní HTML dokument
+    const htmlContent = `
         <!DOCTYPE html>
         <html lang="cs">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${testName}</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .question { margin-bottom: 20px; }
-                .question h3 { margin: 10px 0; }
-                .answers { margin-left: 20px; }
-            </style>
+            <link rel="stylesheet" href="style_test.css"> <!-- Pokud používáte externí CSS -->
+            <script src="timer.js"></script> <!-- Pokud používáte časovač -->
         </head>
         <body>
-        <h1>${testName}</h1>
-        <div id="testContent">
-    `;
-
-    questions.forEach((question, index) => {
-        htmlContent += `
-            <div class="question">
-                <h3>Otázka ${index + 1}: ${question.text}</h3>
-                <div class="answers">
-        `;
-
-        question.options.forEach((option, i) => {
-            htmlContent += `
-                <label>
-                    <input type="checkbox" disabled ${question.correctOption === i + 1 ? 'checked' : ''}>
-                    ${option}
-                </label><br>
-            `;
-        });
-
-        htmlContent += `
-                </div>
+            <div class="test-content">
+                ${content}
             </div>
-        `;
-    });
-
-    htmlContent += `
-        </div>
         </body>
         </html>
     `;
 
-    // Vytvoření souboru HTML a jeho stažení
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${testName}.html`; // Název souboru
-    a.click();
-    URL.revokeObjectURL(url); // Uvolnění objektu URL
+    downloadFile(htmlContent, `${testName}.html`, 'text/html');
 }
+
+
+
+function saveAsMoodleXML() {
+    const content = document.getElementById('testContent').innerHTML; // Získá obsah náhledu
+    const testName = document.getElementById('testName').value || 'test'; // Použije název testu nebo výchozí název
+
+    // Vytvoří Moodle XML obsah
+    const xmlContent = `
+        <?xml version="1.0" encoding="UTF-8"?>
+        <quiz>
+            <question type="category">
+                <category>
+                    <text>$course$/Default for ${testName}</text>
+                </category>
+            </question>
+            <question type="multichoice">
+                <name><text>${testName} - Example Question</text></name>
+                <questiontext format="html">
+                    <text><![CDATA[${content}]]></text>
+                </questiontext>
+                <answer fraction="100"><text>Correct Answer</text></answer>
+                <answer fraction="0"><text>Wrong Answer</text></answer>
+            </question>
+        </quiz>
+    `;
+
+    downloadFile(xmlContent, `${testName}.xml`, 'application/xml');
+}
+
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType }); // Vytvoření souboru
+    const link = document.createElement('a'); // Vytvoření odkazu
+    link.href = URL.createObjectURL(blob); // Vytvoření URL pro blob
+    link.download = filename; // Určení názvu souboru
+    link.click(); // Simulování kliknutí na odkaz pro stažení
+
+    // Uvolnění paměti
+    setTimeout(() => URL.revokeObjectURL(link.href), 100);
+}
+
+

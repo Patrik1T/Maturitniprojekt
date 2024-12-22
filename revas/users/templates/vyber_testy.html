@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vytvořit test</title>
     <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
-  <script src="{% static 'js/rozhodovacka.js' %}"></script>
+    <script src="{% static 'js/rozhodovacka.js' %}"></script>
 </head>
 <body>
 <div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
@@ -16,7 +16,6 @@
 <div id="successContainer" style="display:none; color: white; background-color: green; padding: 10px; text-align: center;">
     <strong>Úspěch:</strong> Test byl úspěšně uložen.
 </div>
-
 
     <div class="container">
         <h1>Vytvořit test</h1>
@@ -58,35 +57,34 @@
 
         <form id="testForm">
             <div id="questionsContainer"></div>
+            <h2>Tvorba testu</h2>
             <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+            <h2>Ukázka testu</h2>
             <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
             <h2>Typ uložení</h2>
             <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
             <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-            <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
-            <button type="button" class="submit-btn" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
-
+            <button type="button" onclick="saveAsHtml()">Uložit jako HTML</button>
+            <button type="button" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
         </form>
 
         <div id="previewTest" class="test-section">
             <h2>Náhled testu</h2>
             <div id="testContent"></div>
-        <div class="timer-display" id="timerDisplay" style="display:none;">
-            <p>Čas zbývající: <span id="timerCount"></span></p>
-        </div>
+            <div class="timer-display" id="timerDisplay" style="display:none;">
+                <p>Čas zbývající: <span id="timerCount"></span></p>
+            </div>
         </div>
 
         <div class="results" id="resultsSection" style="display:none;">
-    <h2>Výsledky testu</h2>
-    <p id="scoreDisplay"></p>
-    <p id="gradeDisplay"></p>
-    <p id="percentageDisplay"></p>
-    <p id="correctAnswersDisplay"></p>
-    <p id="partiallyCorrectDisplay"></p>
-    <p id="wrongAnswersDisplay"></p>
-</div>
+            <h2>Výsledky testu</h2>
+            <p id="scoreDisplay"></p>
+            <p id="gradeDisplay"></p>
+            <p id="percentageDisplay"></p>
+            <p id="correctAnswersDisplay"></p>
+            <p id="partiallyCorrectDisplay"></p>
+            <p id="wrongAnswersDisplay"></p>
+        </div>
     </div>
-
-
 </body>
 </html>

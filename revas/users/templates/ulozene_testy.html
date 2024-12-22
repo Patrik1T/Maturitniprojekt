@@ -1,41 +1,18 @@
-{% load static %}
+{% extends "struktura/base.html" %}
 
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veřejné Testy</title>
-    <link rel="stylesheet" href="{% static 'style/ulozene_zverejnene_testy.css' %}?v=1.0">
-</head>
-<body>
-    <!-- Hlavička -->
-    {% include 'struktura/nav.html' %}
+{% block title %}
+Moje konkrétní stránka
+{% endblock %}
 
-    <div class="layout">
-        <!-- Levý panel -->
-        {% include 'struktura/tabulky.html' %}
-
-        <!-- Hlavní obsah -->
-        <div class="main-content">
-            <div class="main-section">
-                <h1>Veřejné testy</h1>
-
-                <!-- Karta s obrázkem, názvem, popiskem a tlačítkem -->
-                <div class="card">
-                    <img src="https://via.placeholder.com/100" alt="Test Image">
-                    <div class="content">
-                        <h2>Název testu</h2>
-                        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
-                        <button class="try-button">Vyzkoušet</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% block content %}
+<div class="card">
+    <img src="https://via.placeholder.com/100" alt="Test Image" class="card-img">
+    <div class="content">
+        <h2>Název testu</h2>
+        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
+        <button class="try-button">Vyzkoušet</button>
     </div>
+</div>
 
-    <!-- Footer -->
-    {% include 'struktura/footer.html' %}
-</body>
-</html>
+{% endblock %}
 
