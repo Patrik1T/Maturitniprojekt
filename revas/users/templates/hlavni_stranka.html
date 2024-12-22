@@ -1,61 +1,134 @@
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
-<script src="{% static 'js/kalendar.js' %}"></script>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responzivní layout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
+    <script src="{% static 'js/kalendar.js' %}"></script>
 <script src="{% static 'js/zapisnik.js' %}"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    {% include 'struktura/nav.html' %}
 
-<!-- Hlavička -->
-{% include 'struktura/nav.html' %}
-
-<!-- Hlavní obsah stránky -->
-<div class="content">
-    {% block content %}
-    <!-- Sem se bude vkládat specifický obsah pro každou stránku -->
-    {% endblock %}
-</div>
-
-<!-- Levý panel -->
-<div class="layout">
-    {% include 'struktura/tabulky.html' %}
-
-    <!-- Hlavní obsah -->
-    <div class="main-content">
-        <div class="calendar">
-            <div class="calendar-controls">
-                <button onclick="changeMonth(-1)">Předchozí</button>
-                <h3 id="calendar-title"></h3>
-                <button onclick="changeMonth(1)">Další</button>
+    <div class="container-fluid flex-grow-1">
+        <div class="row">
+            <!-- Levý panel -->
+            <div class="col-lg-2 col-md-4 col-sm-12 bg-light p-3">
+                {% include 'struktura/tabulky.html' %}
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Po</th>
-                        <th>Út</th>
-                        <th>St</th>
-                        <th>Čt</th>
-                        <th>Pá</th>
-                        <th>So</th>
-                        <th>Ne</th>
-                    </tr>
-                </thead>
-                <tbody id="calendar-days"></tbody>
-            </table>
-            <div class="current-time" id="current-time"></div>
-        </div>
 
-        <div class="table">
-            <h2>Oznámení testy</h2>
-        </div>
-        <div class="table">
-            <h2>Uložené testy</h2>
-        </div>
-        <div class="table">
-            <h2>Vyhodnocené</h2>
-        </div>
+            <!-- Hlavní obsah -->
+            <div class="col-lg-10 col-md-8 col-sm-12 p-3">
+                <div class="calendar bg-white shadow-sm p-3 mb-3 rounded">
+                    <div class="calendar-controls d-flex justify-content-between align-items-center">
+                        <button class="btn btn-primary btn-sm" onclick="changeMonth(-1)">Předchozí</button>
+                        <h3 id="calendar-title" class="m-0">Kalendář</h3>
+                        <button class="btn btn-primary btn-sm" onclick="changeMonth(1)">Další</button>
+                    </div>
+                    <table class="table table-bordered text-center mt-3">
+                        <thead>
+                            <tr>
+                                <th>Po</th>
+                                <th>Út</th>
+                                <th>St</th>
+                                <th>Čt</th>
+                                <th>Pá</th>
+                                <th>So</th>
+                                <th>Ne</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendar-days"></tbody>
+                    </table>
+                </div>
 
+                <div class="card-deck">
+                   <div class="card">
+    <div class="card-header">Novinky v aplikaci.</div>
+    <div class="card-body">
+        <h1><strong>Nová aplikace pro testy: Revas</strong></h1>
+        <p>Jsme nadšeni, že vám můžeme představit naši novou aplikaci pro testování, která se jmenuje <strong>Revas</strong>. Tento nástroj vám umožní snadno vytvářet, sdílet a vyhodnocovat různé testy. Ať už jste učitel, student nebo někdo, kdo chce otestovat své znalosti, Revas vám nabízí intuitivní rozhraní a mnoho funkcí pro efektivní testování a učení.</p>
+        
+        <h2><strong>Populární testy v aplikaci:</strong></h2>
+        <ul>
+            <li>
+                <strong>Rozhodovačka:</strong> Zde můžete vytvořit jednoduchý test pro odškrtávání odpovědí. Test je jednoduchý udělat a provést.
+                <img src="{% static 'obrazky/general_knowledge.jpg' %}" alt="Rozhodovačka" width="100" class="img-fluid">
+            </li>
+            <li>
+                <strong>Multi test:</strong> Je především oblíbený, protože obsahuje všechny klasické testy, které naše aplikace používá.
+                <img src="{% static 'obrazky/math_tests.jpg' %}" alt="Multi test" width="100" class="img-fluid">
+            </li>
+        </ul>
+
+        <h2><strong>Populární herní testy:</strong></h2>
+        <ul>
+            <li>
+                <strong>Tetris:</strong> Tento test je založen na populární hře Tetris. Vaším úkolem je umístit padající bloky tak, aby vytvořily úplné řady, které se odstraní,
+                ale má to svůj háček, že se vám objeví otázka a jenom pokud na ní zodpovíte správně, tak dostanete body. Zlepšíte si tím svou rychlost reakce a prostorovou představivost.
+                <img src="{% static 'obrazky/kizE.png' %}" alt="Tetris test" width="100" class="img-fluid">
+            </li>
+            <li>
+                <strong>Pexeso:</strong> Pexeso je klasická hra na pamatování. Testujte svou schopnost zapamatovat si páry otázka a odpověď a najít je co nejrychleji. Skvělá zábava pro všechny věkové kategorie!
+                Jednoduchá pro vytvoření.
+                <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
+            </li>
+        </ul>
+
+        <p>Doufáme, že si užijete používání naší aplikace a že vám pomůže v učení i zábavě!</p>
     </div>
 </div>
 
-<!-- Footer -->
+                    <div class="card">
+                        <div class="card-header">Nově sveřejněné testy.</div>
+                        <div class="card-body">
+                            <div class="card">
+                    
+                    <div class="content">
+                        <h2>Název testu</h2>
+                        <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
+                        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
+                        <button class="try-button">Vyzkoušet</button>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Vaše vyrobené testy.</div>
+                        <div class="card-body">
+                            <div class="card">
+                    
+                    <div class="content">
+                        <h2>Název testu</h2>
+                        <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
+                        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
+                        <button class="try-button">Vyzkoušet</button>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Vaše zveřejněné testy</div>
+                        <div class="card-body">
+                           
+                    <div class="content">
+                        <h2>Název testu</h2>
+                        <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
+                        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
+                        <button class="try-button">Vyzkoušet</button>
+                    </div>
+                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% include 'struktura/footer.html' %}
 
+</body>
+</html>

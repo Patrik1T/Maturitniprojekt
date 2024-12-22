@@ -1,7 +1,9 @@
 {% load static %}
 
 <header>
-     <img class="logo" src="{% static 'obrazky/logoRevas.png' %}" alt="Logo" width="100">
+    <a href="{% url 'hlavni_stranka' %}"> <!-- Zde vložte URL na domovskou stránku nebo na požadovaný odkaz -->
+        <img class="logo" src="{% static 'obrazky/logoRevas.png' %}" alt="Logo" width="100">
+    </a>
     <div class="nav-links">
         <a href="{% url 'testy' %}">Testy</a>
         <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
@@ -15,3 +17,4 @@
         <a class="icon-button" href="{% url 'profil' %}">P</a>
     </div>
 </header>
+

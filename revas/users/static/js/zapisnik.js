@@ -1,8 +1,6 @@
-let savedNotes = [];
-
-// Funkce pro ukládání poznámky
+// Funkce pro uložení poznámky
 function saveNote() {
-    const noteInput = document.getElementById('note-input');
+    const noteInput = document.getElementById("note-input");
     const noteText = noteInput.value.trim();
 
     if (noteText === "") {
@@ -10,49 +8,58 @@ function saveNote() {
         return;
     }
 
-    // Uložení poznámky do pole
     savedNotes.push(noteText);
-    noteInput.value = ''; // Vyprázdní textarea
-    renderNotes(); // Překreslení poznámek
+    noteInput.value = ""; // Vyprázdnění textarea
+    renderNotes(); // Aktualizace zobrazení poznámek
 }
 
 // Funkce pro vykreslení poznámek
 function renderNotes() {
-    const savedNotesContainer = document.getElementById('saved-notes');
-    savedNotesContainer.innerHTML = '';
+    const savedNotesContainer = document.getElementById("saved-notes");
+    savedNotesContainer.innerHTML = ""; // Vyprázdnění
 
     savedNotes.forEach((note, index) => {
-        const noteElement = document.createElement('div');
-        noteElement.classList.add('saved-note');
+        const noteElement = document.createElement("div");
+        noteElement.className = "saved-note";
 
-        // Poznámka
-        noteElement.innerHTML = `
-            <span contenteditable="true" onblur="updateNote(${index}, this.innerText)">${note}</span>
-            <div>
-                <button onclick="deleteNote(${index})">Smazat</button>
-            </div>
-        `;
+        const noteText = document.createElement("span");
+        noteText.innerText = note;
+
+        const editButton = document.createElement("button");
+        editButton.innerText = "Upravit";
+        editButton.onclick = () => editNotePrompt(index);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.innerText = "Smazat";
+        deleteButton.onclick = () => deleteNote(index);
+
+        noteElement.appendChild(noteText);
+        noteElement.appendChild(editButton);
+        noteElement.appendChild(deleteButton);
 
         savedNotesContainer.appendChild(noteElement);
     });
 }
 
-// Funkce pro editaci poznámky
-function updateNote(index, newText) {
-    if (newText !== "") {
-        savedNotes[index] = newText;
+// Funkce pro úpravu poznámky
+function editNotePrompt(index) {
+    const updatedNote = prompt("Upravte poznámku:", savedNotes[index]);
+    if (updatedNote !== null && updatedNote.trim() !== "") {
+        savedNotes[index] = updatedNote.trim();
+        renderNotes();
+    } else if (updatedNote === "") {
+        alert("Poznámka nemůže být prázdná!");
     }
 }
 
 // Funkce pro smazání poznámky
 function deleteNote(index) {
-    if (confirm("Opravu chcete tuto poznámku smazat?")) {
-        savedNotes.splice(index, 1); // Odstranění poznámky z pole
-        renderNotes(); // Překreslení poznámek
+    if (confirm("Opravdu chcete tuto poznámku smazat?")) {
+        savedNotes.splice(index, 1);
+        renderNotes();
     }
 }
 
-// Zavolání funkce pro inicializaci při načtení stránky
-document.addEventListener('DOMContentLoaded', function() {
-    renderNotes();
-});
+// Zavolání při načtení stránky
+window.addEventListener("DOMContentLoaded", renderNotes);
+

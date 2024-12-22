@@ -12,7 +12,6 @@ function changeMonth(offset) {
     renderCalendar();
 }
 
-// Funkce pro zobrazení kalendáře
 function renderCalendar() {
     const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
     const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
@@ -51,14 +50,15 @@ function renderCalendar() {
     }
 }
 
-
 // Funkce pro zobrazení aktuálního času
 function displayTime() {
     const time = new Date().toLocaleTimeString();
     document.getElementById('current-time').innerText = `Aktuální čas: ${time}`;
 }
+
 document.addEventListener('DOMContentLoaded', function() {
     renderCalendar();
     setInterval(displayTime, 1000); // Aktualizace času každou sekundu
 });
+
 
