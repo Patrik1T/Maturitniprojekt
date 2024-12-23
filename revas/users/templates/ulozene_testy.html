@@ -1,12 +1,14 @@
 {% extends "struktura/base.html" %}
 
+{% load static %}
+
 {% block title %}
 Moje konkrétní stránka
 {% endblock %}
 
 {% block content %}
 <div class="card">
-    <img src="https://via.placeholder.com/100" alt="Test Image" class="card-img">
+    <img src="{% static 'obrazky/' %}" alt="Test Image" class="card-img">
     <div class="content">
         <h2>Název testu</h2>
         <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>

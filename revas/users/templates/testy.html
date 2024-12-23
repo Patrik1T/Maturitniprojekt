@@ -5,12 +5,15 @@ Moje konkrétní stránka
 {% endblock %}
 
 {% block content %}
-
-<!-- Hlavní obsah -->
-        <div class="main-content">
-           
+{% load static %}
+<link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
+  <div class="container">
+    <div class="row">
+        <!-- Levý sloupec -->
+        <div class="col-lg-6 col-md-12">
             <div class="test-category">
-            <h1>Rozhodovačka</h1>
+                <h1>Testy</h1>
+                <h1>Rozhodovačka</h1>
             <h2>Účel</h2>
             <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
             <h2>Možnosti</h2>
@@ -18,10 +21,10 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/vyber_testy">Vytvořit</a>
-
-            <h1>Ano nebo ne</h1>
+               
+                <h1>Ano nebo ne</h1>
             <h2>Účel</h2>
             <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
             <h2>Možnosti</h2>
@@ -29,7 +32,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/ano_ne">Vytvořit</a>
 
             <h1>Spojovačka</h1>
@@ -40,7 +43,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/GKha.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/spojovacka">Vytvořit</a>
 
             <h1>Multi test</h1>
@@ -51,7 +54,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/Multi_test">Vytvořit</a>
 
             <h1>Programovaci test</h1>
@@ -62,7 +65,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/programovaci_test">Vytvořit</a>
 
             <h1>Psaci</h1>
@@ -73,7 +76,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/psaci_testy">Vytvořit</a>
 
             <h1>Tabulka</h1>
@@ -84,7 +87,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/tabulka">Vytvořit</a>
 
 
@@ -96,15 +99,15 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/Bs03.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/maraton">Vytvořit</a>
-
+            </div>
         </div>
 
-
-        <!-- Druhý test -->
-        <div class="test-category">
-           <h1>Pexeso</h1>
+        <!-- Pravý sloupec -->
+        <div class="col-lg-6 col-md-12">
+            <div class="test-category">
+               <h1>Pexeso</h1>
             <h2>Účel</h2>
             <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
             <h2>Možnosti</h2>
@@ -112,7 +115,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/pexeso">Vytvořit</a>
 
 
@@ -124,7 +127,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/SIUh.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/obesenec">Vytvořit</a>
 
             <h1>Labyrint</h1>
@@ -135,7 +138,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/28K4.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/Labyrint">Vytvořit</a>
 
             <h1>Dveře hra</h1>
@@ -146,7 +149,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/m61g.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/dvere_hra">Vytvořit</a>
 
             <h1>Flappy bird</h1>
@@ -157,7 +160,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/6o89.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/flappy_bird">Vytvořit</a>
 
             <h1>Lov pokladů</h1>
@@ -168,7 +171,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/Z4pc.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/lov_pokladu">Vytvořit</a>
 
             <h1>Snake</h1>
@@ -179,7 +182,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/LmCb.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/snake">Vytvořit</a>
 
             <h1>Kámen, nůžky, papír</h1>
@@ -190,7 +193,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/f0eA.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/vytvor_test">Vytvořit</a>
 
             <h1>Klikačka</h1>
@@ -201,7 +204,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/4UWz.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/klikaci_hra/">Vytvořit</a>
 
         <h1>Tetris</h1>
@@ -212,8 +215,13 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="https://via.placeholder.com/150" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/kizE.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/tetris">Vytvořit</a>
         </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}

@@ -1,87 +1,56 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.card {
-    width: 100px;
-    height: 100px;
-    display: inline-block;
-    margin: 10px;
-    text-align: center;
-    background-color: #f0f0f0;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.card.flipped {
-    background-color: #4CAF50;
-    color: white;
-    transform: rotateY(180deg);
-}
-
-.grid {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.score {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-
-
-.timer {
-    font-size: 20px;
-    margin: 10px 0;
-    text-align: center;
-}
-
-.pair-info {
-    margin-bottom: 20px;
-}
-
-.pair-info input {
-    width: 100%;
-    margin-bottom: 5px;
-}
-
-.save-btn, .show-btn {
-    background-color: #1E90FF;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.save-results-btn {
-    background-color: #32CD32; /* Zelená barva pro tlačítko uložení */
-}
+ body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .button-container {
+            margin: 20px;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            user-select: none;
+        }
+        .card.flipped {
+            background-color: #fff;
+        }
+        .card.matched {
+            background-color: #7cfc00;
+        }
+        .hidden {
+            display: none;
+        }
+        .score {
+            font-size: 24px;
+        }
+        input[type="text"] {
+            margin: 5px;
+            padding: 5px;
+        }
+        .pairs-list {
+            margin-top: 20px;
+        }
+        .pair-item {
+            margin-bottom: 10px;
+        }
+        .pair-item button {
+            margin-left: 10px;
+        }

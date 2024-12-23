@@ -1,142 +1,43 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odeslat zprávu</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1E90FF, #87CEEB);
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #fff;
-        }
+{% extends 'struktura/base.html' %}
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-            padding: 20px;
-        }
+{% block title %}Odeslat zprávu{% endblock %}
 
-        .message-board {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            text-align: left;
-            overflow-y: auto;
-            max-height: 400px;
-        }
+{% block content %}
+<div class="message-board-container">
+    <h2>Zprávy</h2>
 
-        .message-board h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .message {
-            background-color: #f4f4f4;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        .message .user {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .message .time {
-            font-size: 0.9em;
-            color: #777;
-        }
-
-        .form-container {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        input, textarea, button {
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        button {
-            background-color: #1E90FF;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #4682B4;
-            transform: scale(1.05);
-        }
-
-        .link {
-            color: #1E90FF;
-            text-decoration: none;
-        }
-
-        .link:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <!-- Seznam zpráv -->
+    <!-- Kontejner pro zprávy s posuvníkem -->
     <div class="message-board">
-        <h2>Zprávy</h2>
-
-        <!-- Zpráva 1 -->
         <div class="message">
             <div class="user">Uživatel 1</div>
             <div class="time">12:45 PM</div>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
         </div>
 
-        <!-- Zpráva 2 -->
         <div class="message">
             <div class="user">Uživatel 2</div>
             <div class="time">1:10 PM</div>
             <p>Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.</p>
         </div>
 
-        <!-- Zpráva 3 -->
         <div class="message">
             <div class="user">Uživatel 3</div>
             <div class="time">2:00 PM</div>
             <p>Vestibulum fringilla pede sit amet augue. In tincidunt consequat magna. Aenean imperdiet. Etiam ultricies nisi vel augue.</p>
         </div>
 
-    </div>
-
-    <!-- Formulář pro odeslání zprávy -->
-    <div class="form-container">
-        <h3>Napište zprávu</h3>
-        <form action="/send_message" method="POST">
-            <textarea name="message" placeholder="Napište vaši zprávu..." required></textarea>
-            <button type="submit">Odeslat zprávu</button>
-        </form>
-
-        <p><a href="/logout" class="link">Odhlásit se</a></p>
+        <!-- Přidej více zpráv pro otestování -->
     </div>
 </div>
 
-</body>
-</html>
+<!-- Formulář pro odeslání zprávy -->
+<div class="form-container">
+    <h3>Napište zprávu</h3>
+    <form action="/send_message" method="POST">
+        <textarea name="message" placeholder="Napište vaši zprávu..." required></textarea>
+        <button type="submit">Odeslat zprávu</button>
+    </form>
+
+    <p><a href="/logout" class="link">Odhlásit se</a></p>
+</div>
+{% endblock %}

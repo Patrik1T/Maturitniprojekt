@@ -14,6 +14,8 @@
         #questionPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid black; }
         button { margin-top: 10px; }
         #score { font-size: 20px; text-align: center; margin-bottom: 20px; }
+        #questionForm { margin: 20px 0; }
+        #questionList { margin-top: 20px; text-align: left; }
     </style>
 </head>
 <body>
@@ -38,7 +40,37 @@
         <div id="answerOptions"></div>
     </div>
 
+    <div id="questionForm">
+        <h3>Vytvořte vlastní otázku a odpovědi</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" />
+        <div>
+            <input type="text" id="answer1" placeholder="Odpověď 1" />
+            <input type="checkbox" id="correct1" /> Správná
+        </div>
+        <div>
+            <input type="text" id="answer2" placeholder="Odpověď 2" />
+            <input type="checkbox" id="correct2" /> Správná
+        </div>
+        <div>
+            <input type="text" id="answer3" placeholder="Odpověď 3" />
+            <input type="checkbox" id="correct3" /> Správná
+        </div>
+        <div>
+            <input type="text" id="answer4" placeholder="Odpověď 4" />
+            <input type="checkbox" id="correct4" /> Správná
+        </div>
+        <button id="saveQuestionBtn">Uložit otázku</button>
+    </div>
+
+    <div id="questionList">
+        <h3>Seznam otázek:</h3>
+        <ul id="questionsContainer"></ul>
+    </div>
+
+    <button id="startGameBtn">Spustit hru</button>
+
     <script>
+        const questions = [];
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const nextCanvas = document.getElementById("nextCanvas");
@@ -48,25 +80,19 @@
         const nextCanvas2 = document.getElementById("nextCanvas2");
         const nextCtx2 = nextCanvas2.getContext("2d");
 
-        const rows = 24;  // Zvětšení výšky hry
+        const rows = 24;
         const cols = 10;
         const blockSize = 30;
         const gameBoard = Array.from({ length: rows }, () => Array(cols).fill(0));
 
         const tetriminos = [
-            { color: "red", shape: [[1, 1, 1, 1]] }, // I
-            { color: "blue", shape: [[1, 1], [1, 1]] }, // O
-            { color: "green", shape: [[1, 1, 0], [0, 1, 1]] }, // S
-            { color: "orange", shape: [[0, 1, 1], [1, 1, 0]] }, // Z
-            { color: "purple", shape: [[1, 0, 0], [1, 1, 1]] }, // J
-            { color: "yellow", shape: [[0, 0, 1], [1, 1, 1]] }, // L
-            { color: "cyan", shape: [[0, 1, 0], [1, 1, 1]] }, // T
-        ];
-
-        const questions = [
-            { question: "Kolik je 5 + 3?", answers: ["8", "7", "9", "6"], correct: "8" },
-            { question: "Jaké je hlavní město ČR?", answers: ["Praha", "Brno", "Ostrava", "Plzeň"], correct: "Praha" },
-            { question: "Jaká je barva nebe za jasného dne?", answers: ["Modrá", "Zelená", "Červená", "Fialová"], correct: "Modrá" },
+            { color: "red", shape: [[1, 1, 1, 1]] },
+            { color: "blue", shape: [[1, 1], [1, 1]] },
+            { color: "green", shape: [[1, 1, 0], [0, 1, 1]] },
+            { color: "orange", shape: [[0, 1, 1], [1, 1, 0]] },
+            { color: "purple", shape: [[1, 0, 0], [1, 1, 1]] },
+            { color: "yellow", shape: [[0, 0, 1], [1, 1, 1]] },
+            { color: "cyan", shape: [[0, 1, 0], [1, 1, 1]] },
         ];
 
         let score = 0;
@@ -76,7 +102,7 @@
         let nextTetrimino;
         let futureTetriminos = [];
         let gamePaused = false;
-        const dropInterval = 1000;  // Fixní interval pro pád tvarů (každý 1000ms)
+        const dropInterval = 1000;
         let lastDropTime = 0;
         let gameIntervalId;
 
@@ -99,9 +125,9 @@
                     if (shape[r][c] !== 0) {
                         ctx.fillStyle = currentTetrimino.color;
                         ctx.fillRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize);
-                        ctx.strokeStyle = "#000";  // Okraje pro tvary
+                        ctx.strokeStyle = "#000";
                         ctx.lineWidth = 2;
-                        ctx.strokeRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize); // Okraje
+                        ctx.strokeRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize);
                     }
                 }
             }
@@ -115,9 +141,9 @@
                     if (shape[r][c] !== 0) {
                         context.fillStyle = tetrimino.color;
                         context.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
-                        context.strokeStyle = "#000";  // Okraje pro tvary
+                        context.strokeStyle = "#000";
                         context.lineWidth = 2;
-                        context.strokeRect(c * blockSize, r * blockSize, blockSize, blockSize); // Okraje
+                        context.strokeRect(c * blockSize, r * blockSize, blockSize, blockSize);
                     }
                 }
             }
@@ -217,7 +243,7 @@
             drawNextTetrimino(nextCtx2, futureTetriminos[1]);
 
             if (!gamePaused) {
-                gameIntervalId = setInterval(gameLoop, dropInterval);  // Fixní interval pro pád tvarů
+                gameIntervalId = setInterval(gameLoop, dropInterval);
             }
         }
 
@@ -240,13 +266,53 @@
                         startGame();
                     }
                 }
-                lastDropTime = now;  // Aktualizace času pro další pád
+                lastDropTime = now;
             }
 
             drawBoard();
             drawTetrimino();
         }
 
+        // Uložení otázky
+        document.getElementById("saveQuestionBtn").addEventListener("click", function() {
+            const questionText = document.getElementById("questionInput").value;
+            const answers = [
+                { text: document.getElementById("answer1").value, correct: document.getElementById("correct1").checked },
+                { text: document.getElementById("answer2").value, correct: document.getElementById("correct2").checked },
+                { text: document.getElementById("answer3").value, correct: document.getElementById("correct3").checked },
+                { text: document.getElementById("answer4").value, correct: document.getElementById("correct4").checked }
+            ];
+
+            // Přidání otázky
+            questions.push({ question: questionText, answers: answers.filter(a => a.text !== ""), correct: answers.find(a => a.correct)?.text });
+
+            // Aktualizace seznamu otázek
+            updateQuestionList();
+        });
+
+        // Aktualizace seznamu otázek
+        function updateQuestionList() {
+            const container = document.getElementById("questionsContainer");
+            container.innerHTML = "";
+            questions.forEach((q, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `${q.question} - <button onclick="deleteQuestion(${index})">Smazat</button>`;
+                container.appendChild(li);
+            });
+        }
+
+        // Smazání otázky
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            updateQuestionList();
+        }
+
+        // Spuštění hry
+        document.getElementById("startGameBtn").addEventListener("click", function() {
+            startGame();
+        });
+
+        // Pohyb v hře
         document.addEventListener("keydown", event => {
             if (event.key === "ArrowLeft" && canMove(-1, 0, currentTetrimino.shape)) {
                 currentPos.x--;
@@ -258,12 +324,9 @@
                 rotateTetrimino();
             }
         });
-
-        startGame();
     </script>
 </body>
 </html>
-
 
 
 

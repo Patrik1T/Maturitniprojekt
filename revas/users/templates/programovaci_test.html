@@ -1,73 +1,90 @@
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
-<script src="{% static 'js/programovaci_test.js.js' %}"></script>
-
-{% block content %}
-<div class="container">
-    <h1>Vytvořit test</h1>
-    <h2>Popisek k testu</h2>
-
-    <div class="test-name">
-        <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu" required>
-    </div>
-
-    <!-- Obrázek testu (nahrání souboru) -->
-    <label for="testImage">Obrázek testu (nahrát soubor):</label>
-    <input type="file" id="testImage" accept="image/*">
-
-    <!-- Popis testu (textarea pro více textu) -->
-    <label for="testDescription">Popis testu:</label>
-    <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-
-    <h2>Tvoření testu</h2>
-
-    <div class="timer">
-        <label for="timer">Nastavit časovač (v minutách):</label>
-        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
-        <label for="enableTimer">Povolit časovač</label>
-        <input type="checkbox" id="enableTimer">
-    </div>
-
-    <div class="grade-settings">
-        <h3>Počet bodů pro každou známku</h3>
-        <label for="grade1">Známka 1 (minimální body):</label>
-        <input type="number" id="grade1" min="1" value="90">
-        <label for="grade2">Známka 2 (minimální body):</label>
-        <input type="number" id="grade2" min="1" value="70">
-        <label for="grade3">Známka 3 (minimální body):</label>
-        <input type="number" id="grade3" min="1" value="50">
-        <label for="grade4">Známka 4 (minimální body):</label>
-        <input type="number" id="grade4" min="1" value="30">
-        <label for="grade5">Známka 5 (minimální body):</label>
-        <input type="number" id="grade5" min="1" value="0">
-    </div>
-
-    <form id="testForm">
-        <div id="questionsContainer"></div>
-        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
-        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <h2>Typ uložení</h2>
-        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
-        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
-    </form>
-
-    <div id="previewTest" class="test-section">
-        <h2>Náhled testu</h2>
-        <div id="testContent"></div>
-        <button type="button" class="end-test-btn" onclick="endTest()">Ukončit test</button>
-    </div>
-
-    <div class="results" id="resultsSection" style="display:none;">
-        <h2>Výsledky testu</h2>
-        <p id="scoreDisplay"></p>
-        <p id="gradeDisplay"></p>
-    </div>
-
-    <div class="timer-display" id="timerDisplay" style="display:none;">
-        <p>Čas zbývající: <span id="timerCount"></span></p>
-    </div>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+    <script src="{% static 'js/programovaci_test.js' %}"></script>
+</head>
+<body>
+<div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
+    <strong>Chyba:</strong> Něco je špatně, zkontrolujte formulář.
 </div>
-{% endblock %}
+<div id="successContainer" style="display:none; color: white; background-color: green; padding: 10px; text-align: center;">
+    <strong>Úspěch:</strong> Test byl úspěšně uložen.
+</div>
+
+    <div class="container">
+        <h1>Vytvořit test</h1>
+        <h2>Popisek k testu</h2>
+
+        <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+
+        <label for="testImage">Obrázek testu (nahrát soubor):</label>
+        <input type="file" id="testImage" accept="image/*">
+
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+
+        <h2>Tvoření testu</h2>
+
+        <div class="timer">
+            <label for="timer">Nastavit časovač (v minutách):</label>
+            <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+            <label for="enableTimer">Povolit časovač</label>
+            <input type="checkbox" id="enableTimer">
+        </div>
+
+        <div class="grade-settings">
+            <h3>Počet bodů pro každou známku</h3>
+            <label for="grade1">Známka 1 (minimální body):</label>
+            <input type="number" id="grade1" min="1" value="90">
+            <label for="grade2">Známka 2 (minimální body):</label>
+            <input type="number" id="grade2" min="1" value="70">
+            <label for="grade3">Známka 3 (minimální body):</label>
+            <input type="number" id="grade3" min="1" value="50">
+            <label for="grade4">Známka 4 (minimální body):</label>
+            <input type="number" id="grade4" min="1" value="30">
+            <label for="grade5">Známka 5 (minimální body):</label>
+            <input type="number" id="grade5" min="1" value="0">
+        </div>
+
+        <form id="testForm">
+            <div id="questionsContainer"></div>
+            <h2>Tvorba testu</h2>
+            <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+            <h2>Ukázka testu</h2>
+            <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+            <h2>Typ uložení</h2>
+            <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
+            <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+            <button type="button" onclick="saveAsHtml()">Uložit jako HTML</button>
+            <button type="button" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
+        </form>
+
+        <div id="previewTest" class="test-section">
+            <h2>Náhled testu</h2>
+            <div id="testContent"></div>
+            <div class="timer-display" id="timerDisplay" style="display:none;">
+                <p>Čas zbývající: <span id="timerCount"></span></p>
+            </div>
+        </div>
+
+        <div class="results" id="resultsSection" style="display:none;">
+            <h2>Výsledky testu</h2>
+            <p id="scoreDisplay"></p>
+            <p id="gradeDisplay"></p>
+            <p id="percentageDisplay"></p>
+            <p id="correctAnswersDisplay"></p>
+            <p id="partiallyCorrectDisplay"></p>
+            <p id="wrongAnswersDisplay"></p>
+        </div>
+    </div>
+</body>
+</html>

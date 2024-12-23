@@ -1,11 +1,15 @@
-<!DOCTYPE html>
+{% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pexeso: Otázky a Odpovědi</title>
     <style>
-        body {
+    body {
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -91,8 +95,9 @@
         <button onclick="resetGame()">Nová hra</button>
     </div>
 
-    <script>
-        const questionInput = document.getElementById("question");
+
+<script>
+      const questionInput = document.getElementById("question");
         const answerInput = document.getElementById("answer");
         const gameBoardDiv = document.getElementById("gameBoard");
         const scoreDiv = document.getElementById("score");
@@ -139,41 +144,42 @@
         }
 
         // Funkce pro zahájení hry
-        function startGame() {
-            if (pairs.length < 2) {
-                alert("Pro spuštění hry je potřeba alespoň 1 pár!");
-                return;
-            }
+function startGame() {
+    if (pairs.length < 1) {
+        alert("Pro spuštění hry je potřeba alespoň 1 pár!");
+        return;
+    }
 
-            gameActive = true;
-            score = 0;
-            flippedCards = [];
-            gameBoardDiv.innerHTML = '';
-            gameBoardDiv.classList.remove("hidden");
-            endMessage.classList.add("hidden");
-            scoreDiv.textContent = `Skóre: ${score}`;
+    gameActive = true;
+    score = 0;
+    flippedCards = [];
+    gameBoardDiv.innerHTML = '';
+    gameBoardDiv.classList.remove("hidden");
+    endMessage.classList.add("hidden");
+    scoreDiv.textContent = `Skóre: ${score}`;
 
-            // Vytvoření karet pro pexeso (dvojice otázek a odpovědí)
-            const cards = [];
-            pairs.forEach(pair => {
-                cards.push({ content: pair.question, type: 'question' });
-                cards.push({ content: pair.answer, type: 'answer' });
-            });
+    // Vytvoření karet pro pexeso (dvojice otázek a odpovědí)
+    const cards = [];
+    pairs.forEach((pair, index) => {
+        cards.push({ content: pair.question, type: 'question', pairId: index });
+        cards.push({ content: pair.answer, type: 'answer', pairId: index });
+    });
 
-            // Zamíchání karet
-            shuffle(cards);
+    // Zamíchání karet
+    shuffle(cards);
 
-            // Vytvoření karet na herní desce
-            cards.forEach((card, index) => {
-                const cardDiv = document.createElement("div");
-                cardDiv.classList.add("card");
-                cardDiv.dataset.index = index;
-                cardDiv.dataset.content = card.content;
-                cardDiv.dataset.type = card.type;
-                cardDiv.addEventListener("click", flipCard);
-                gameBoardDiv.appendChild(cardDiv);
-            });
-        }
+    // Vytvoření karet na herní desce
+    cards.forEach((card, index) => {
+        const cardDiv = document.createElement("div");
+        cardDiv.classList.add("card");
+        cardDiv.dataset.index = index;
+        cardDiv.dataset.content = card.content;
+        cardDiv.dataset.type = card.type;
+        cardDiv.dataset.pairId = card.pairId;  // Přidání pairId
+        cardDiv.addEventListener("click", flipCard);
+        gameBoardDiv.appendChild(cardDiv);
+    });
+}
 
         // Funkce pro otočení karty
         function flipCard(event) {
@@ -196,31 +202,33 @@
             }
         }
 
-        // Funkce pro kontrolu, zda jsou dvě otočené karty správně spárované
-        function checkMatch() {
-            const [firstCard, secondCard] = flippedCards;
+       // Funkce pro kontrolu, zda jsou dvě otočené karty správně spárované
+function checkMatch() {
+    const [firstCard, secondCard] = flippedCards;
 
-            if (firstCard.dataset.content === secondCard.dataset.content) {
-                // Správný pár
-                firstCard.classList.add("matched");
-                secondCard.classList.add("matched");
-                score += 10;
-                scoreDiv.textContent = `Skóre: ${score}`;
-                flippedCards = [];
-                if (document.querySelectorAll(".matched").length === document.querySelectorAll(".card").length) {
-                    endGame();
-                }
-            } else {
-                // Nesprávný pár, skrytí karet
-                setTimeout(() => {
-                    firstCard.classList.remove("flipped");
-                    secondCard.classList.remove("flipped");
-                    firstCard.textContent = '';
-                    secondCard.textContent = '';
-                    flippedCards = [];
-                }, 1000);
-            }
+    // Porovnáme pairId místo obsahu
+    if (firstCard.dataset.pairId === secondCard.dataset.pairId) {
+        // Správný pár
+        firstCard.classList.add("matched");
+        secondCard.classList.add("matched");
+        score += 10;
+        scoreDiv.textContent = `Skóre: ${score}`;
+        flippedCards = [];
+        if (document.querySelectorAll(".matched").length === document.querySelectorAll(".card").length) {
+            endGame();
         }
+    } else {
+        // Nesprávný pár, skrytí karet
+        setTimeout(() => {
+            firstCard.classList.remove("flipped");
+            secondCard.classList.remove("flipped");
+            firstCard.textContent = '';
+            secondCard.textContent = '';
+            flippedCards = [];
+        }, 1000);
+    }
+}
+
 
         // Funkce pro zamíchání políčka
         function shuffle(array) {
@@ -251,4 +259,5 @@
     </script>
 </body>
 </html>
+{% endblock %}
 

@@ -1,3 +1,9 @@
+{% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -13,6 +19,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
+            flex-direction: column;
         }
         #gameArea {
             position: relative;
@@ -47,9 +54,55 @@
         .exit {
             background-color: green;
         }
+        #questionArea {
+            margin-bottom: 20px;
+        }
+        #questionList {
+            margin-top: 10px;
+        }
+        .questionItem {
+            margin-bottom: 10px;
+        }
+        .answerInput {
+            margin-top: 5px;
+        }
+        .answerInput input {
+            margin-right: 10px;
+        }
+        .answerInput button {
+            margin-top: 5px;
+        }
+        #currentQuestion {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <div id="questionArea">
+        <h3>Vytvořte otázky a odpovědi</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" /><br>
+        <div id="answerInputs">
+            <div class="answerInput">
+                <input type="text" class="answerOption" placeholder="Odpověď 1" />
+                <input type="checkbox" class="correctAnswer" /> Správná
+                <button onclick="deleteAnswerInput(this)">Smazat</button>
+            </div>
+            <div class="answerInput">
+                <input type="text" class="answerOption" placeholder="Odpověď 2" />
+                <input type="checkbox" class="correctAnswer" /> Správná
+                <button onclick="deleteAnswerInput(this)">Smazat</button>
+            </div>
+        </div>
+        <button onclick="addAnswerInput()">Přidat odpověď</button><br>
+        <button onclick="addQuestion()">Přidat otázku</button>
+
+        <div id="questionList"></div>
+        <br>
+        <button onclick="startPreview()">Náhled testu</button>
+    </div>
+
+    <div id="currentQuestion"></div>
+
     <div id="gameArea"></div>
     <div id="player" class="player"></div>
     <div id="timer">Čas: 60</div>
@@ -60,27 +113,121 @@
         const player = document.getElementById("player");
         const timerElement = document.getElementById("timer");
         const scoreElement = document.getElementById("score");
+        const currentQuestionElement = document.getElementById("currentQuestion");
 
-        let playerPosition = { x: 0, y: 0 };  // Počáteční pozice hráče
+        let playerPosition = { x: -1, y: 0 };  // Hráč začíná mimo labyrint na levé straně (x = -1)
         let score = 0;
         let timeLeft = 60;
         let gameInterval;
 
         // Data pro otázky
-        let questions = [
-            { question: "Kolik je 5 + 3?", options: ["8", "9"], correct: "8" },
-            { question: "Hlavní město Francie?", options: ["Paříž", "Lyon"], correct: "Paříž" },
-            { question: "Barva trávy?", options: ["Zelená", "Modrá"], correct: "Zelená" }
-        ];
+        let questions = [];
+        let currentQuestionIndex = -1;
 
         const gridSize = 10;
         let grid = [];
         let exitPosition = { x: 9, y: 9 }; // Exit je na pravém dolním rohu
 
+        let isAnsweringQuestion = false; // Proměnná pro kontrolu odpovídání na otázku
+
+        // Funkce pro přidání odpovědi
+        function addAnswerInput() {
+            const answerInputs = document.getElementById("answerInputs");
+            const newAnswerInput = document.createElement("div");
+            newAnswerInput.classList.add("answerInput");
+            newAnswerInput.innerHTML = `<input type="text" class="answerOption" placeholder="Nová odpověď" />
+                                        <input type="checkbox" class="correctAnswer" /> Správná
+                                        <button onclick="deleteAnswerInput(this)">Smazat</button>`;
+            answerInputs.appendChild(newAnswerInput);
+        }
+
+        // Funkce pro odstranění odpovědi
+        function deleteAnswerInput(button) {
+            const answerInput = button.parentElement;
+            answerInput.remove();
+        }
+
+        // Funkce pro přidání otázky
+        function addQuestion() {
+            const questionText = document.getElementById("questionInput").value.trim();
+            const answerInputs = document.getElementsByClassName("answerOption");
+            const correctAnswers = document.getElementsByClassName("correctAnswer");
+            const answers = [];
+            let correctAnswerIndex = -1;
+
+            // Získání odpovědí a označení správné odpovědi
+            for (let i = 0; i < answerInputs.length; i++) {
+                const answerText = answerInputs[i].value.trim();
+                const isCorrect = correctAnswers[i].checked;
+                if (answerText) {
+                    answers.push(answerText);
+                    if (isCorrect) {
+                        correctAnswerIndex = i;
+                    }
+                }
+            }
+
+            if (answers.length < 2) {
+                alert("Musíte přidat alespoň dvě odpovědi.");
+                return;
+            }
+
+            if (correctAnswerIndex === -1) {
+                alert("Musíte označit správnou odpověď.");
+                return;
+            }
+
+            const question = {
+                question: questionText,
+                options: answers,
+                correctIndex: correctAnswerIndex // Uložení indexu správné odpovědi
+            };
+
+            questions.push(question);
+            displayQuestions();
+            clearAnswerInputs(); // Vyčistíme vstupy po přidání otázky
+        }
+
+        // Funkce pro zobrazení otázek
+        function displayQuestions() {
+            const questionList = document.getElementById("questionList");
+            questionList.innerHTML = '';
+            questions.forEach((item, index) => {
+                const questionItem = document.createElement("div");
+                questionItem.classList.add("questionItem");
+                questionItem.innerHTML = `
+                    <strong>${item.question}</strong><br>
+                    Odpovědi: ${item.options.map((opt, i) => {
+                        return `${opt} ${i === item.correctIndex ? "(Správná)" : ""}`;
+                    }).join(", ")}<br>
+                    <button onclick="deleteQuestion(${index})">Smazat</button>
+                `;
+                questionList.appendChild(questionItem);
+            });
+        }
+
+        // Funkce pro odstranění otázky
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            displayQuestions();
+        }
+
+        // Funkce pro zobrazení náhledu testu a generování labyrintu
+        function startPreview() {
+            if (questions.length === 0) {
+                alert("Nejdříve přidejte alespoň jednu otázku.");
+                return;
+            }
+            createGameArea();  // Vytvoření labyrintu s odpovídajícím počtem šedých kostek
+            startTimer();  // Spuštění časovače
+        }
+
         // Vytvoříme hrací plochu
         function createGameArea() {
             gameArea.innerHTML = '';
             grid = [];
+
+            let questionCount = questions.length;
 
             for (let y = 0; y < gridSize; y++) {
                 for (let x = 0; x < gridSize; x++) {
@@ -92,7 +239,7 @@
                     grid.push({ x, y, element: tile });
 
                     // Začátek - červená kostka
-                    if (x === 0 && y === 0) {
+                    if (x === -1 && y === 0) {  // Pozice hráče vedle labyrintu (x = -1)
                         tile.classList.add('path');
                     }
                     // Exit - zelená kostka
@@ -103,7 +250,7 @@
                     else if (Math.random() < 0.2) {
                         tile.classList.add('wall');
                     }
-                    else if (Math.random() < 0.1) {
+                    else if (Math.random() < (0.1 * questionCount)) {  // Počet šedých kostek závisí na počtu otázek
                         tile.classList.add('question');
                     }
                     else {
@@ -116,6 +263,25 @@
             player.style.left = `${playerPosition.x * 40}px`;
             player.style.top = `${playerPosition.y * 40}px`;
         }
+
+        // Startovací timer
+        function startTimer() {
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Čas: ${timeLeft}`;
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    alert("Čas vypršel! Zkuste to znovu.");
+                }
+            }, 1000);
+        }
+
+        // Zpracování stisknutí kláves
+        document.addEventListener("keydown", (e) => {
+            if (!isAnsweringQuestion) {  // Povolení pohybu pouze pokud neodpovídáme na otázku
+                movePlayer(e.key);
+            }
+        });
 
         // Pohyb hráče
         function movePlayer(direction) {
@@ -132,69 +298,55 @@
                 playerPosition = newPos;
                 player.style.left = `${playerPosition.x * 40}px`;
                 player.style.top = `${playerPosition.y * 40}px`;
-                checkExit();
-                checkQuestion(newPos);
+                checkForQuestion();
             }
         }
 
-        // Kontrola, jestli je pohyb platný
+        // Kontrola, zda pohyb je platný
         function isValidMove(position) {
-            if (position.x < 0 || position.x >= gridSize || position.y < 0 || position.y >= gridSize) {
-                return false;
-            }
+            if (position.x < 0 || position.x >= gridSize || position.y < 0 || position.y >= gridSize) return false;
             const tile = grid.find(t => t.x === position.x && t.y === position.y);
-            return tile && !tile.element.classList.contains('wall');
+            return !tile.element.classList.contains("wall");
         }
 
-        // Zkontrolujeme, jestli hráč dosáhl východu
-        function checkExit() {
-            if (playerPosition.x === exitPosition.x && playerPosition.y === exitPosition.y) {
-                clearInterval(gameInterval);
-                alert(`Gratulujeme! Vyhráli jste s ${score} body.`);
+        // Zkontroluje, zda hráč vstoupil na šedý čtverec (otázku)
+        function checkForQuestion() {
+            const tile = grid.find(t => t.x === playerPosition.x && t.y === playerPosition.y);
+            if (tile.element.classList.contains("question")) {
+                const questionIndex = Math.floor(Math.random() * questions.length);
+                showQuestion(questions[questionIndex]);
+                tile.element.classList.remove("question");
             }
         }
 
-        // Spuštění otázky
-        function handleQuestion(tile) {
-            const currentQuestion = questions[Math.floor(Math.random() * questions.length)];
-            const answer = prompt(`${currentQuestion.question}\n${currentQuestion.options.join("\n")}`);
+        // Funkce pro zobrazení otázky a odpovědí
+        function showQuestion(question) {
+            isAnsweringQuestion = true; // Nastavíme, že hráč odpovídá
+            currentQuestionElement.innerHTML = `
+                <strong>${question.question}</strong><br>
+                ${question.options.map((option, index) => {
+                    return `<button onclick="checkAnswer(${index}, ${question.correctIndex})">${option}</button><br>`;
+                }).join("")}
+            `;
+        }
 
-            if (answer === currentQuestion.correct) {
-                score += 10;
+        // Funkce pro kontrolu odpovědi
+        function checkAnswer(selectedIndex, correctIndex) {
+            if (selectedIndex === correctIndex) {
+                score++;
                 scoreElement.textContent = `Body: ${score}`;
-                tile.classList.remove('question');
-                tile.classList.add('path'); // Změna na bílou
-            } else {
-                alert("Špatná odpověď!");
             }
+            currentQuestionElement.innerHTML = ''; // Vymazání otázky
+            isAnsweringQuestion = false; // Uvolníme možnost pohybu
         }
-
-        // Kontrola, jestli hráč vstoupil na šedou kostku
-        function checkQuestion(position) {
-            const tile = grid.find(t => t.x === position.x && t.y === position.y);
-            if (tile && tile.element.classList.contains('question')) {
-                handleQuestion(tile.element);
-            }
-        }
-
-        // Startovací timer
-        function startTimer() {
-            gameInterval = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = `Čas: ${timeLeft}`;
-                if (timeLeft <= 0) {
-                    clearInterval(gameInterval);
-                    alert("Čas vypršel! Zkuste to znovu.");
-                }
-            }, 1000);
-        }
-
-        // Zpracování stisknutí kláves
-        document.addEventListener("keydown", (e) => movePlayer(e.key));
-
-        // Nastavení a spuštění hry
-        createGameArea();
-        startTimer();
     </script>
 </body>
 </html>
+
+
+
+
+
+
+{% endblock %}
+
