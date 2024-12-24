@@ -7,99 +7,78 @@
 ![Moje obrázek](logoRevas.png)
 
 ## Moje hlavní cíle, můj hlavní plán:
-### 1. týden (15.9. – 22.9.): Plánování a Nastavení Projektu (100%)
+### Plánování a Nastavení Projektu: (100%)
 
-•	`Detailní specifikace aplikace (moduly: testy, platby, denní výzvy, veřejné sdílení). `(hotovo)
+•	`Zjištění o všem co se jak dělá . `(100%)
 
-•	`Vytvoření readme.md. `(hotovo)
+•	`Detailní specifikace aplikace . `(100%)
 
-•	`Vytvoření SQL databáze pro strukturu projektu. `(hotovo)
+•	`Vytvoření readme.md. `(100%)
 
-•	`Nastavení vývojového prostředí: Django (backend), React (frontend), P5.js (herní prvky). `(hotovo)
+•	`Vytvoření SQL databáze pro strukturu projektu. `(100%)
 
-•	`Základní struktura projektu (databáze: testy, otázky, uživatelé, platby). `(hotovo)
+•	`Nastavení vývojového prostředí: Django (backend a fronted). `(100%)
 
-•	`Přidání knihovny pro zpracování plateb (např. Stripe nebo PayPal SDK). `(hotovo)
+•	`Základní struktura projektu (databáze: testy, otázky, uživatelé, platby). `(100%)
 
-### 2.–3. týden: Backendová Logika (100%)
+•	`Přidání knihovny pro zpracování plateb (např. Stripe nebo PayPal SDK). `(100%)
 
-•	`Vytvoření datových modelů: `
+### Přihlašování a registrace:  (90%)
 
-•	Testy, otázky, odpovědi. ()
+•	`Přihlášení: ` (90%)
 
-•	Uživatelské profily s pokročilými statistikami (úspěchy, chyby). ()
+•	`Přihlášení přes github: ` (100%)
 
-•	Platby za prémiové funkce. ` ()
+•	`Registrace: ` (90%)
 
-•	`Implementace REST API: 
 
-•	CRUD operace pro správu testů. ()
+### Testy: (90%)
 
-•	API pro ukládání statistik uživatelů (chyby, postup). ()
+•	`Udělání základních testů. ` (90%)
 
-•	API pro zpracování plateb. ` ()
 
-•	`Export testů do formátů GIFT a Moodle XML. ` ()
+### Herní testy: (90%)
 
-•	`Testy backendové logiky (unit testy). ` ()
+•	- `Udělání herních testů. ` (90%)
 
-### 4.–5. týden: Frontendová Základní Struktura (100%)
 
-•	`Základní UI v Reactu: registrace, správa testů, zobrazení kalendáře. ` ()
+### Ukládání, statistiky, historie a další věci: (0%)
 
-•	`Integrace API (získávání a zobrazování testů, uživatelských statistik). ` ()
+•	`Historie. ` (0%)
 
-•	`První verze herních prvků v P5.js (např. jednoduchý kvíz, pexeso). ` ()
+•	`Statistiky ` (0%)
 
-•	`Autentifikace uživatelů (Django). ` ()
+•	`Ukládání. ` (29%)
 
-### 6.–7. týden: Gamifikace a Pokročilé Herní Prvky (100%)
+### Komunikace (20%)
 
-•	- `Implementace postupování levelů: za úspěšné testy uživatel získá body nebo odměny. ` ()
+•	`Zjistit jak se to dělá. ` (100%)
 
-•	- `Rozšíření herních prvků a vizualizací (např. animace v P5.js). ` ()
+•	`Posílání správ a souborů mezi uživateli ` (0%)
 
-•	- `Denní výzvy: sledování, v jakých otázkách uživatel chybuje, a vytváření denních kvízů pro opravu chyb. ` ()
 
-•	- `Propojení gamifikace s backendem (ukládání skóre, úspěchů a chyb). ` ()
+### Košík (20%)
 
-### 8. týden: Veřejné Sdílení a Učební Materiály (0%)
+•	`Zjistit jak se to dělá. ` (100%)
 
-•	`Implementace veřejného sdílení testů. Autor testu může rozhodnout, zda bude test přístupný veřejnosti. ` ()
+•	`Sprovoznění platby. ` (0%)
 
-•	`Možnost vytvářet učební materiály k jednotlivým tématům (např. lekce, které doplní testy). ` ()
+•	`Přidání výhod. ` (0%)
 
-•	`Integrace kalendáře pro zobrazení naplánovaných testů a výzev. ` ()
 
-### 9. týden: Platby a Prémiové Funkce (0%)
+### Upravení stylů, menších chyb, nedostatků a Finální Testování (60%)
 
-•	`Integrace platební brány (Stripe, PayPal) pro nákup prémiových funkcí (např. extra herní prvky nebo personalizace UI). ` ()
+•	`Fungování kódu ` (40%)
 
-•	`Zajištění bezpečnosti plateb a ochrany uživatelských dat. ` ()
+•	`Styli aplikace  ` (100%)
 
-•	`Testování API pro zpracování plateb a napojení na uživatelské profily (zobrazení zakoupených výhod). ` ()
+•	`Vygenerování/nakreslení všech animací a obrázků.  ` (20%)
 
-### 10. týden: Optimalizace a Integrace s Moodle (0%)
+### Dokumentace a příprava na prezentaci projektu (20%)
 
-•	`Optimalizace výkonu aplikace (rychlost načítání, plynulost herních prvků). ` ()
+•	`Udělání dokumentace v Latexu. ` (20%)
 
-•	`Testování exportu do Moodle, ladění generovaných formátů (GIFT a Moodle XML). ` ()
-
-•	`Zabezpečení API a ochrana dat uživatelů (např. SSL, správné ošetření vstupů). ` ()
-
-### 11.–12. týden: Upravení stylů, menších chyb, nedostatků a Finální Testování (0%)
-
-•	`Nasazení aplikace na produkční server (Heroku, DigitalOcean, AWS). ` ()
-
-•	`Testování všech funkcí (platby, herní mechaniky, veřejné testy).  ` ()
-
-•	`Nakreslení všech animací a obrázků.  ` ()
-
-### 11.–12. týden: Dokumentace a příprava na prezentaci projektu (0%)
-
-•	`Udělání dokumentace v Latexu. ` ()
-
-•	`Udělání video prezentace o projektu. ` ()
+•	`Udělání video prezentace o projektu. ` (0%)
 
 
 ## Používané technologie:
