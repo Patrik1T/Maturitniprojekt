@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vytvořit test</title>
     <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
-    <script src="{% static 'js/ano_ne.js' %}"></script>
+ 
 </head>
 <body>
 <div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
@@ -58,14 +58,19 @@
         <form id="testForm">
             <div id="questionsContainer"></div>
             <h2>Tvorba testu</h2>
-            <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+            <button type="button" onclick="addQuestion()">Přidat otázku</button>
+
             <h2>Ukázka testu</h2>
             <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
             <h2>Typ uložení</h2>
             <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
             <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+            <!-- Uložení jako HTML -->
             <button type="button" onclick="saveAsHtml()">Uložit jako HTML</button>
+            <!-- Uložení jako Moodle XML -->
             <button type="button" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
+            <button type="button" onclick="saveAsJson()">Uložit jako JSON</button>
+
         </form>
 
         <div id="previewTest" class="test-section">
@@ -77,14 +82,346 @@
         </div>
 
         <div class="results" id="resultsSection" style="display:none;">
-            <h2>Výsledky testu</h2>
-            <p id="scoreDisplay"></p>
-            <p id="gradeDisplay"></p>
-            <p id="percentageDisplay"></p>
-            <p id="correctAnswersDisplay"></p>
-            <p id="partiallyCorrectDisplay"></p>
-            <p id="wrongAnswersDisplay"></p>
-        </div>
+    <h2>Výsledky testu</h2>
+    <p id="scoreDisplay"></p>
+    <p id="gradeDisplay"></p>
+    <p id="correctAnswersDisplay"></p>
+    <p id="partiallyCorrectDisplay"></p>
+    <p id="wrongAnswersDisplay"></p>
+</div>
+
     </div>
 </body>
 </html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
+<script>
+    let questionCount = 0;
+    let timerInterval;
+    let totalTime = 0;
+    let timeRemaining = 0;
+    let totalPoints = 0;
+    let correctAnswers = 0;
+    let userAnswers = [];
+
+     // Funkce pro přidání otázky
+    function addQuestion() {
+        questionCount++;
+        const questionHTML = `
+            <div class="question-wrapper" id="question${questionCount}">
+                <label>Otázka ${questionCount}:</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+                <div class="error-message" id="errorQuestion${questionCount}">Tato otázka musí mít text.</div>
+                <label>Správná odpověď:</label>
+                <select name="question${questionCount}_correct_answer">
+                    <option value="ano">Ano</option>
+                    <option value="ne">Ne</option>
+                </select>
+                <label>Body za tuto otázku:</label>
+                <input type="number" name="question${questionCount}_points" min="1" value="1" required>
+                <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+            </div>
+        `;
+        document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
+    }
+
+  // Funkce pro sběr otázek a bodů
+    function gatherQuestions() {
+        const questions = [];
+        const questionElements = document.querySelectorAll('.question-wrapper');
+
+        questionElements.forEach((questionElement, index) => {
+            const questionText = questionElement.querySelector(`input[name="question${index + 1}_text"]`).value;
+            const correctAnswer = questionElement.querySelector(`select[name="question${index + 1}_correct_answer"]`).value;
+            const points = parseInt(questionElement.querySelector(`input[name="question${index + 1}_points"]`).value);
+
+            questions.push({
+                text: questionText,
+                correctAnswer: correctAnswer,
+                points: points
+            });
+        });
+
+        return questions;
+    }
+        // Funkce pro zobrazení testu a přidání odpovědí
+    function previewTest() {
+        const questions = gatherQuestions();
+        if (questions.length === 0) {
+            alert("Přidejte alespoň jednu otázku.");
+            return;
+        }
+
+        let previewHTML = '<h3>Náhled na test:</h3>';
+        questions.forEach((q, index) => {
+            previewHTML += `
+                <div>
+                    <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
+                    <label><input type="radio" name="preview_question${index}" value="ano"> Ano</label>
+                    <label><input type="radio" name="preview_question${index}" value="ne"> Ne</label>
+                </div>
+            `;
+        });
+
+        previewHTML += `
+            <button type="button" onclick="endTest()">Konec</button>
+        `;
+        document.getElementById('testContent').innerHTML = previewHTML;
+        document.getElementById('previewTest').style.display = 'block';
+    }
+
+        // Funkce pro vyhodnocení testu
+function evaluateTest() {
+    const questions = gatherQuestions();
+    const userAnswers = [];
+
+    // Pro každou otázku vybereme odpověď uživatele
+    questions.forEach((q, index) => {
+        const userAnswer = document.querySelector(`[name="preview_question${index}"]:checked`);
+        if (userAnswer) {
+            userAnswers.push(userAnswer.value);
+        } else {
+            userAnswers.push(null); // Pokud uživatel nevybere odpověď, přidáme null
+        }
+    });
+
+    // Vypočítáme skóre
+    const score = calculateScore(userAnswers, questions);
+    const grade = getGrade(score);
+
+    // Zobrazíme výsledek
+    displayResults(questions, userAnswers, score, grade);
+}
+
+
+    // Funkce pro smazání otázky
+    function deleteQuestion(questionId) {
+        const questionElement = document.getElementById(`question${questionId}`);
+        questionElement.remove();
+    }
+
+    
+
+    // Funkce pro odeslání testu
+    function submitTest() {
+        const answers = getAnswers();
+        const score = calculateScore(answers);
+        const grade = getGrade(score);
+
+        document.getElementById('scoreDisplay').innerText = `Počet bodů: ${score}`;
+        document.getElementById('gradeDisplay').innerText = `Známka: ${grade}`;
+        document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    // Funkce pro získání odpovědí
+    function getAnswers() {
+        const answers = [];
+        const questions = document.querySelectorAll('.question-wrapper');
+        questions.forEach((question, index) => {
+            const answer = document.querySelector(`input[name="question${index + 1}_answer"]:checked`);
+            if (answer) {
+                answers.push(answer.value);
+            }
+        });
+        return answers;
+    }
+
+   // Funkce pro výpočet skóre
+    function calculateScore() {
+        let score = 0;
+        userAnswers.forEach((answer, index) => {
+            if (answer === 'ano' && questions[index].correctAnswer === 'ano') {
+                score += questions[index].points;
+            } else if (answer === 'ne' && questions[index].correctAnswer === 'ne') {
+                score += questions[index].points;
+            }
+        });
+        return score;
+    }
+
+   // Funkce pro získání hodnocení
+function getGrade(score) {
+    const grade1 = parseInt(document.getElementById('grade1').value);
+    const grade2 = parseInt(document.getElementById('grade2').value);
+    const grade3 = parseInt(document.getElementById('grade3').value);
+    const grade4 = parseInt(document.getElementById('grade4').value);
+    const grade5 = parseInt(document.getElementById('grade5').value);
+
+    if (score >= grade1) return '1';
+    if (score >= grade2) return '2';
+    if (score >= grade3) return '3';
+    if (score >= grade4) return '4';
+    return '5';
+}
+
+    // Funkce pro získání otázek
+    function getQuestions() {
+        const questions = [];
+        const questionElements = document.querySelectorAll('.question-wrapper');
+        questionElements.forEach((questionElement, index) => {
+            const questionText = questionElement.querySelector(`input[name="question${index + 1}_text"]`).value;
+            const points = parseInt(questionElement.querySelector(`input[name="question${index + 1}_points"]`).value);
+            questions.push({
+                text: questionText,
+                points: points
+            });
+        });
+        return questions;
+    }
+
+    // Funkce pro zobrazení výsledků
+function displayResults(questions, userAnswers, score, grade) {
+    const correctAnswersDisplay = document.getElementById('correctAnswersDisplay');
+    const partiallyCorrectDisplay = document.getElementById('partiallyCorrectDisplay');
+    const wrongAnswersDisplay = document.getElementById('wrongAnswersDisplay');
+    
+    let correctHTML = '';
+    let partiallyCorrectHTML = '';
+    let wrongHTML = '';
+    
+    let correctCount = 0;
+    let partiallyCorrectCount = 0;
+    let wrongCount = 0;
+
+    // Pro každou otázku zkontrolujeme odpověď
+    questions.forEach((q, index) => {
+        const correctAnswer = q.correctAnswer; // Správná odpověď
+        const userAnswer = userAnswers[index]; // Odpověď uživatele
+
+        // Kontrola odpovědi
+        if (userAnswer === correctAnswer) {
+            correctHTML += `<span class="correct">Otázka ${index + 1}: Správně - ${q.text}</span><br>`;
+            correctCount++;
+        } else if (userAnswer !== null) {
+            wrongHTML += `<span class="wrong">Otázka ${index + 1}: Špatně - ${q.text}</span><br>`;
+            wrongCount++;
+        } else {
+            partiallyCorrectHTML += `<span class="partially-correct">Otázka ${index + 1}: Nezodpovězeno</span><br>`;
+            partiallyCorrectCount++;
+        }
+    });
+
+    // Zobrazení výsledků
+    correctAnswersDisplay.innerHTML = `Správně: ${correctCount} otázek<br>${correctHTML}`;
+    partiallyCorrectDisplay.innerHTML = `Chybně: ${wrongCount} otázek<br>${wrongHTML}`;
+    wrongAnswersDisplay.innerHTML = `Nezodpovězeno: ${partiallyCorrectCount} otázek<br>${partiallyCorrectHTML}`;
+
+    document.getElementById('scoreDisplay').innerText = `Počet bodů: ${score}`;
+    document.getElementById('gradeDisplay').innerText = `Známka: ${grade}`;
+    document.getElementById('resultsSection').style.display = 'block';
+}
+
+// Zavolání funkce při kliknutí na tlačítko pro zobrazení výsledků
+function showTestResults() {
+    // Předpokládané testovací odpovědi
+    const correctAnswers = ['Answer 1', 'Answer 2', 'Answer 4']; // Tohle nastavte podle skutečných správných odpovědí
+    const userAnswers = ['Answer 1', 'Answer 3', 'Answer 5']; // Tohle nastavte podle odpovědí uživatele
+    const partiallyCorrectAnswers = ['Answer 2']; // Tohle nastavte podle téměř správných odpovědí
+    // Zavolání funkce pro zobrazení výsledků
+    displayResults(correctAnswers, userAnswers, partiallyCorrectAnswers);
+}
+// Příklad jak zavolat tuto funkci při kliknutí na tlačítko "Ukázat test"
+document.querySelector('.preview-btn').addEventListener('click', showTestResults);
+
+  // Funkce pro výpočet skóre
+function calculateScore(userAnswers, questions) {
+    let score = 0;
+    userAnswers.forEach((answer, index) => {
+        if (answer === questions[index].correctAnswer) {
+            score++;
+        }
+    });
+    return score;
+}  
+
+ // Funkce pro ukončení testu a vyhodnocení
+    function endTest() {
+        const questions = gatherQuestions();
+        userAnswers = [];
+        let score = 0;
+
+        // Pro každou otázku zkontrolujeme odpověď
+        questions.forEach((q, index) => {
+            const userAnswer = document.querySelector(`[name="preview_question${index}"]:checked`);
+            if (userAnswer) {
+                userAnswers.push(userAnswer.value);
+                if (userAnswer.value === q.correctAnswer) {
+                    score += q.points; // Přičteme body za správnou odpověď
+                }
+            } else {
+                userAnswers.push(null); // Pokud uživatel nevybere odpověď, přidáme null
+            }
+        });
+
+        // Získáme hodnocení
+        const grade = getGrade(score);
+
+        // Zobrazíme výsledek
+        displayResults(questions, userAnswers, score, grade);
+    }
+    
+function saveAsHtml() {
+            const questions = gatherQuestions();
+            let htmlContent = `
+                <html>
+                <head><title>Test</title></head>
+                <body>
+                    <h1>Test</h1>
+                    <form>
+            `;
+
+            questions.forEach((q, index) => {
+                htmlContent += `
+                    <div>
+                        <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
+                        <label><input type="radio" name="question${index}" value="ano"> Ano</label>
+                        <label><input type="radio" name="question${index}" value="ne"> Ne</label>
+                    </div>
+                `;
+            });
+
+            htmlContent += `
+                <button type="submit">Odeslat</button>
+            </form></body></html>
+            `;
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            saveAs(blob, 'test.html');
+        }
+
+        function saveAsMoodleXML() {
+            const questions = gatherQuestions();
+            let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
+
+            questions.forEach((q, index) => {
+                xmlContent += `
+                    <question type="truefalse">
+                        <name>
+                            <text>Otázka ${index + 1}</text>
+                        </name>
+                        <questiontext format="html">
+                            <text>${q.text}</text>
+                        </questiontext>
+                        <answer fraction="100">
+                            <text>${q.correctAnswer === 'ano' ? 'True' : 'False'}</text>
+                        </answer>
+                    </question>
+                `;
+            });
+
+            xmlContent += '</quiz>';
+
+            const blob = new Blob([xmlContent], { type: 'application/xml' });
+            saveAs(blob, 'test.xml');
+        }
+
+        function saveAsJson() {
+            const questions = gatherQuestions();
+            const jsonContent = JSON.stringify(questions, null, 2);
+            const blob = new Blob([jsonContent], { type: 'application/json' });
+            saveAs(blob, 'test.json');
+        }
+
+</script>
