@@ -1,0 +1,18 @@
+{% extends 'struktura/base.html' %}
+
+{% block title %}
+    Upravit profil
+{% endblock %}
+
+{% block content %}
+    <h1>Upravit profil</h1>
+
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Uložit změny</button>
+        </form>
+    </div>
+
+{% endblock %}

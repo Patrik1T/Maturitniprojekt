@@ -8,13 +8,16 @@ Moje konkrétní stránka
 
 {% block content %}
 <div class="card">
-    <img src="{% static 'obrazky/' %}" alt="Test Image" class="card-img">
-    <div class="content">
-        <h2>Název testu</h2>
-        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
-        <button class="try-button">Vyzkoušet</button>
+   <h1>Moje soukromé testy</h1>
+{% for test in tests %}
+    <div>
+        <h2>{{ test.name }}</h2>
+        <p>{{ test.description }}</p>
+        <img src="{{ test.image.url }}" alt="{{ test.name }}">
     </div>
+    </form>
 </div>
-
+{% endfor %}
 {% endblock %}
+
 

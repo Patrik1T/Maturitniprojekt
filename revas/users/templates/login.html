@@ -1,18 +1,26 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Přihlášení</title>
-
-    <!-- Načítání statického CSS souboru -->
-    <link rel="stylesheet" href="{% static 'style/login.css' %}">
+    <link rel="stylesheet" href="{% static 'style/registrace.css' %}">
 </head>
 <body>
 
-<div class="login-container">
+<div class="form-container">
     <h2>Přihlášení</h2>
+
+    {% if messages %}
+        <div class="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -24,14 +32,9 @@
         <button type="submit">Přihlásit se</button>
     </form>
 
-    <div class="social-buttons">
-        <!-- Přihlášení přes Moodle místo GitHub -->
-        <button class="moodle-btn" onclick="window.location.href='/github_log'">Přihlásit se přes Github</button>
-        <button class="google-btn" onclick="window.location.href='/google_log'">Přihlásit se přes Google</button>
-    </div>
-
-    <p><a href="{% url 'login' %}">Přihlaste se zde</a> /t /t /t /t /t /t /t <a href="{% url 'register' %}">Zaregistrujte se zde</a></p>
+    <p><a href="{% url 'register' %}">Zaregistrujte se zde</a></p>
 </div>
 
 </body>
 </html>
+

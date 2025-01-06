@@ -1,32 +1,39 @@
+
+
 {% extends "struktura/base.html" %}
 
 {% block title %}
 Moje konkrétní stránka
 {% endblock %}
-
-{% block content %}
-
 <h1>Osobní údaje</h1>
+    Profil
+{% block content %}
+    <h1>Osobní údaje</h1>
 
-            <div class="info-box">
-                <h2>Profil</h2>
-                <p><strong>Logo:</strong> [Logo zde]</p>
-                <p><strong>Jméno:</strong> Jan</p>
-                <p><strong>Příjmení:</strong> Novák</p>
-                <p><strong>Věk:</strong> 25</p>
-                <p><strong>Email:</strong> jan.novak@example.com</p>
-                <p><strong>Heslo:</strong> ********</p>
-            </div>
+<div class="info-box">
+    <h2>Profil</h2>
+    <p><strong>Jméno:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Heslo:</strong> ********</p>
+</div>
+
+<p><a href="{% url 'edit_profile' %}">Upravit profil</a></p>
+
+<div class="info-box">
+    <h1>Statistiky</h1>
+    <p><strong>Počet vyrobených testů:</strong> {{ user_stats.total_tests_created }}</p>
+
+    <h2>Statistiky podle typu testu:</h2>
+    <ul>
+        {% for test_type in test_types %}
+        <li>
+            
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
     
-        <div class="info-box">
-                <h1>Statistiky</h1>
-                <p><strong>Počet správných:</strong> 0</p>
-                <p><strong>Počet skoro správných:</strong> 0</p>
-                <p><strong>Počet špatných:</strong> 0</p>
-                <p><strong>Celkově zodpovězených otázek:</strong> 0</p>
-                <p><strong>Celkově provedených testů:</strong> 0</p>
-                <p><strong>Celkově udělaných testů:</strong> 0</p>
-            </div>
 
             <div class="info-box">
                 <h1>Uložené testy</h1>

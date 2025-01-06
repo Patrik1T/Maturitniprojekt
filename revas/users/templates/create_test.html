@@ -1,0 +1,8 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <label for="is_public">Veřejný test</label>
+    <input type="checkbox" name="is_public">
+    <button type="submit" name="save_private">Uložit jako soukromý test</button>
+    <button type="submit" name="save_public">Uložit jako veřejný test</button>
+</form>

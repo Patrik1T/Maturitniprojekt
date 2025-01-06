@@ -1,12 +1,11 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrace</title>
-
-    <!-- Načítání statického CSS souboru -->
     <link rel="stylesheet" href="{% static 'style/registrace.css' %}">
 </head>
 <body>
@@ -22,7 +21,7 @@
         </div>
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST">
         {% csrf_token %}
 
         <div class="form-group">
@@ -31,18 +30,6 @@
             {% if form.username.errors %}
                 <div class="error">
                     {% for error in form.username.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="id_last_name">Příjmení</label>
-            {{ form.last_name }}
-            {% if form.last_name.errors %}
-                <div class="error">
-                    {% for error in form.last_name.errors %}
                         <p>{{ error }}</p>
                     {% endfor %}
                 </div>
@@ -85,61 +72,10 @@
             {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="id_age">Věk</label>
-            {{ form.age }}
-            {% if form.age.errors %}
-                <div class="error">
-                    {% for error in form.age.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="id_gender">Pohlaví</label>
-            {{ form.gender }}
-            {% if form.gender.errors %}
-                <div class="error">
-                    {% for error in form.gender.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="id_profile_picture">Profilový obrázek</label>
-            {{ form.profile_picture }}
-            {% if form.profile_picture.errors %}
-                <div class="error">
-                    {% for error in form.profile_picture.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="password-rules">
-            <p><strong>Pravidla pro heslo:</strong></p>
-            <ul>
-                <li>Minimálně 8 znaků</li>
-                <li>Alespoň jedno velké písmeno</li>
-                <li>Alespoň jedna číslice</li>
-            </ul>
-        </div>
-
         <button type="submit">Registrovat</button>
     </form>
 
-    <div class="social-buttons">
-        <!-- Přihlášení přes Moodle a Google -->
-        <button class="moodle-btn" onclick="window.location.href='/github_log'">Přihlásit se přes Github</button>
-        <button class="google-btn" onclick="window.location.href='/google_log'">Přihlásit se přes Google</button>
-    </div>
-
-    <p><a href="{% url 'login' %}">Přihlaste se zde</a> /t /t /t /t /t /t /t /t /t <a href="{% url 'register' %}">Zaregistrujte se zde</a></p>
+    <p><a href="{% url 'login' %}">Přihlaste se zde</a></p>
 </div>
 
 </body>

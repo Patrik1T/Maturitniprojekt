@@ -1,12 +1,8 @@
 {% extends "struktura/base.html" %}
-
-{% block title %}
-Moje konkrétní stránka
-{% endblock %}
-
-{% block content %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'style/styles.css' %}?v=1.0">
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'style/styles.css' %}">
   <div class="container">
     <div class="row">
         <!-- Levý sloupec -->
@@ -21,7 +17,7 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/fVVu.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/vyber_testy">Vytvořit</a>
                
                 <h1>Ano nebo ne</h1>
@@ -32,8 +28,30 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/E8Bj.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/ano_ne">Vytvořit</a>
+                
+                <h1>Psaci</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="{% static 'obrazky/ekMM.png' %}" alt="Test Rozhodovačka">
+            <a class="button" href="/psaci_testy">Vytvořit</a>
+                
+                <h1>Programovaci test</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="{% static 'obrazky/RcCf.png' %}" alt="Test Rozhodovačka">
+            <a class="button" href="/programovaci_test">Vytvořit</a>
 
             <h1>Spojovačka</h1>
             <h2>Účel</h2>
@@ -46,39 +64,6 @@ Moje konkrétní stránka
             <img src="{% static 'obrazky/GKha.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/spojovacka">Vytvořit</a>
 
-            <h1>Multi test</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
-            <a class="button" href="/Multi_test">Vytvořit</a>
-
-            <h1>Programovaci test</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
-            <a class="button" href="/programovaci_test">Vytvořit</a>
-
-            <h1>Psaci</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
-            <a class="button" href="/psaci_testy">Vytvořit</a>
-
             <h1>Tabulka</h1>
             <h2>Účel</h2>
             <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
@@ -87,11 +72,34 @@ Moje konkrétní stránka
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
             <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
+            <img src="{% static 'obrazky/NfQX.png' %}" alt="Test Rozhodovačka">
             <a class="button" href="/tabulka">Vytvořit</a>
-
-
-            <h1>Maraton</h1>
+                
+                
+                <h1>Spravna_odpoved</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="{% static 'obrazky/KZTM.png' %}" alt="Test Rozhodovačka">
+            <a class="button" href="/spravna_odpoved">Vytvořit</a>
+                
+                
+                 <h1>Multi test</h1>
+            <h2>Účel</h2>
+            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
+            <h2>Možnosti</h2>
+            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+            <p>- Přidat otázku a odpovědi</p>
+            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
+            <img src="{% static 'obrazky/RYRg.png' %}" alt="Test Rozhodovačka">
+            <a class="button" href="/Multi_test">Vytvořit</a>
+                
+                <h1>Maraton</h1>
             <h2>Účel</h2>
             <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
             <h2>Možnosti</h2>
