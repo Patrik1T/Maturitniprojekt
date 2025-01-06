@@ -1,3 +1,9 @@
+{% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -12,9 +18,9 @@
 
         #gameArea {
             position: relative;
-            width: 1600px;  /* Zvětšení šířky mapy */
-            height: 1200px; /* Zvětšení výšky mapy */
-            margin: 0 auto;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
             background-color: #87CEEB;
             border: 2px solid #000;
             overflow: hidden;
@@ -25,8 +31,8 @@
             height: 40px;
             background-color: red;
             position: absolute;
-            top: 580px;  /* Změněno pro větší mapu */
-            left: 780px; /* Změněno pro větší mapu */
+            top: 280px;
+            left: 380px;
             border-radius: 50%;
         }
 
@@ -37,59 +43,35 @@
             border: 2px solid #DAA520;
             position: absolute;
             border-radius: 5px;
+            font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
-            color: black;
         }
 
-        .obstacle, .freeze, .teleport, .enemy {
+        .block {
+            width: 40px;
+            height: 40px;
             position: absolute;
-            border-radius: 5px;
         }
 
-        .obstacle {
-            width: 50px;
-            height: 50px;
+        .block.obstacle {
             background-color: black;
         }
 
-        .freeze {
-            width: 50px;
-            height: 50px;
-            background-color: grey;
-        }
-
-        .teleport {
-            width: 50px;
-            height: 50px;
-            background-color: purple;
-        }
-
-        .enemy {
-            width: 40px;
-            height: 40px;
-            background-color: green;
-            border-radius: 50%;
-        }
-
-        #score, #timer {
-            position: absolute;
-            top: 10px;
-            font-size: 18px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
+        .block.freeze {
+            background-color: gray;
         }
 
         #score {
+            position: absolute;
+            top: 10px;
             left: 10px;
-        }
-
-        #timer {
-            right: 10px;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
         .questionPopup {
@@ -99,342 +81,616 @@
             transform: translate(-50%, -50%);
             background-color: white;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             display: none;
             z-index: 100;
         }
 
-        .gameOver, .gameWon {
-            display: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background: rgba(0, 0, 0, 0.8);
+        .questionPopup button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #008CBA;
             color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .questionPopup button:hover {
+            background-color: #005F73;
+        }
+
+        #questionList {
+            margin: 20px auto;
+            width: 800px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+
+        #questionList ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #questionList li {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #questionList .deleteButton {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        #startGame, #restartGame {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             text-align: center;
-            font-size: 24px;
-            line-height: 100vh;
         }
     </style>
 </head>
 <body>
-
-<div id="gameArea">
-    <div id="score">Body: 0</div>
-    <div id="timer">Čas: 60</div>
-    <div class="player"></div>
-    <!-- Více pokladů -->
-    <div class="treasure" style="top: 100px; left: 200px;" data-question-index="0">?</div>
-    <div class="treasure" style="top: 600px; left: 1000px;" data-question-index="1">?</div>
-    <div class="treasure" style="top: 800px; left: 400px;" data-question-index="2">?</div>
-    <div class="treasure" style="top: 400px; left: 1300px;" data-question-index="3">?</div>
-    <div class="treasure" style="top: 1000px; left: 500px;" data-question-index="4">?</div>
+<div id="settings">
+    <h2>Nastavení hry</h2>
+    <h3>Bodové prahy</h3>
+    <div id="gradeSettings">
+        <div>
+            <label>Známka 1 (minimální body): </label>
+            <input type="number" id="grade1" value="90">
+        </div>
+        <div>
+            <label>Známka 2 (minimální body): </label>
+            <input type="number" id="grade2" value="75">
+        </div>
+        <div>
+            <label>Známka 3 (minimální body): </label>
+            <input type="number" id="grade3" value="60">
+        </div>
+        <div>
+            <label>Známka 4 (minimální body): </label>
+            <input type="number" id="grade4" value="45">
+        </div>
+    </div>
+    <h3>Časovač</h3>
+    <div>
+        <label>Délka hry (v sekundách, 0 = bez časového limitu): </label>
+        <input type="number" id="timerDuration" value="0">
+    </div>
+    <button onclick="applySettings()">Použít nastavení</button>
 </div>
 
-<div class="questionPopup" id="questionPopup">
-    <h2 id="questionText">Otázka?</h2>
-    <div id="answerOptions"></div>
-</div>
+    <div id="questionList">
+        <h2>Správa otázek</h2>
+        <textarea id="newQuestion" placeholder="Zadejte otázku"></textarea>
+        <div id="answersContainer"></div>
+        <button onclick="addAnswer()">Přidat odpověď</button>
+        <button onclick="addQuestion()">Uložit otázku</button>
+        <ul id="questions"></ul>
+    </div>
+    <button id="startGame" onclick="startGame()">Spustit hru</button>
+<button onclick="exportToJSON()">Exportuj do JSON</button>
+<button onclick="exportToMoodleXML()">Exportuj do XML</button>
+    <button id="restartGame" style="display:none;" onclick="restartGame()">Restartovat hru</button>
 
-<div class="gameOver" id="gameOver">
-    Konec hry! Získal/a jste <span id="finalScore">0</span> bodů.
-</div>
+    <div id="gameArea" style="display: none;">
+        <div id="score">Body: 0</div>
+        <div class="player"></div>
+    </div>
 
-<div class="gameWon" id="gameWon">
-    Vyhrál/a jsi! Gratulujeme k nalezení všech pokladů!
-</div>
+    <div class="questionPopup" id="questionPopup">
+        <h2 id="questionText"></h2>
+        <div id="answerOptions"></div>
+    </div>
 
-<script>
-    const player = document.querySelector('.player');
-    const treasures = document.querySelectorAll('.treasure');
-    const questionPopup = document.getElementById('questionPopup');
-    const questionText = document.getElementById('questionText');
-    const answerOptions = document.getElementById('answerOptions');
-    const scoreDisplay = document.getElementById('score');
-    const timerDisplay = document.getElementById('timer');
-    const gameOverDisplay = document.getElementById('gameOver');
-    const finalScore = document.getElementById('finalScore');
-    const gameWonDisplay = document.getElementById('gameWon');
+    <script>
+        const player = document.querySelector('.player');
+        const gameArea = document.getElementById('gameArea');
+        const questionPopup = document.getElementById('questionPopup');
+        const questionText = document.getElementById('questionText');
+        const answerOptions = document.getElementById('answerOptions');
+        const scoreDisplay = document.getElementById('score');
 
-    const questions = [
-        { question: "Kolik je 5 + 3?", answers: ["8", "7", "9", "6"], correct: "8" },
-        { question: "Jaké je hlavní město ČR?", answers: ["Praha", "Brno", "Ostrava", "Plzeň"], correct: "Praha" },
-        { question: "Jaká je barva nebe za jasného dne?", answers: ["Modrá", "Zelená", "Červená", "Fialová"], correct: "Modrá" },
-        { question: "Kolik je 10 + 2?", answers: ["12", "10", "14", "8"], correct: "12" },
-        { question: "Jaké je největší město v ČR?", answers: ["Praha", "Brno", "Ostrava", "Plzeň"], correct: "Praha" },
-    ];
+        let questions = [];
+        let treasures = [];
+        let obstacles = [];
+        let isFrozen = false;
+        let currentScore = 0;
 
-    let currentScore = 0;
-    let timeLeft = 60;
-    let frozen = false;
-    let foundTreasures = 0;
-    let timerInterval;
-
-   // Funkce pro generování nepřátel
-function generateEnemies(num) {
-    for (let i = 0; i < num; i++) {
-        const enemy = document.createElement('div');
-        enemy.classList.add('enemy');
-        const x = Math.floor(Math.random() * 1550);  // Nové rozmezí pro větší mapu
-        const y = Math.floor(Math.random() * 1150); // Nové rozmezí pro větší mapu
-        enemy.style.left = `${x}px`;
-        enemy.style.top = `${y}px`;
-        document.getElementById('gameArea').appendChild(enemy);
-        moveEnemy(enemy);
-    }
-}
-
-// Funkce pro pohyb nepřátel
-function moveEnemy(enemy) {
-    setInterval(() => {
-        const x = Math.floor(Math.random() * 1550);
-        const y = Math.floor(Math.random() * 1150);
-        enemy.style.left = `${x}px`;
-        enemy.style.top = `${y}px`;
-    }, 2000);
-}
-
-// Funkce pro generování překážek, freeze a teleport bloků
-function generateObstacles(num) {
-    // Generujeme překážky
-    for (let i = 0; i < num; i++) {
-        const obstacle = document.createElement('div');
-        obstacle.classList.add('obstacle');
-        const x = Math.floor(Math.random() * 1550);  // Nové rozmezí pro větší mapu
-        const y = Math.floor(Math.random() * 1150); // Nové rozmezí pro větší mapu
-        obstacle.style.left = `${x}px`;
-        obstacle.style.top = `${y}px`;
-        document.getElementById('gameArea').appendChild(obstacle);
-    }
-
-    // Generujeme freeze bloky
-    for (let i = 0; i < num; i++) {
-        const freeze = document.createElement('div');
-        freeze.classList.add('freeze');
-        const x = Math.floor(Math.random() * 1550);  // Nové rozmezí pro větší mapu
-        const y = Math.floor(Math.random() * 1150); // Nové rozmezí pro větší mapu
-        freeze.style.left = `${x}px`;
-        freeze.style.top = `${y}px`;
-        document.getElementById('gameArea').appendChild(freeze);
-    }
-
-    // Generujeme teleport bloky
-    for (let i = 0; i < 5; i++) {
-        const teleport = document.createElement('div');
-        teleport.classList.add('teleport');
-        const x = Math.floor(Math.random() * 1550);  // Nové rozmezí pro větší mapu
-        const y = Math.floor(Math.random() * 1150); // Nové rozmezí pro větší mapu
-        teleport.style.left = `${x}px`;
-        teleport.style.top = `${y}px`;
-        document.getElementById('gameArea').appendChild(teleport);
-    }
-}
-
-// Při spuštění hry generujeme překážky a nepřátele
-generateObstacles(12);  // Generuje 5 překážek, freeze a teleport bloků
-generateEnemies(7);   // Generuje 10 nepřátel
-
-    function movePlayer(event) {
-        if (frozen) return;
-        const step = 10;
-        const rect = player.getBoundingClientRect();
-        const gameAreaRect = document.getElementById('gameArea').getBoundingClientRect();
-
-        switch (event.key) {
-            case 'ArrowUp':
-                if (rect.top > gameAreaRect.top) {
-                    player.style.top = `${player.offsetTop - step}px`;
-                }
-                break;
-            case 'ArrowDown':
-                if (rect.bottom < gameAreaRect.bottom) {
-                    player.style.top = `${player.offsetTop + step}px`;
-                }
-                break;
-            case 'ArrowLeft':
-                if (rect.left > gameAreaRect.left) {
-                    player.style.left = `${player.offsetLeft - step}px`;
-                }
-                break;
-            case 'ArrowRight':
-                if (rect.right < gameAreaRect.right) {
-                    player.style.left = `${player.offsetLeft + step}px`;
-                }
-                break;
+        function addAnswer() {
+            const answerContainer = document.createElement('div');
+            answerContainer.innerHTML = `
+                <input type="text" placeholder="Odpověď">
+                <input type="checkbox"> Správná
+                <button onclick="removeElement(this)">Odstranit</button>
+            `;
+            document.getElementById('answersContainer').appendChild(answerContainer);
         }
-        checkTreasureCollision();
-        checkFreezeCollision();
-        checkTeleportCollision();
-        checkEnemyCollision();
-    }
 
-    function checkTreasureCollision() {
-        treasures.forEach(treasure => {
-            const playerRect = player.getBoundingClientRect();
-            const treasureRect = treasure.getBoundingClientRect();
+        function removeElement(button) {
+            button.parentElement.remove();
+        }
 
-            if (
-                playerRect.top < treasureRect.bottom &&
-                playerRect.bottom > treasureRect.top &&
-                playerRect.left < treasureRect.right &&
-                playerRect.right > treasureRect.left &&
-                !treasure.hasAttribute('data-answered')
-            ) {
-                showQuestion(treasure);
-            }
-        });
-    }
-
-    function checkEnemyCollision() {
-        const enemies = document.querySelectorAll('.enemy');
-        enemies.forEach(enemy => {
-            const playerRect = player.getBoundingClientRect();
-            const enemyRect = enemy.getBoundingClientRect();
-
-            if (
-                playerRect.top < enemyRect.bottom &&
-                playerRect.bottom > enemyRect.top &&
-                playerRect.left < enemyRect.right &&
-                playerRect.right > enemyRect.left
-            ) {
-                currentScore -= 5;
-                scoreDisplay.innerText = `Body: ${currentScore}`;
-                freezePlayer();
-            }
-        });
-    }
-
-    function checkFreezeCollision() {
-        const freezeBlocks = document.querySelectorAll('.freeze');
-        freezeBlocks.forEach(freeze => {
-            const playerRect = player.getBoundingClientRect();
-            const freezeRect = freeze.getBoundingClientRect();
-
-            if (
-                playerRect.top < freezeRect.bottom &&
-                playerRect.bottom > freezeRect.top &&
-                playerRect.left < freezeRect.right &&
-                playerRect.right > freezeRect.left
-            ) {
-                freezePlayer();
-            }
-        });
-    }
-
-    function checkTeleportCollision() {
-        const teleportBlocks = document.querySelectorAll('.teleport');
-        teleportBlocks.forEach(teleportBlock => {
-            const playerRect = player.getBoundingClientRect();
-            const teleportRect = teleportBlock.getBoundingClientRect();
-
-            if (
-                playerRect.top < teleportRect.bottom &&
-                playerRect.bottom > teleportRect.top &&
-                playerRect.left < teleportRect.right &&
-                playerRect.right > teleportRect.left
-            ) {
-                teleportTreasures();
-            }
-        });
-    }
-
-    function teleportTreasures() {
-        treasures.forEach(treasure => {
-            const newX = Math.floor(Math.random() * 1550);
-            const newY = Math.floor(Math.random() * 1150);
-            treasure.style.left = `${newX}px`;
-            treasure.style.top = `${newY}px`;
-        });
-    }
-
-    function freezePlayer() {
-        frozen = true;
-        setTimeout(() => {
-            frozen = false;
-        }, 5000);
-    }
-
-    function showQuestion(treasure) {
-        const questionIndex = treasure.getAttribute('data-question-index');
-        const question = questions[questionIndex];
-        questionText.innerText = question.question;
-
-        answerOptions.innerHTML = '';
-        question.answers.forEach(answer => {
-            const button = document.createElement('button');
-            button.innerText = answer;
-            button.onclick = () => {
-                if (answer === question.correct) {
-                    currentScore += 10;
-                    scoreDisplay.innerText = `Body: ${currentScore}`;
+        function addQuestion() {
+            const questionTextInput = document.getElementById('newQuestion').value;
+            if (!questionTextInput) return alert("Zadejte text otázky!");
+            const answers = [];
+            const correctAnswers = [];
+            document.querySelectorAll('#answersContainer div').forEach(div => {
+                const answerText = div.querySelector('input[type="text"]').value;
+                const isCorrect = div.querySelector('input[type="checkbox"]').checked;
+                if (answerText) {
+                    answers.push(answerText);
+                    if (isCorrect) correctAnswers.push(answerText);
                 }
-                treasure.setAttribute('data-answered', 'true');
-                treasure.style.display = 'none';
-                foundTreasures++;
-                questionPopup.style.display = 'none';
-                checkGameEnd();
+            });
+            if (answers.length < 2 || correctAnswers.length === 0) {
+                return alert("Musíte zadat alespoň dvě odpovědi a vybrat jednu správnou.");
+            }
+
+            questions.push({ question: questionTextInput, answers, correct: correctAnswers });
+            const questionList = document.getElementById('questions');
+            const li = document.createElement('li');
+            li.innerText = `${questionTextInput} (${correctAnswers.join(', ')})`;
+            const deleteButton = document.createElement('button');
+            deleteButton.innerText = "Smazat";
+            deleteButton.className = "deleteButton";
+            deleteButton.onclick = () => {
+                li.remove();
+                const index = questions.indexOf(q => q.question === questionTextInput);
+                questions.splice(index, 1);
             };
-            answerOptions.appendChild(button);
-        });
+            li.appendChild(deleteButton);
+            questionList.appendChild(li);
 
-        questionPopup.style.display = 'block';
+            document.getElementById('newQuestion').value = '';
+            document.getElementById('answersContainer').innerHTML = '';
+        }
+
+        function startGame() {
+            if (questions.length === 0) {
+                return alert("Musíte přidat alespoň jednu otázku, aby hra mohla začít.");
+            }
+
+            document.getElementById('questionList').style.display = 'none';
+            document.getElementById('startGame').style.display = 'none';
+            document.getElementById('restartGame').style.display = 'block';
+            gameArea.style.display = 'block';
+
+            setupGame();
+        }
+
+        function restartGame() {
+            treasures.forEach(treasure => treasure.remove());
+            obstacles.forEach(obstacle => obstacle.remove());
+            treasures = [];
+            obstacles = [];
+            currentScore = 0;
+            scoreDisplay.innerText = `Body: 0`;
+            setupGame();
+        }
+
+function setupGame() {
+    // Počet skutečných pokladů a falešných pokladů
+    const totalTreasures = questions.length;  // Počet skutečných pokladů
+    const totalFakeTreasures = totalTreasures * 10;  // Falešných pokladů bude desetkrát víc
+
+    // Vytvoření skutečných pokladů (otázky)
+    for (let i = 0; i < totalTreasures; i++) {
+        const treasure = document.createElement('div');
+        treasure.className = 'treasure';
+        treasure.style.backgroundColor = 'yellow'; // Poklad je žlutý
+        treasure.style.width = '40px';
+        treasure.style.height = '40px';
+        treasure.style.top = `${Math.random() * (gameArea.offsetHeight - 40)}px`;
+        treasure.style.left = `${Math.random() * (gameArea.offsetWidth - 40)}px`;
+        treasure.setAttribute('data-question-index', i);
+        treasure.innerHTML = '?';  // Otázník pro skutečný poklad
+        gameArea.appendChild(treasure);
+        treasures.push(treasure);
     }
 
-    function checkGameEnd() {
-        if (foundTreasures === treasures.length) {
-            gameWon();
+    // Vytvoření falešných pokladů (bez otázky)
+    for (let i = 0; i < totalFakeTreasures; i++) {
+        const fakeTreasure = document.createElement('div');
+        fakeTreasure.className = 'treasure';
+        fakeTreasure.style.backgroundColor = 'yellow'; // Falešný poklad je stejný jako skutečný
+        fakeTreasure.style.width = '40px';
+        fakeTreasure.style.height = '40px';
+        fakeTreasure.style.top = `${Math.random() * (gameArea.offsetHeight - 40)}px`;
+        fakeTreasure.style.left = `${Math.random() * (gameArea.offsetWidth - 40)}px`;
+        fakeTreasure.innerHTML = '?';  // Stejně jako skutečný poklad
+        gameArea.appendChild(fakeTreasure);
+        treasures.push(fakeTreasure);
+    }
+}
+
+
+
+
+        function movePlayer(event) {
+            if (isFrozen) return;
+            const step = 10;
+            const rect = player.getBoundingClientRect();
+            const gameAreaRect = gameArea.getBoundingClientRect();
+
+            let newTop = player.offsetTop;
+            let newLeft = player.offsetLeft;
+
+            switch (event.key) {
+                case 'ArrowUp':
+                    if (rect.top > gameAreaRect.top) newTop -= step;
+                    break;
+                case 'ArrowDown':
+                    if (rect.bottom < gameAreaRect.bottom) newTop += step;
+                    break;
+                case 'ArrowLeft':
+                    if (rect.left > gameAreaRect.left) newLeft -= step;
+                    break;
+                case 'ArrowRight':
+                    if (rect.right < gameAreaRect.right) newLeft += step;
+                    break;
+            }
+
+            if (!detectCollision(newTop, newLeft)) {
+                player.style.top = `${newTop}px`;
+                player.style.left = `${newLeft}px`;
+                checkTreasureCollision();
+            }
+        }
+        
+ function detectCollision(newTop, newLeft) {
+    const playerRect = {
+        top: newTop,
+        left: newLeft,
+        bottom: newTop + 40,
+        right: newLeft + 40
+    };
+
+    let collision = false;
+
+    obstacles.forEach(obstacle => {
+        const obstacleRect = obstacle.getBoundingClientRect();
+
+        if (
+            playerRect.top < obstacleRect.bottom &&
+            playerRect.bottom > obstacleRect.top &&
+            playerRect.left < obstacleRect.right &&
+            playerRect.right > obstacleRect.left
+        ) {
+            // Kontrola typu bloku
+            if (obstacle.classList.contains('obstacle')) {
+                console.log('Černý blok - pohyb zablokován');
+                collision = true; // Blokovat pohyb
+            } else if (obstacle.classList.contains('freeze')) {
+                console.log('Šedý blok - zmrazení hráče');
+                freezePlayer(); // Zmrazení na 5 sekund
+            } else if (obstacle.classList.contains('teleport')) {
+                console.log('Fialový blok - teleport pokladů');
+                teleportTreasures(obstacle); // Teleportace pokladů
+            }
+        }
+    });
+
+    return collision;
+}
+
+function freezePlayer() {
+    if (!isFrozen) {
+        isFrozen = true;
+        console.log('Hráč je zmrazen');
+        setTimeout(() => {
+            isFrozen = false;
+            console.log('Hráč může opět pohybovat');
+        }, 5000); // Zmrazení na 5 sekund
+    }
+}
+
+function teleportTreasures(teleport) {
+    if (!teleport.hasAttribute('data-teleported')) {
+        console.log('Teleportace pokladů');
+        treasures.forEach(treasure => {
+            const newTop = Math.random() * (gameArea.offsetHeight - 40);
+            const newLeft = Math.random() * (gameArea.offsetWidth - 40);
+            treasure.style.top = `${newTop}px`;
+            treasure.style.left = `${newLeft}px`;
+        });
+        teleport.setAttribute('data-teleported', 'true');
+        setTimeout(() => teleport.removeAttribute('data-teleported'), 3000); // Reset teleportace po 3 sekundách
+    }
+}
+
+
+        function checkTreasureCollision() {
+            treasures.forEach(treasure => {
+                const playerRect = player.getBoundingClientRect();
+                const treasureRect = treasure.getBoundingClientRect();
+
+                if (
+                    playerRect.top < treasureRect.bottom &&
+                    playerRect.bottom > treasureRect.top &&
+                    playerRect.left < treasureRect.right &&
+                    playerRect.right > treasureRect.left &&
+                    !treasure.hasAttribute('data-answered')
+                ) {
+                    showQuestion(treasure);
+                }
+            });
+        }
+
+        function showQuestion(treasure) {
+            const questionIndex = treasure.getAttribute('data-question-index');
+            const question = questions[questionIndex];
+            questionText.innerText = question.question;
+
+            answerOptions.innerHTML = '';
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer;
+                button.onclick = () => {
+                    if (question.correct.includes(answer)) {
+                        currentScore += 10;
+                        scoreDisplay.innerText = `Body: ${currentScore}`;
+                    }
+                    treasure.setAttribute('data-answered', 'true');
+                    treasure.style.display = 'none';
+                    questionPopup.style.display = 'none';
+                };
+                answerOptions.appendChild(button);
+            });
+
+            questionPopup.style.display = 'block';
+        }
+
+        document.addEventListener('keydown', movePlayer);
+        
+        let gradeThresholds = [
+    { grade: "1", minPoints: 90 },
+    { grade: "2", minPoints: 75 },
+    { grade: "3", minPoints: 60 },
+    { grade: "4", minPoints: 45 },
+    { grade: "5", minPoints: 0 },
+];
+let timerDuration = 0; // Čas v sekundách, 0 = bez časového limitu
+let timerInterval;
+
+function setGradeThresholds(thresholds) {
+    gradeThresholds = thresholds;
+}
+
+function setTimer(duration) {
+    timerDuration = duration;
+}
+
+function calculateGrade(points) {
+    for (let threshold of gradeThresholds) {
+        if (points >= threshold.minPoints) {
+            return threshold.grade;
         }
     }
+    return "5"; // Pokud nejsou body dostatečné ani pro nejnižší známku
+}
 
-    function gameWon() {
-        clearInterval(timerInterval);
-        gameWonDisplay.style.display = 'block';
-        setTimeout(() => {
-            gameWonDisplay.style.display = 'none';
-            restartGame();
-        }, 3000);
-    }
+function startTimer() {
+    if (timerDuration > 0) {
+        let remainingTime = timerDuration;
+        const timerDisplay = document.createElement("div");
+        timerDisplay.id = "timerDisplay";
+        timerDisplay.style.position = "absolute";
+        timerDisplay.style.top = "10px";
+        timerDisplay.style.right = "10px";
+        timerDisplay.style.fontSize = "18px";
+        timerDisplay.style.color = "white";
+        timerDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+        timerDisplay.style.padding = "5px 10px";
+        timerDisplay.style.borderRadius = "5px";
+        gameArea.appendChild(timerDisplay);
 
-    function restartGame() {
-        currentScore = 0;
-        timeLeft = 60;
-        foundTreasures = 0;
-        scoreDisplay.innerText = `Body: ${currentScore}`;
-        timerDisplay.innerText = `Čas: ${timeLeft}`;
-        treasures.forEach(treasure => {
-            treasure.style.display = 'block';
-            treasure.removeAttribute('data-answered');
-        });
-        gameOverDisplay.style.display = 'none';
-        generateEnemy();
-        startTimer();
-    }
-
-    function gameOver() {
-        gameOverDisplay.style.display = 'block';
-        finalScore.innerText = currentScore;
-        clearInterval(timerInterval);
-    }
-
-    function startTimer() {
         timerInterval = setInterval(() => {
-            timeLeft--;
-            timerDisplay.innerText = `Čas: ${timeLeft}`;
-
-            if (timeLeft <= 0) {
-                gameOver();
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                endGame();
+                return;
             }
+            remainingTime--;
+            timerDisplay.innerText = `Zbývající čas: ${remainingTime}s`;
         }, 1000);
     }
+}
 
-    document.addEventListener('keydown', movePlayer);
-    generateEnemy();
-    generateObstacles(10);  // Více překážek
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    const timerDisplay = document.getElementById("timerDisplay");
+    if (timerDisplay) {
+        timerDisplay.remove();
+    }
+}
+
+function endGame() {
+    stopTimer();
+
+    // Zobrazit výsledky ve speciálním okně
+    const grade = calculateGrade(currentScore);
+    const resultsDialog = document.getElementById("resultsDialog");
+    const resultsContent = document.getElementById("resultsContent");
+
+    resultsContent.innerHTML = `
+        <h2>Výsledky hry</h2>
+        <p>Vaše skóre: <strong>${currentScore}</strong></p>
+        <p>Vaše známka: <strong>${grade}</strong></p>
+    `;
+    resultsDialog.style.display = "block";
+
+    // Skrýt herní oblast
+    gameArea.style.display = "none";
+}
+
+function checkTreasureCollision() {
+    let allTreasuresAnswered = true;
+
+    treasures.forEach(treasure => {
+        const playerRect = player.getBoundingClientRect();
+        const treasureRect = treasure.getBoundingClientRect();
+
+        if (
+            playerRect.top < treasureRect.bottom &&
+            playerRect.bottom > treasureRect.top &&
+            playerRect.left < treasureRect.right &&
+            playerRect.right > treasureRect.left &&
+            !treasure.hasAttribute('data-answered')
+        ) {
+            showQuestion(treasure);
+        }
+
+        if (!treasure.hasAttribute('data-answered')) {
+            allTreasuresAnswered = false;
+        }
+    });
+
+    // Pokud jsou všechny poklady odpovězeny, ukončit hru
+    if (allTreasuresAnswered) {
+        endGame();
+    }
+}
+
+function startGame() {
+    if (questions.length === 0) {
+        return alert("Musíte přidat alespoň jednu otázku, aby hra mohla začít.");
+    }
+
+    document.getElementById("questionList").style.display = "none";
+    document.getElementById("startGame").style.display = "none";
+    document.getElementById("restartGame").style.display = "block";
+    gameArea.style.display = "block";
+
+    currentScore = 0;
+    scoreDisplay.innerText = `Body: 0`;
+    setupGame();
     startTimer();
-</script>
+}
 
+function restartGame() {
+    treasures.forEach(treasure => treasure.remove());
+    obstacles.forEach(obstacle => obstacle.remove());
+    treasures = [];
+    obstacles = [];
+    currentScore = 0;
+
+    scoreDisplay.innerText = `Body: 0`;
+    stopTimer();
+    startGame();
+}
+
+function applySettings() {
+    const grade1 = parseInt(document.getElementById("grade1").value);
+    const grade2 = parseInt(document.getElementById("grade2").value);
+    const grade3 = parseInt(document.getElementById("grade3").value);
+    const grade4 = parseInt(document.getElementById("grade4").value);
+    const timer = parseInt(document.getElementById("timerDuration").value);
+
+    setGradeThresholds([
+        { grade: "1", minPoints: grade1 },
+        { grade: "2", minPoints: grade2 },
+        { grade: "3", minPoints: grade3 },
+        { grade: "4", minPoints: grade4 },
+        { grade: "5", minPoints: 0 },
+    ]);
+
+    setTimer(timer);
+
+    alert("Nastavení bylo uloženo!");
+}
+
+document.body.insertAdjacentHTML("beforeend", settingsHTML);
+
+    function exportToJSON() {
+    if (questions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    // Získání aktuálního skóre, času a pozice hráče
+    const jsonData = {
+        questions: questions,  // Export otázek, odpovědí a bodů
+        score: currentScore,  // Export aktuálních bodů
+        // Zde můžete přidat pozici hráče a stav časovače, pokud to je potřeba
+        timeLeft: timerDuration,  // Export zbývajícího času
+        playerPosition: {
+            top: player.offsetTop,
+            left: player.offsetLeft
+        }, 
+        isTimerEnabled: timerDuration > 0  // Stav časovače
+    };
+
+    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'labyrint_hra.json';
+    link.click();
+}
+
+function exportToMoodleXML() {
+    if (questions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
+
+    questions.forEach((item, index) => {
+        // Předpokládáme, že "correct" obsahuje pole správných odpovědí
+        xmlContent += `
+        <question type="multichoice">
+            <name>
+                <text>Otázka ${index + 1}</text>
+            </name>
+            <questiontext format="html">
+                <text><![CDATA[<p>${item.question}</p>]]></text>
+            </questiontext>
+            ${item.answers.map((answer, i) => {
+                const isCorrect = item.correct.includes(answer) ? '100' : '0';
+                return `
+                <answer fraction="${isCorrect}">
+                    <text><![CDATA[${answer}]]></text>
+                </answer>`;
+            }).join('')}
+            <feedback>
+                <text>Správná odpověď!</text>
+            </feedback>
+            <defaultgrade>1</defaultgrade>
+        </question>`;
+    });
+
+    xmlContent += `\n</quiz>`;
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "labyrint_moodle_quiz.xml";
+    a.click();
+}
+
+
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </body>
 </html>
+{% endblock %}
