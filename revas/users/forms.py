@@ -2,7 +2,15 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
-from .models import QuestionPair
+from .models import QuestionPair, CustomUser
+from django import forms
+from .models import Test
+
+
+class TestForm(forms.ModelForm):
+    class Meta:
+        model = Test
+        fields = ['name', 'description', 'image']
 
 
 class QuestionPairForm(forms.ModelForm):
@@ -13,34 +21,47 @@ class QuestionPairForm(forms.ModelForm):
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(max_length=100, required=True, label="Uživatelské jméno")
-    first_name = forms.CharField(max_length=100, required=True, label="Jméno")
-    last_name = forms.CharField(max_length=100, required=True, label="Příjmení")
     email = forms.EmailField(required=True, label="Email")
     password = forms.CharField(widget=forms.PasswordInput, min_length=8, required=True, label="Heslo")
     confirm_password = forms.CharField(widget=forms.PasswordInput, required=True, label="Potvrďte heslo")
-    age = forms.IntegerField(min_value=18, required=True, label="Věk")
-    gender_choices = [('M', 'Muži'), ('F', 'Ženy')]
-    gender = forms.ChoiceField(choices=gender_choices, required=True, label="Pohlaví")
-    profile_picture = forms.ImageField(required=False, label="Profilový obrázek")
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            raise ValidationError("Tento email je již registrován.")
+            raise ValidationError("Tento e-mail je již zaregistrován.")
         return email
 
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if not re.match(r"^(?=.*[A-Z])(?=.*\d).{8,}$", password):
-            raise ValidationError("Heslo musí mít alespoň 8 znaků, jedno velké písmeno a jednu číslici.")
-        return password
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password != confirm_password:
+            self.add_error('confirm_password', "Hesla se neshodují.")
+        return cleaned_data
+
+
+class MessageForm(forms.Form):
+    recipient = forms.ModelChoiceField(queryset=User.objects.all(), required=False, label="Komu")  # Null = veřejné zprávy
+    text = forms.CharField(widget=forms.Textarea, required=True, label="Zpráva")
+
+
+
+class UserProfileForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
 
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
 
-        if password != confirm_password:
-            raise ValidationError("Hesla se neshodují.")
-
+        if password and password != confirm_password:
+            raise forms.ValidationError("Hesla se neshodují.")
         return cleaned_data
+
+

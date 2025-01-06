@@ -1,26 +1,20 @@
-from django.http import HttpResponse
-from django.contrib.auth.views import LoginView
-from django.contrib.auth import authenticate
-import random
-from django.views.decorators.csrf import csrf_exempt
-from .models import Game, Player, QuestionPair
-from .forms import QuestionPairForm
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.contrib import messages
-from .forms import RegistrationForm
-from .models import UserProfile
-from django.shortcuts import redirect
-from django.contrib.auth import login
-from django.contrib.auth.forms import AuthenticationForm
+from .models import Game, Player, UserStatistics, TestType
+
 from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect
 
-# Nastavení Stripe
-# stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
+from django.contrib import messages
 
-#modely hlavních stránek
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Message
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+
+from .forms import *
+
 def main_page(request):
     return render(request, 'main_page.html')
 
@@ -133,121 +127,152 @@ def dvere_hra(request):
 def klikaci_hra(request):
     return render(request, 'klikaci_hra.html')
 
+def spravna_odpoved(request):
+    return render(request, 'spravna_odpoved.html')
 
 
-from django.shortcuts import render, redirect
-from .forms import RegistrationForm
-from django.contrib.auth.models import User
-from django.contrib import messages
+
+
 
 def register(request):
     if request.method == "POST":
-        form = RegistrationForm(request.POST, request.FILES)  # Načítáme POST a případně soubory (pro profilový obrázek)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
-            # Uložíme uživatele
+            # Vytvoření nového uživatele
             user = User.objects.create_user(
                 username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
                 email=form.cleaned_data['email'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
+                password=form.cleaned_data['password'],
             )
-
-            # Pokud je vyplněný profilový obrázek, uložíme ho
-            if form.cleaned_data.get('profile_picture'):
-                profile = UserProfile.objects.create(
-                    user=user,
-                    age=form.cleaned_data['age'],
-                    gender=form.cleaned_data['gender'],
-                    profile_picture=form.cleaned_data['profile_picture']
-                )
-            else:
-                profile = UserProfile.objects.create(
-                    user=user,
-                    age=form.cleaned_data['age'],
-                    gender=form.cleaned_data['gender']
-                )
-
-            messages.success(request, "Registrace byla úspěšná!")
-            return redirect('login')  # Po úspěšné registraci přesměrujeme na stránku pro přihlášení
+            messages.success(request, "Registrace byla úspěšná! Nyní se můžete přihlásit.")
+            return redirect('login')
         else:
-            # Pokud formulář není validní, vrátíme zpět s chybami
-            messages.error(request, "Vyplňte prosím všechny údaje správně.")
+            messages.error(request, "Vyplňte formulář správně.")
     else:
         form = RegistrationForm()
 
     return render(request, 'register.html', {'form': form})
 
-
-def login_view(request):
+def user_login(request):  # Původní login_user přejmenován
     if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Ověření uživatele podle emailu
+        try:
+            user = User.objects.get(email=email)  # Najdeme uživatele podle emailu
+            user = authenticate(request, username=user.username, password=password)
+            if user is not None:
+                login(request, user)  # Přihlásíme uživatele
+                messages.success(request, "Přihlášení bylo úspěšné.")
+                return redirect('hlavni_stranka')  # Přesměrování na hlavní stránku
+            else:
+                messages.error(request, "Špatné heslo.")
+        except User.DoesNotExist:
+            messages.error(request, "Uživatel s tímto emailem neexistuje.")
+
+    return render(request, 'login.html')  # Pokud je metoda GET nebo neúspěch, zobrazí se formulář
+
+
+
+@login_required
+def chat(request):
+    messages = Message.objects.filter(recipient__isnull=True).order_by('-timestamp')  # Veřejné zprávy
+    form = MessageForm()
+
+    if request.method == "POST":
+        form = MessageForm(request.POST)
         if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('main_page')  # Přesměrování na hlavní stránku po přihlášení
+            message = Message(
+                sender=request.user,
+                recipient=form.cleaned_data.get('recipient'),
+                text=form.cleaned_data['text']
+            )
+            message.save()
+            return redirect('chat')  # Aktualizuje stránku
+
+    return render(request, 'spravy.html', {'messages': messages, 'form': form})
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Údaje byly úspěšně aktualizovány.")
+            return redirect('profile')  # Přesměrování na stránku s profilem
     else:
-        form = AuthenticationForm()
-    return render(request, 'prihlasovacistranka', {'form': form})
+        form = UserProfileForm(instance=user)
+
+    return render(request, 'edit_profile.html', {'form': form})
 
 
-def vytvor_test(request):
+@login_required
+def profil(request):
+    return render(request, 'profil.html', {
+        'user': request.user
+    })
+
+
+@login_required
+def profile_view(request):
+    # Získáme statistiky pro aktuálního uživatele
+    user_stats = UserStatistics.objects.get(user=request.user)
+
+    # Získáme všechny testy podle typu
+    test_types = TestType.objects.all()
+
+    return render(request, 'profile.html', {
+        'user_stats': user_stats,
+        'test_types': test_types,
+    })
+
+# Zobrazení formuláře pro vytvoření testu
+def create_test(request):
     if request.method == 'POST':
-        # Zde bude logika pro zpracování testu
-        total_questions = 0
-        # Počítáme otázky
-        for key in request.POST:
-            if key.startswith('question') and key.endswith('_text'):
-                total_questions += 1
-
-        # Získáme všechny otázky a odpovědi
-        questions_data = []
-        for i in range(1, total_questions + 1):
-            question_text = request.POST.get(f'question{i}_text')
-            correct_answer = request.POST.get(f'question{i}_answer')
-            options = [
-                request.POST.get(f'question{i}_option1'),
-                request.POST.get(f'question{i}_option2'),
-                request.POST.get(f'question{i}_option3'),
-                request.POST.get(f'question{i}_option4')
-            ]
-            questions_data.append({
-                'question': question_text,
-                'options': options,
-                'correct_answer': correct_answer,
-            })
-
-        # Testová data jsou připravena pro další zpracování
-        return HttpResponse(f"Test s {total_questions} otázkami byl úspěšně odeslán.")
-
-    return render(request, 'vytvor_test.html')
-
-
-def custom_login(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('home')  # Přesměrování po úspěšném přihlášení
-        else:
-            # Pokud přihlášení neproběhlo
-            return render(request, 'prihlasovacistranka.html', {'error': 'Neplatné přihlašovací údaje'})
+        form = TestForm(request.POST, request.FILES)
+        if form.is_valid():
+            test = form.save(commit=False)
+            test.is_public = request.POST.get('is_public') == 'on'  # Pokud je zaškrtnuto, test je veřejný
+            test.save()
+            return redirect('test_success')  # Přesměrování na stránku o úspěšném uložení
     else:
-        return render(request, 'prihlasovacistranka.html')
+        form = TestForm()
+    return render(request, 'create_test.html', {'form': form})
 
-    from django.db import models
-    from django.contrib.auth.models import User
+def public_tests(request):
+    tests = Test.objects.filter(is_public=True)
+    return render(request, 'verejne_testy.html', {'tests': tests})
 
-    class Profile(models.Model):
-        user = models.OneToOneField(User, on_delete=models.CASCADE)
-        picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
-        age = models.IntegerField(null=True)
-        gender = models.CharField(max_length=1, choices=[('M', 'Muži'), ('F', 'Ženy')])
+def private_tests(request):
+    tests = Test.objects.filter(created_by=request.user)
+    return render(request, 'ulozene_testy.html', {'tests': tests})
 
-        def __str__(self):
-            return f'{self.user.username} Profile'
+
+@csrf_exempt
+def save_test(request):
+    if request.method == 'POST':
+        # Získání dat z formuláře
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        is_public = request.POST.get('is_public') == 'true'
+
+        # Uložení testu
+        test = Test.objects.create(
+            name=name,
+            description=description,
+            image=image,
+            created_by=request.user,
+            is_public=is_public
+        )
+
+        return JsonResponse({'success': True, 'test_id': test.id})
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
 
 
 # Pohled pro vytvoření nové hry
@@ -291,84 +316,3 @@ def add_question_pair(request):
         form = QuestionPairForm()
     return render(request, 'add_question_pair.html', {'form': form})
 
-
-"""
-@csrf_exempt
-def create_checkout_session(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        cart = data.get('items', [])
-
-        # Vytvoření položek pro Checkout session
-        line_items = []
-        for item in cart:
-            line_items.append({
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {
-                        'name': item['item'],
-                    },
-                    'unit_amount': item['price'] * 100,  # Cena v centách
-                },
-                'quantity': 1,
-            })
-
-        try:
-            checkout_session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
-                line_items=line_items,
-                mode='payment',
-                success_url='http://localhost:8000/success/',
-                cancel_url='http://localhost:8000/cancel/',
-            )
-            return JsonResponse({'id': checkout_session.id})
-        except Exception as e:
-            return JsonResponse({'error': str(e)})
-
-# Endpointy pro úspěch a zrušení platby
-def success(request):
-    return render(request, 'success.html')
-
-def cancel(request):
-    return render(request, 'cancel.html')
-
-import stripe
-import json
-from django.conf import settings
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
-
-@csrf_exempt
-def create_checkout_session(request):
-    try:
-        if request.method == 'POST':
-            data = json.loads(request.body)
-            items = data.get('items', [])
-
-            line_items = []
-            for item in items:
-                line_items.append({
-                    'price_data': {
-                        'currency': 'usd',
-                        'product_data': {
-                            'name': item['item'],
-                        },
-                        'unit_amount': item['price'] * 100,  # Cena je v centech
-                    },
-                    'quantity': 1,
-                })
-
-            session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
-                line_items=line_items,
-                mode='payment',
-                success_url=settings.FRONTEND_URL + '/success/',
-                cancel_url=settings.FRONTEND_URL + '/cancel/',
-            )
-
-            return JsonResponse({'id': session.id})
-
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-"""

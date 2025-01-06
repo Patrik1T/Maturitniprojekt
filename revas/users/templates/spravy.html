@@ -1,43 +1,32 @@
 {% extends 'struktura/base.html' %}
 
-{% block title %}Odeslat zprávu{% endblock %}
+{% block title %}Chat{% endblock %}
 
 {% block content %}
 <div class="message-board-container">
-    <h2>Zprávy</h2>
+    <h2>Chat</h2>
 
     <!-- Kontejner pro zprávy s posuvníkem -->
     <div class="message-board">
-        <div class="message">
-            <div class="user">Uživatel 1</div>
-            <div class="time">12:45 PM</div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-        </div>
-
-        <div class="message">
-            <div class="user">Uživatel 2</div>
-            <div class="time">1:10 PM</div>
-            <p>Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.</p>
-        </div>
-
-        <div class="message">
-            <div class="user">Uživatel 3</div>
-            <div class="time">2:00 PM</div>
-            <p>Vestibulum fringilla pede sit amet augue. In tincidunt consequat magna. Aenean imperdiet. Etiam ultricies nisi vel augue.</p>
-        </div>
-
-        <!-- Přidej více zpráv pro otestování -->
+        {% for message in messages %}
+            <div class="message">
+                <div class="user">{{ message.sender.username }}</div>
+                <div class="time">{{ message.timestamp|date:"H:i" }}</div>
+                <p>{{ message.text }}</p>
+            </div>
+        {% empty %}
+            <p>Žádné zprávy k zobrazení.</p>
+        {% endfor %}
     </div>
 </div>
 
 <!-- Formulář pro odeslání zprávy -->
 <div class="form-container">
     <h3>Napište zprávu</h3>
-    <form action="/send_message" method="POST">
-        <textarea name="message" placeholder="Napište vaši zprávu..." required></textarea>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
         <button type="submit">Odeslat zprávu</button>
     </form>
-
-    <p><a href="/logout" class="link">Odhlásit se</a></p>
 </div>
 {% endblock %}
