@@ -1,7 +1,20 @@
-  let questionCount = 0;
+let questionCount = 0;
         let timerInterval;
         let totalTime = 0;
         let timeRemaining = 0;
+
+function saveTest(location) {
+
+    if (location === 'profil') {
+
+        showSuccessMessage('Test byl úspěšně uložen v aplikaci.');
+    } else if (location === 'verejne_testy') {
+
+        showSuccessMessage('Test byl úspěšně uložen jako veřejný test.');
+    }
+}
+
+
 
 
         function showSuccessMessage(message) {
@@ -13,67 +26,61 @@
     }, 3000);
 }
 
+        // Funkce pro přidání nové otázky
         function addQuestion() {
-    questionCount++;
-    const questionHTML = `
-        <div class="question-wrapper" id="question${questionCount}">
-            <label>Otázka ${questionCount}:</label>
-            <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
-            <div class="error-message" id="errorQuestion${questionCount}" style="display: none;">Tato otázka musí mít text.</div>
+            questionCount++;
+            const questionHTML = `
+                <div class="question-wrapper" id="question${questionCount}">
+                    <label>Otázka ${questionCount}:</label>
+                    <textarea name="question${questionCount}_text" placeholder="Zadejte otázku" required></textarea>
+                    <div class="error-message" id="errorQuestion${questionCount}" style="display: none;">Tato otázka musí mít text.</div>
 
-            <label>Body:</label>
-            <input type="number" name="question${questionCount}_points" min="1" value="1">
+                    <label>Body:</label>
+                    <input type="number" name="question${questionCount}_points" min="1" value="1">
 
-            <div class="answers" id="answers${questionCount}">
+                    <div class="answers" id="answers${questionCount}">
+                        <label>
+                            <input type="checkbox" name="question${questionCount}_correct_answer" value="1">
+                            <input type="text" placeholder="Odpověď 1" required>
+                        </label>
+                    </div>
+
+                    <div class="error-message" id="errorAnswer${questionCount}" style="display: none;">Musíte označit správnou odpověď.</div>
+
+                    <button type="button" onclick="addAnswer(${questionCount})">Přidat odpověď</button>
+                    <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+                </div>
+            `;
+            document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
+        }
+
+        // Funkce pro přidání odpovědi
+        function addAnswer(questionId) {
+            const answersContainer = document.getElementById(`answers${questionId}`);
+            const answerCount = answersContainer.children.length + 1;
+
+            const answerHTML = `
                 <label>
-                    <input type="checkbox" name="question${questionCount}_correct_answer" value="1">
-                    <input type="text" placeholder="Odpověď 1" required>
-                    <button type="button" onclick="removeAnswer(${questionCount}, 1)">Smazat odpověď</button>
+                    <input type="checkbox" name="question${questionId}_correct_answer" value="${answerCount}">
+                    <input type="text" placeholder="Odpověď ${answerCount}" required>
                 </label>
-            </div>
+            `;
+            answersContainer.insertAdjacentHTML('beforeend', answerHTML);
+        }
 
-            <div class="error-message" id="errorAnswer${questionCount}" style="display: none;">Musíte označit správnou odpověď.</div>
-
-            <button type="button" onclick="addAnswer(${questionCount})">Přidat odpověď</button>
-            <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
-        </div>
-    `;
-    document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
-}
-
-function addAnswer(questionId) {
-    const answersContainer = document.getElementById(`answers${questionId}`);
-    const answerCount = answersContainer.children.length + 1;
-
-    const answerHTML = `
-        <label>
-            <input type="checkbox" name="question${questionId}_correct_answer" value="${answerCount}">
-            <input type="text" placeholder="Odpověď ${answerCount}" required>
-            <button type="button" onclick="removeAnswer(${questionId}, ${answerCount})">Smazat odpověď</button>
-        </label>
-    `;
-    answersContainer.insertAdjacentHTML('beforeend', answerHTML);
-}
-
-
+        // Funkce pro odstranění odpovědi
         function removeAnswer(questionId, answerId) {
-    const answersContainer = document.getElementById(`answers${questionId}`);
-    const answerToRemove = answersContainer.querySelectorAll('label')[answerId - 1];
-    if (answerToRemove) {
-        answerToRemove.remove();
-    }
-}
+            const answersContainer = document.getElementById(`answers${questionId}`);
+            const answerToRemove = answersContainer.querySelectorAll('label')[answerId - 1];
+            if (answerToRemove) {
+                answerToRemove.remove();
+            }
+        }
 
-
-
-
-
-function deleteQuestion(id) {
-    document.getElementById(`question${id}`).remove();
-}
-
-
-
+        // Funkce pro odstranění otázky
+        function deleteQuestion(id) {
+            document.getElementById(`question${id}`).remove();
+        }
 
 
 function gatherQuestions() {
@@ -458,5 +465,3 @@ function downloadFile(content, filename, mimeType) {
     // Uvolnění paměti
     setTimeout(() => URL.revokeObjectURL(link.href), 100);
 }
-
-

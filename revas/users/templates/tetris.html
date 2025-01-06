@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -39,6 +40,36 @@
         <div id="questionText"></div>
         <div id="answerOptions"></div>
     </div>
+     <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+
+        <label for="testImage">Obrázek testu (nahrát soubor):</label>
+        <input type="file" id="testImage" accept="image/*">
+
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+         <!-- Nastavení pro známky -->
+    <div class="button-container">
+        <label for="grade1">Bodů pro 1: </label>
+        <input type="number" id="grade1" placeholder="90" min="1" />
+        <label for="grade2">Bodů pro 2: </label>
+        <input type="number" id="grade2" placeholder="75" min="1" />
+        <label for="grade3">Bodů pro 3: </label>
+        <input type="number" id="grade3" placeholder="50" min="1" />
+        <label for="grade4">Bodů pro 4: </label>
+        <input type="number" id="grade4" placeholder="25" min="1" />
+        <label for="grade5">Bodů pro 5: </label>
+        <input type="number" id="grade5" placeholder="0" min="1" />
+    </div>
+
+    <!-- Nastavení časovače -->
+    <div class="button-container">
+        <input type="checkbox" id="enableTimer" />
+        <label for="enableTimer">Použít časovač</label>
+        <input type="number" id="timeLimit" placeholder="Čas (v sekundách)" min="10" disabled />
+    </div>
 
     <div id="questionForm">
         <h3>Vytvořte vlastní otázku a odpovědi</h3>
@@ -68,6 +99,8 @@
     </div>
 
     <button id="startGameBtn">Spustit hru</button>
+    <button onclick="exportToJSON()">Exportuj do JSON</button>
+<button onclick="exportToMoodleXML()">Exportuj do XML</button>
 
     <script>
         const questions = [];
@@ -213,11 +246,12 @@
             answerOptionsElement.innerHTML = "";
 
             randomQuestion.answers.forEach(answer => {
-                const button = document.createElement('button');
-                button.textContent = answer;
-                button.onclick = () => handleAnswer(answer, randomQuestion.correct);
-                answerOptionsElement.appendChild(button);
-            });
+    const button = document.createElement('button');
+    button.textContent = answer.text; // Zobrazuje text odpovědi
+    button.onclick = () => handleAnswer(answer.text, randomQuestion.correct); // Porovnává text odpovědi
+    answerOptionsElement.appendChild(button);
+});
+
 
             document.getElementById("questionPopup").style.display = "block";
             clearInterval(gameIntervalId);
@@ -276,15 +310,19 @@
         // Uložení otázky
         document.getElementById("saveQuestionBtn").addEventListener("click", function() {
             const questionText = document.getElementById("questionInput").value;
-            const answers = [
-                { text: document.getElementById("answer1").value, correct: document.getElementById("correct1").checked },
-                { text: document.getElementById("answer2").value, correct: document.getElementById("correct2").checked },
-                { text: document.getElementById("answer3").value, correct: document.getElementById("correct3").checked },
-                { text: document.getElementById("answer4").value, correct: document.getElementById("correct4").checked }
-            ];
+const answers = [
+    { text: document.getElementById("answer1").value, correct: document.getElementById("correct1").checked },
+    { text: document.getElementById("answer2").value, correct: document.getElementById("correct2").checked },
+    { text: document.getElementById("answer3").value, correct: document.getElementById("correct3").checked },
+    { text: document.getElementById("answer4").value, correct: document.getElementById("correct4").checked }
+];
 
-            // Přidání otázky
-            questions.push({ question: questionText, answers: answers.filter(a => a.text !== ""), correct: answers.find(a => a.correct)?.text });
+// Přidání otázky
+questions.push({ 
+    question: questionText, 
+    answers: answers.filter(a => a.text !== ""), 
+    correct: answers.find(a => a.correct)?.text 
+});
 
             // Aktualizace seznamu otázek
             updateQuestionList();
@@ -292,14 +330,15 @@
 
         // Aktualizace seznamu otázek
         function updateQuestionList() {
-            const container = document.getElementById("questionsContainer");
-            container.innerHTML = "";
-            questions.forEach((q, index) => {
-                const li = document.createElement("li");
-                li.innerHTML = `${q.question} - <button onclick="deleteQuestion(${index})">Smazat</button>`;
-                container.appendChild(li);
-            });
-        }
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+    questions.forEach((q, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `${q.question} - <button onclick="deleteQuestion(${index})">Smazat</button>`;
+        container.appendChild(li);
+    });
+}
+
 
         // Smazání otázky
         function deleteQuestion(index) {
@@ -324,9 +363,72 @@
                 rotateTetrimino();
             }
         });
+        
+ function exportToJSON() {
+    if (questions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    const jsonData = {
+        questions: questions,  // Export otázek, odpovědí a bodů
+        score: score,  // Export aktuálních bodů
+        timeLeft: timeLeft,  // Export zbývajícího času
+        playerPosition: playerPosition,  // Export pozice hráče
+        isTimerEnabled: isTimerEnabled  // Stav časovače
+    };
+
+    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'test_data.json';
+    link.click();
+}
+
+function exportToMoodleXML() {
+    if (questions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
+
+    questions.forEach((item, index) => {
+        xmlContent += `
+        <question type="multichoice">
+            <name>
+                <text>Otázka ${index + 1}</text>
+            </name>
+            <questiontext format="html">
+                <text><![CDATA[<p>${item.question}</p>]]></text>
+            </questiontext>
+            <answer fraction="100">
+                <text><![CDATA[${item.answers.find(a => a.correct)?.text}]]></text>
+            </answer>
+            <feedback>
+                <text>Správná odpověď!</text>
+            </feedback>
+            <defaultgrade>${item.points || 1}</defaultgrade>
+        </question>\n`;
+    });
+
+    xmlContent += '</quiz>';
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "test_data_moodle.xml";
+    a.click();
+}
+
+
     </script>
 </body>
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
+
 
 
 

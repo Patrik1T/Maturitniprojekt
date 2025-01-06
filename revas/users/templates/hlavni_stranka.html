@@ -45,42 +45,54 @@
                     </table>
                 </div>
 
-                <div class="card-deck">
-                   <div class="card">
-    <div class="card-header">Novinky v aplikaci.</div>
-    <div class="card-body">
-        <h1><strong>Nová aplikace pro testy: Revas</strong></h1>
-        <p>Jsme nadšeni, že vám můžeme představit naši novou aplikaci pro testování, která se jmenuje <strong>Revas</strong>. Tento nástroj vám umožní snadno vytvářet, sdílet a vyhodnocovat různé testy. Ať už jste učitel, student nebo někdo, kdo chce otestovat své znalosti, Revas vám nabízí intuitivní rozhraní a mnoho funkcí pro efektivní testování a učení.</p>
-        
-        <h2><strong>Populární testy v aplikaci:</strong></h2>
-        <ul>
-            <li>
-                <strong>Rozhodovačka:</strong> Zde můžete vytvořit jednoduchý test pro odškrtávání odpovědí. Test je jednoduchý udělat a provést.
-                <img src="{% static 'obrazky/general_knowledge.jpg' %}" alt="Rozhodovačka" width="100" class="img-fluid">
-            </li>
-            <li>
-                <strong>Multi test:</strong> Je především oblíbený, protože obsahuje všechny klasické testy, které naše aplikace používá.
-                <img src="{% static 'obrazky/math_tests.jpg' %}" alt="Multi test" width="100" class="img-fluid">
-            </li>
-        </ul>
-
-        <h2><strong>Populární herní testy:</strong></h2>
-        <ul>
-            <li>
-                <strong>Tetris:</strong> Tento test je založen na populární hře Tetris. Vaším úkolem je umístit padající bloky tak, aby vytvořily úplné řady, které se odstraní,
-                ale má to svůj háček, že se vám objeví otázka a jenom pokud na ní zodpovíte správně, tak dostanete body. Zlepšíte si tím svou rychlost reakce a prostorovou představivost.
-                <img src="{% static 'obrazky/kizE.png' %}" alt="Tetris test" width="100" class="img-fluid">
-            </li>
-            <li>
-                <strong>Pexeso:</strong> Pexeso je klasická hra na pamatování. Testujte svou schopnost zapamatovat si páry otázka a odpověď a najít je co nejrychleji. Skvělá zábava pro všechny věkové kategorie!
-                Jednoduchá pro vytvoření.
-                <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
-            </li>
-        </ul>
-
-        <p>Doufáme, že si užijete používání naší aplikace a že vám pomůže v učení i zábavě!</p>
+       <div class="container my-5">
+        <h1 class="text-center"><strong>Revas: Nová aplikace pro testy</strong></h1>
+        <div id="revasCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <!-- První stránka -->
+                <div class="carousel-item active">
+                    <div class="card-body text-center">
+                        <h2>Vítejte v aplikaci Revas!</h2>
+                        <p>Tato aplikace vám nabízí širokou škálu testů a možností pro zábavu i vzdělávání.</p>
+                        <img src="{% static 'obrazky/general_knowledge.jpg' %}" alt="Revas hlavní stránka" class="img-fluid" width="300">
+                    </div>
+                </div>
+                <!-- Druhá stránka -->
+                <div class="carousel-item">
+                    <div class="card-body text-center">
+                        <h2>Populární testy v aplikaci:</h2>
+                        <ul>
+                            <li><strong>Rozhodovačka:</strong> Jednoduchý test pro odškrtávání odpovědí.</li>
+                            <li><strong>Multi test:</strong> Obsahuje všechny klasické testy aplikace.</li>
+                        </ul>
+                        <img src="{% static 'obrazky/math_tests.jpg' %}" alt="Multi test" class="img-fluid" width="300">
+                    </div>
+                </div>
+                <!-- Třetí stránka -->
+                <div class="carousel-item">
+                    <div class="card-body text-center">
+                        <h2>Populární herní testy:</h2>
+                        <ul>
+                            <li><strong>Tetris:</strong> Odpovězte správně na otázky a získejte body.</li>
+                            <li><strong>Pexeso:</strong> Zapamatujte si páry otázka-odpověď.</li>
+                        </ul>
+                        <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" class="img-fluid" width="300">
+                    </div>
+                </div>
+            </div>
+            <!-- Ovládací tlačítka -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#revasCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Předchozí</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#revasCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Další</span>
+            </button>
+        </div>
     </div>
-</div>
+
+ 
 
                     <div class="card">
                         <div class="card-header">Nově sveřejněné testy.</div>
@@ -129,6 +141,7 @@
     </div>
 
 {% include 'struktura/footer.html' %}
-
+   <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

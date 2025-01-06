@@ -1,60 +1,64 @@
-  let questionCount = 0;
+let questionCount = 0;
         let timerInterval;
         let totalTime = 0;
         let timeRemaining = 0;
 
+        let questionCount = 0;
 
-        function showSuccessMessage(message) {
-    const successContainer = document.getElementById('successContainer');
-    successContainer.innerHTML = `<strong>Úspěch:</strong> ${message}`;
-    successContainer.style.display = 'block';  // Zobrazí zprávu
-    setTimeout(function() {
-        successContainer.style.display = 'none';  // Po 3 sekundách se zpráva schová
-    }, 3000);
-}
-
-        function addQuestion() {
+function addQuestion(type) {
     questionCount++;
-    const questionHTML = `
-        <div class="question-wrapper" id="question${questionCount}">
-            <label>Otázka ${questionCount}:</label>
-            <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
-            <div class="error-message" id="errorQuestion${questionCount}" style="display: none;">Tato otázka musí mít text.</div>
+    let questionHTML = "";
 
-            <label>Body:</label>
-            <input type="number" name="question${questionCount}_points" min="1" value="1">
-
-            <div class="answers" id="answers${questionCount}">
-                <label>
-                    <input type="checkbox" name="question${questionCount}_correct_answer" value="1">
-                    <input type="text" placeholder="Odpověď 1" required>
-                    <button type="button" onclick="removeAnswer(${questionCount}, 1)">Smazat odpověď</button>
-                </label>
+    if (type === "anoNe") {
+        questionHTML = `
+            <div class="question-wrapper" id="question${questionCount}">
+                <label>Otázka ${questionCount} (Ano/Ne):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+                <div class="answers">
+                    <label><input type="radio" name="question${questionCount}_answer" value="Ano" required> Ano</label>
+                    <label><input type="radio" name="question${questionCount}_answer" value="Ne" required> Ne</label>
+                </div>
+                <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
             </div>
+        `;
+    } else if (type === "psaci") {
+        questionHTML = `
+            <div class="question-wrapper" id="question${questionCount}">
+                <label>Otázka ${questionCount} (Psací):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+                <textarea name="question${questionCount}_answer" placeholder="Zadejte odpověď"></textarea>
+                <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+            </div>
+        `;
+    } else if (type === "spojovaci") {
+        questionHTML = `
+            <div class="question-wrapper" id="question${questionCount}">
+                <label>Otázka ${questionCount} (Spojovací):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+                <div class="answers">
+                    <input type="text" name="question${questionCount}_pair1" placeholder="Spojit 1" required>
+                    <input type="text" name="question${questionCount}_pair2" placeholder="Spojit 2" required>
+                </div>
+                <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+            </div>
+        `;
+    } else if (type === "programovaci") {
+        questionHTML = `
+            <div class="question-wrapper" id="question${questionCount}">
+                <label>Otázka ${questionCount} (Programovací):</label>
+                <input type="text" name="question${questionCount}_text" placeholder="Zadejte otázku" required>
+                <textarea name="question${questionCount}_code" placeholder="Vložte kód"></textarea>
+                <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+            </div>
+        `;
+    }
 
-            <div class="error-message" id="errorAnswer${questionCount}" style="display: none;">Musíte označit správnou odpověď.</div>
-
-            <button type="button" onclick="addAnswer(${questionCount})">Přidat odpověď</button>
-            <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
-        </div>
-    `;
-    document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
+    document.getElementById("questionsContainer").insertAdjacentHTML("beforeend", questionHTML);
 }
 
-function addAnswer(questionId) {
-    const answersContainer = document.getElementById(`answers${questionId}`);
-    const answerCount = answersContainer.children.length + 1;
-
-    const answerHTML = `
-        <label>
-            <input type="checkbox" name="question${questionId}_correct_answer" value="${answerCount}">
-            <input type="text" placeholder="Odpověď ${answerCount}" required>
-            <button type="button" onclick="removeAnswer(${questionId}, ${answerCount})">Smazat odpověď</button>
-        </label>
-    `;
-    answersContainer.insertAdjacentHTML('beforeend', answerHTML);
+function deleteQuestion(questionId) {
+    document.getElementById(`question${questionId}`).remove();
 }
-
 
         function removeAnswer(questionId, answerId) {
     const answersContainer = document.getElementById(`answers${questionId}`);
@@ -63,30 +67,19 @@ function addAnswer(questionId) {
         answerToRemove.remove();
     }
 }
-
-
-
-
-
 function deleteQuestion(id) {
     document.getElementById(`question${id}`).remove();
 }
-
-
-
-
 
 function gatherQuestions() {
     const questions = [];
     let isValid = true;
     let errorMessages = [];  // Pole pro uchování chybových zpráv
-
     for (let i = 1; i <= questionCount; i++) {
         const questionText = document.querySelector(`[name="question${i}_text"]`).value;
         const points = document.querySelector(`[name="question${i}_points"]`).value;
         const options = [...document.querySelectorAll(`#answers${i} input[type="text"]`)].map(input => input.value);
         const correctAnswers = [...document.querySelectorAll(`[name="question${i}_correct_answer"]:checked`)].map(input => input.value);
-
         // Kontrola nadpisu otázky
         if (!questionText) {
             errorMessages.push(`Otázka ${i} nemá název.`);  // Přidej chybu do zpráv
@@ -95,7 +88,6 @@ function gatherQuestions() {
         } else {
             document.getElementById(`errorQuestion${i}`).style.display = 'none';
         }
-
         // Kontrola správné odpovědi
         if (correctAnswers.length === 0) {
             errorMessages.push(`Otázka ${i} nemá správně zaškrtnuté odpovědi.`);  // Přidej chybu do zpráv
@@ -104,12 +96,10 @@ function gatherQuestions() {
         } else {
             document.getElementById(`errorAnswer${i}`).style.display = 'none';
         }
-
         if (questionText && correctAnswers.length > 0) {
             questions.push({ text: questionText, options, correctAnswers, points });
         }
     }
-
     // Pokud existují chyby, zobrazíme je v errorContainer
     if (!isValid) {
         document.getElementById('errorContainer').style.display = 'block';
@@ -117,13 +107,8 @@ function gatherQuestions() {
     } else {
         document.getElementById('errorContainer').style.display = 'none';
     }
-
     return questions;
 }
-
-
-
-
         // Funkce pro náhodné promíchání otázek
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -132,9 +117,6 @@ function gatherQuestions() {
             }
             return array;
         }
-
-
-
         // Funkce pro spuštění časovače
         function startTimer() {
             const timerInput = document.getElementById('timer').value;
@@ -146,7 +128,6 @@ function gatherQuestions() {
                 document.getElementById('timerDisplay').style.display = 'block';
             }
         }
-
         // Funkce pro aktualizaci časovače
         function updateTimer() {
             if (timeRemaining > 0) {
@@ -158,15 +139,13 @@ function gatherQuestions() {
                 submitTest();
             }
         }
-
         // Funkce pro zobrazení času na obrazovce
         function updateTimerDisplay() {
             const minutes = Math.floor(timeRemaining / 60);
             const seconds = timeRemaining % 60;
             document.getElementById('timerCount').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
-
-  // Funkce pro zobrazení náhledu testu
+        // Funkce pro zobrazení náhledu testu
 function previewTest() {
     const testName = document.getElementById('testName').value;
     const questions = gatherQuestions();
@@ -211,131 +190,73 @@ function previewTest() {
         startTimer();
     }
 }
-
-
-
-  function endTest() {
+       function endTest() {
     const questions = gatherQuestions();
     let score = 0;
-
-    let correctAnswersList = []; // Úplně správné otázky
-    let partiallyCorrectList = []; // Skoro správné otázky
-    let completelyWrongList = []; // Úplně špatné otázky
-
-    const userAnswersList = []; // Uložení odpovědí uživatele
-
+    let correctAnswersCount = 0;  // Počet správně odpovězených odpovědí
+    let totalCorrectAnswers = 0;  // Počet všech správných odpovědí
+    let completelyCorrect = 0; // Počet úplně správně zodpovězených
+    let partiallyCorrect = 0; // Počet částečně správně zodpovězených
+    let completelyWrong = 0; // Počet špatně zodpovězených
     questions.forEach((q, index) => {
         const selectedAnswers = [...document.querySelectorAll(`[name="preview_answer${index}"]:checked`)].map(input => input.value);
         const correctAnswers = q.correctAnswers;
-
-        userAnswersList.push(...selectedAnswers);
-
+        totalCorrectAnswers += correctAnswers.length;
         const correctSelectedCount = selectedAnswers.filter(answer => correctAnswers.includes(answer)).length;
-
         if (correctSelectedCount > 0) {
             // Výpočet skóre pro tuto otázku
             const scoreForThisQuestion = parseFloat(q.points) * (correctSelectedCount / correctAnswers.length);
             score += scoreForThisQuestion;
-
+            correctAnswersCount += correctSelectedCount;
             if (correctSelectedCount === correctAnswers.length) {
-                correctAnswersList.push(q.text); // Přidat do úplně správných
+                completelyCorrect++; // Uživatelské odpovědi odpovídají všem správným odpovědím
             } else {
-                partiallyCorrectList.push({
-                    question: q.text,
-                    missingAnswers: correctAnswers.filter(answer => !selectedAnswers.includes(answer)) // Chybějící odpovědi
-                });
+                partiallyCorrect++; // Uživatelské odpovědi odpovídají jen některým správným odpovědím
             }
         } else {
-            completelyWrongList.push(q.text); // Přidat do úplně špatných
+            completelyWrong++; // Uživatelské odpovědi odpovídají žádné správné odpovědi
         }
     });
-
     const totalPoints = questions.reduce((sum, q) => sum + parseFloat(q.points), 0);
+    const correctPercentage = (correctAnswersCount / totalCorrectAnswers) * 100;
     const roundedScore = score.toFixed(2);
     const grade = getGrade(score);
-
-    // Použití displayResults pro zobrazení výsledků
-    const correctQuestions = correctAnswersList;
-    const partiallyCorrectQuestions = partiallyCorrectList.map(pc => `${pc.question} (Chybí: ${pc.missingAnswers.join(', ')})`);
-    const wrongQuestions = completelyWrongList;
-
-    displayResults(correctQuestions, userAnswersList, partiallyCorrectQuestions);
-
-    // Dodatečné zobrazení známky a skóre
     document.getElementById('scoreDisplay').textContent = `Tvoje skóre: ${roundedScore} / ${totalPoints.toFixed(2)} bodů`;
     document.getElementById('gradeDisplay').textContent = `Známka: ${grade}`;
-
-    // Zastavení časovače, pokud běží
+    document.getElementById('resultsSection').style.display = 'block';
+    document.getElementById('percentageDisplay').textContent = `Správně odpověděno: ${correctPercentage.toFixed(2)}%`;
+    // Přidání statistiky pro správné, částečné a nesprávné odpovědi
+    document.getElementById('correctAnswersDisplay').textContent = `Úplně správně: ${completelyCorrect} otázek`;
+    document.getElementById('partiallyCorrectDisplay').textContent = `Skoro správně: ${partiallyCorrect} otázek`;
+    document.getElementById('wrongAnswersDisplay').textContent = `Úplně špatně: ${completelyWrong} otázek`;
     clearInterval(timerInterval);
     document.getElementById('timerDisplay').style.display = 'none';
 }
-
-function displayResults(correctAnswers, userAnswers, partiallyCorrectAnswers) {
-    const correctDisplay = document.getElementById('correctAnswersDisplay');
-    const partiallyCorrectDisplay = document.getElementById('partiallyCorrectDisplay');
-    const wrongDisplay = document.getElementById('wrongAnswersDisplay');
-
-    let correctHTML = '';
-    let partiallyCorrectHTML = '';
-    let wrongHTML = '';
-
-    let correctCount = correctAnswers.length;
-    let partiallyCorrectCount = partiallyCorrectAnswers.length;
-    let wrongCount = userAnswers.length - correctCount - partiallyCorrectCount;
-
-    // Zpracování správných odpovědí
-    correctAnswers.forEach((answer) => {
-        correctHTML += `<span class="correct">${answer}</span><br>`;
-    });
-
-    // Zpracování téměř správných odpovědí
-    partiallyCorrectAnswers.forEach((answer) => {
-        partiallyCorrectHTML += `<span class="partially-correct">${answer}</span><br>`;
-    });
-
-    // Zpracování špatných odpovědí
-    wrongHTML = wrongCount > 0 ? `<span class="wrong">${wrongCount} špatných odpovědí</span>` : '';
-
-    // Zobrazení výsledků
-    correctDisplay.innerHTML = `Úplně správně: ${correctCount} otázek<br>${correctHTML}`;
-    partiallyCorrectDisplay.innerHTML = `Skoro správně: ${partiallyCorrectCount} otázek<br>${partiallyCorrectHTML}`;
-    wrongDisplay.innerHTML = `Úplně špatně: ${wrongCount} otázek<br>${wrongHTML}`;
-}
-
-
-
-
         // Funkce pro restart testu
 function restartTest() {
     document.getElementById('resultsSection').style.display = 'none';
     document.getElementById('timerDisplay').style.display = 'none';
     clearInterval(timerInterval);
     timeRemaining = totalTime;
-
     // Resetovat všechny odpovědi
     const checkboxes = document.querySelectorAll('[name^="preview_answer"]');
     checkboxes.forEach(checkbox => checkbox.checked = false);
-
     // Zobrazit časovač a začít znovu
     if (document.getElementById('enableTimer').checked) {
         startTimer();
     }
-
     // Přečíst otázky a promíchat je
     const questions = gatherQuestions();
     const shuffledQuestions = shuffleArray(questions);
-
     let previewHTML = `
         <h3>Náhled na test</h3>
     `;
-
     shuffledQuestions.forEach((q, index) => {
         previewHTML += `
             <div class="question-preview">
                 <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
                 <div class="answers-preview">
         `;
-
         q.options.forEach((option, i) => {
             previewHTML += `
                 <label>
@@ -344,24 +265,19 @@ function restartTest() {
                 </label><br>
             `;
         });
-
         previewHTML += `
                 </div>
                 <p><strong>Body:</strong> ${q.points}</p>
             </div>
         `;
     });
-
     previewHTML += `
         <button type="button" onclick="endTest()">Ukončit test</button>
         <button type="button" onclick="restartTest()">Restartovat test</button>
     `;
-
     // Vloží obsah do náhledu testu
     document.getElementById('testContent').innerHTML = previewHTML;
 }
-
-
         // Funkce pro získání známky
         function getGrade(score) {
             const grade1 = parseInt(document.getElementById('grade1').value);
@@ -369,14 +285,12 @@ function restartTest() {
             const grade3 = parseInt(document.getElementById('grade3').value);
             const grade4 = parseInt(document.getElementById('grade4').value);
             const grade5 = parseInt(document.getElementById('grade5').value);
-
             if (score >= grade1) return '1';
             if (score >= grade2) return '2';
             if (score >= grade3) return '3';
             if (score >= grade4) return '4';
             return '5';
         }
-
         document.getElementById('enableTimer').addEventListener('change', (e) => {
             if (e.target.checked) {
                 totalTime = parseInt(document.getElementById('timer').value) * 60;
@@ -387,76 +301,54 @@ function restartTest() {
                 document.getElementById('timerDisplay').style.display = 'none';
             }
         });
-
-
-
-
-
-function saveAsHtml() {
-    const content = document.getElementById('testContent').innerHTML; // Získá obsah náhledu
-    const testName = document.getElementById('testName').value || 'test'; // Použije název testu nebo výchozí název
-
-    // Vytvoří kompletní HTML dokument
-    const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="cs">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${testName}</title>
-            <link rel="stylesheet" href="style_test.css"> <!-- Pokud používáte externí CSS -->
-            <script src="timer.js"></script> <!-- Pokud používáte časovač -->
-        </head>
-        <body>
-            <div class="test-content">
-                ${content}
-            </div>
-        </body>
-        </html>
-    `;
-
-    downloadFile(htmlContent, `${testName}.html`, 'text/html');
+function displayResults(correctAnswers, userAnswers, partiallyCorrectAnswers) {
+    const correctDisplay = document.getElementById('correctAnswersDisplay');
+    const partiallyCorrectDisplay = document.getElementById('partiallyCorrectDisplay');
+    const wrongDisplay = document.getElementById('wrongAnswersDisplay');
+    let correctHTML = '';
+    let partiallyCorrectHTML = '';
+    let wrongHTML = '';
+    let correctCount = 0;
+    let partiallyCorrectCount = 0;
+    let wrongCount = 0;
+    // Zpracování správných odpovědí
+    correctAnswers.forEach((answer) => {
+        correctHTML += `<span class="correct">${answer}</span><br>`;
+        correctCount++;
+    });
+    // Zpracování téměř správných odpovědí
+    partiallyCorrectAnswers.forEach((answer) => {
+        partiallyCorrectHTML += `<span class="partially-correct">${answer}</span><br>`;
+        partiallyCorrectCount++;
+    });
+    // Zpracování odpovědí uživatele
+    userAnswers.forEach((answer) => {
+        const isCorrect = correctAnswers.some((correctAnswer) => correctAnswer.toLowerCase().trim() === answer.toLowerCase().trim());
+        const isPartiallyCorrect = partiallyCorrectAnswers.some((partiallyCorrectAnswer) => partiallyCorrectAnswer.toLowerCase().trim() === answer.toLowerCase().trim());
+        if (isCorrect) {
+            correctHTML += `<span class="correct">${answer}</span><br>`;
+            correctCount++;
+        } else if (isPartiallyCorrect) {
+            partiallyCorrectHTML += `<span class="partially-correct">${answer}</span><br>`;
+            partiallyCorrectCount++;
+        } else {
+            wrongHTML += `<span class="wrong">${answer}</span><br>`;
+            wrongCount++;
+        }
+    });
+    // Zobrazení výsledků
+    correctDisplay.innerHTML = `Úplně správně: ${correctCount} otázek<br>${correctHTML}`;
+    partiallyCorrectDisplay.innerHTML = `Skoro správně: ${partiallyCorrectCount} otázek<br>${partiallyCorrectHTML}`;
+    wrongDisplay.innerHTML = `Úplně špatně: ${wrongCount} otázek<br>${wrongHTML}`;
 }
-
-
-
-function saveAsMoodleXML() {
-    const content = document.getElementById('testContent').innerHTML; // Získá obsah náhledu
-    const testName = document.getElementById('testName').value || 'test'; // Použije název testu nebo výchozí název
-
-    // Vytvoří Moodle XML obsah
-    const xmlContent = `
-        <?xml version="1.0" encoding="UTF-8"?>
-        <quiz>
-            <question type="category">
-                <category>
-                    <text>$course$/Default for ${testName}</text>
-                </category>
-            </question>
-            <question type="multichoice">
-                <name><text>${testName} - Example Question</text></name>
-                <questiontext format="html">
-                    <text><![CDATA[${content}]]></text>
-                </questiontext>
-                <answer fraction="100"><text>Correct Answer</text></answer>
-                <answer fraction="0"><text>Wrong Answer</text></answer>
-            </question>
-        </quiz>
-    `;
-
-    downloadFile(xmlContent, `${testName}.xml`, 'application/xml');
+// Zavolání funkce při kliknutí na tlačítko pro zobrazení výsledků
+function showTestResults() {
+    // Předpokládané testovací odpovědi
+    const correctAnswers = ['Answer 1', 'Answer 2', 'Answer 4']; // Tohle nastavte podle skutečných správných odpovědí
+    const userAnswers = ['Answer 1', 'Answer 3', 'Answer 5']; // Tohle nastavte podle odpovědí uživatele
+    const partiallyCorrectAnswers = ['Answer 2']; // Tohle nastavte podle téměř správných odpovědí
+    // Zavolání funkce pro zobrazení výsledků
+    displayResults(correctAnswers, userAnswers, partiallyCorrectAnswers);
 }
-
-
-function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType }); // Vytvoření souboru
-    const link = document.createElement('a'); // Vytvoření odkazu
-    link.href = URL.createObjectURL(blob); // Vytvoření URL pro blob
-    link.download = filename; // Určení názvu souboru
-    link.click(); // Simulování kliknutí na odkaz pro stažení
-
-    // Uvolnění paměti
-    setTimeout(() => URL.revokeObjectURL(link.href), 100);
-}
-
-
+// Příklad jak zavolat tuto funkci při kliknutí na tlačítko "Ukázat test"
+document.querySelector('.preview-btn').addEventListener('click', showTestResults);

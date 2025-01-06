@@ -48,19 +48,27 @@
             <label for="grade5">Známka 5 (minimální body):</label>
             <input type="number" id="grade5" min="1" value="0">
         </div>
-         <!-- Blok pro další obsah -->
-    {% block content %}
         
-    {% endblock %}
     
-     <form id="testForm">
+  <form id="testForm">
             <div id="questionsContainer"></div>
             <h2>Typ uložení</h2>
             <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
             <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+            <!-- Uložení jako HTML -->
             <button type="button" onclick="saveAsHtml()">Uložit jako HTML</button>
+
+            <!-- Uložení jako Moodle XML -->
             <button type="button" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
+            <button type="button" onclick="saveAsYaml()">Uložit jako YAML</button>
+            <button type="button" onclick="saveAsJson()">Uložit jako JSON</button>
+
         </form>
+        
+         <!-- Blok pro další obsah -->
+    {% block content %}
+        
+    {% endblock %}
 
         <div class="results" id="resultsSection" style="display:none;">
             <h2>Výsledky testu</h2>
@@ -72,6 +80,179 @@
             <p id="wrongAnswersDisplay"></p>
         </div>
     </div>
-
 </body>
 </html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
+<script>
+// Funkce pro uložení jako HTML
+function saveAsHtml() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questions = questionsContainer.querySelectorAll('.question'); 
+
+    let htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${testName}</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .question { margin-bottom: 20px; }
+        .answers { margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>${testName}</h1>
+    <p>${testDescription}</p>
+    <h2>Otázky</h2>
+`;
+
+    questions.forEach(question => {
+        const questionText = question.querySelector('.question-text').value;  
+        const answers = question.querySelectorAll('.answer-text');
+        const correctAnswerIndex = question.querySelector('.correct-answer').value;
+
+        htmlContent += `<div class="question">
+            <p><strong>${questionText}</strong></p>
+            <div class="answers">`;
+
+        answers.forEach((answer, index) => {
+            const answerText = answer.value;
+            htmlContent += `<p>${answerText} ${index == correctAnswerIndex ? "(Správná)" : ""}</p>`;
+        });
+
+        htmlContent += `</div></div>`;
+    });
+
+    htmlContent += `</body></html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName}.html`);
+}
+
+// Funkce pro uložení jako Moodle XML
+function saveAsMoodleXML() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questions = questionsContainer.querySelectorAll('.question'); 
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+    <quiz>
+        <name>${testName}</name>
+        <description>${testDescription}</description>`;
+
+    questions.forEach(question => {
+        const questionText = question.querySelector('.question-text').value;
+        const answers = question.querySelectorAll('.answer-text');
+        const correctAnswerIndex = question.querySelector('.correct-answer').value;
+
+        xmlContent += `
+            <question type="multiple_choice">
+                <questiontext>${questionText}</questiontext>
+                <answers>`;
+
+        answers.forEach((answer, index) => {
+            const answerText = answer.value;
+            const isCorrect = index == correctAnswerIndex ? 'TRUE' : 'FALSE';
+            xmlContent += `
+                <answer>
+                    <text>${answerText}</text>
+                    <correct>${isCorrect}</correct>
+                </answer>`;
+        });
+
+        xmlContent += `</answers></question>`;
+    });
+
+    xmlContent += `</quiz>`;
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName}.xml`);
+}
+
+// Funkce pro uložení jako YAML
+function saveAsYaml() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questions = questionsContainer.querySelectorAll('.question');
+
+    let testData = {
+        name: testName,
+        description: testDescription,
+        questions: []
+    };
+
+    questions.forEach(question => {
+        const questionText = question.querySelector('.question-text').value;
+        const answers = question.querySelectorAll('.answer-text');
+        const correctAnswerIndex = question.querySelector('.correct-answer').value;
+
+        let answersArray = [];
+        answers.forEach((answer, index) => {
+            answersArray.push({
+                text: answer.value,
+                correct: index == correctAnswerIndex
+            });
+        });
+
+        testData.questions.push({
+            question: questionText,
+            answers: answersArray
+        });
+    });
+
+    // Generování YAML obsahu
+    const yamlContent = jsyaml.dump(testData);
+    
+    // Uložení souboru jako YAML
+    const blob = new Blob([yamlContent], { type: 'application/x-yaml' });
+    saveAs(blob, `${testName}.yaml`);
+}
+
+// Funkce pro uložení jako JSON
+function saveAsJson() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+    const questionsContainer = document.getElementById('questionsContainer');
+    const questions = questionsContainer.querySelectorAll('.question');
+
+    let testData = {
+        name: testName,
+        description: testDescription,
+        questions: []
+    };
+
+    questions.forEach(question => {
+        const questionText = question.querySelector('.question-text').value;
+        const answers = question.querySelectorAll('.answer-text');
+        const correctAnswerIndex = question.querySelector('.correct-answer').value;
+
+        let answersArray = [];
+        answers.forEach((answer, index) => {
+            answersArray.push({
+                text: answer.value,
+                correct: index == correctAnswerIndex
+            });
+        });
+
+        testData.questions.push({
+            question: questionText,
+            answers: answersArray
+        });
+    });
+
+    // Generování JSON obsahu
+    const jsonContent = JSON.stringify(testData, null, 2);
+    
+    // Uložení souboru jako JSON
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    saveAs(blob, `${testName}.json`);
+}
+</script>
+

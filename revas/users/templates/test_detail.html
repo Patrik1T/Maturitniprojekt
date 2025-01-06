@@ -1,0 +1,24 @@
+{% extends "struktura/base.html" %}
+
+{% block title %}
+{{ test.name }}
+{% endblock %}
+
+{% block content %}
+<div class="test-detail">
+    <h1>{{ test.name }}</h1>
+    <p>{{ test.description }}</p>
+    {% if test.html_file %}
+        <a href="{{ test.html_file.url }}" download>Stáhnout HTML</a>
+    {% endif %}
+    {% if test.xml_file %}
+        <a href="{{ test.xml_file.url }}" download>Stáhnout XML</a>
+    {% endif %}
+    {% if test.yaml_file %}
+        <a href="{{ test.yaml_file.url }}" download>Stáhnout YAML</a>
+    {% endif %}
+    {% if test.json_file %}
+        <a href="{{ test.json_file.url }}" download>Stáhnout JSON</a>
+    {% endif %}
+</div>
+{% endblock %}
