@@ -1,5 +1,3 @@
-{% extends "struktura/basetests.html" %}
-
 {% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
 
 {% block content %}
@@ -9,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pexeso: Otázky a Odpovědi</title>
     <style>
-    body {
+        body {
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -52,7 +50,7 @@
         .score {
             font-size: 24px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             margin: 5px;
             padding: 5px;
         }
@@ -68,6 +66,16 @@
     </style>
 </head>
 <body>
+<div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+
+        <label for="testImage">Obrázek testu (nahrát soubor):</label>
+        <input type="file" id="testImage" accept="image/*">
+
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
 
     <h1>Pexeso: Otázky a Odpovědi</h1>
 
@@ -75,9 +83,37 @@
     <div class="button-container">
         <input type="text" id="question" placeholder="Zadejte otázku" />
         <input type="text" id="answer" placeholder="Zadejte odpověď" />
+        <input type="number" id="points" placeholder="Počet bodů" min="1" />
         <button onclick="addPair()">Přidat pár</button>
         <button onclick="startGame()">Začít hru</button>
     </div>
+
+    <!-- Nastavení pro známky -->
+    <div class="button-container">
+        <label for="grade1">Bodů pro 1: </label>
+        <input type="number" id="grade1" placeholder="90" min="1" />
+        <label for="grade2">Bodů pro 2: </label>
+        <input type="number" id="grade2" placeholder="75" min="1" />
+        <label for="grade3">Bodů pro 3: </label>
+        <input type="number" id="grade3" placeholder="50" min="1" />
+        <label for="grade4">Bodů pro 4: </label>
+        <input type="number" id="grade4" placeholder="25" min="1" />
+        <label for="grade5">Bodů pro 5: </label>
+        <input type="number" id="grade5" placeholder="0" min="1" />
+    </div>
+
+    <!-- Nastavení časovače -->
+    <div class="button-container">
+        <input type="checkbox" id="enableTimer" />
+        <label for="enableTimer">Použít časovač</label>
+        <input type="number" id="timeLimit" placeholder="Čas (v sekundách)" min="10" disabled />
+    </div>
+
+<div class="button-container">
+    <button onclick="exportToMoodleXML()">Uložit jako Moodle XML</button>
+    <button onclick="exportToJSON()">Uložit jako JSON</button>
+</div>
+
 
     <!-- Seznam přidaných párů s možností jejich odstranění -->
     <div class="pairs-list" id="pairsList"></div>
@@ -92,172 +128,311 @@
     <div id="endMessage" class="hidden">
         <h2>Hra skončila!</h2>
         <p>Vaše skóre je: <span id="finalScore"></span></p>
+        <p>Vaše známka: <span id="grade"></span></p>
         <button onclick="resetGame()">Nová hra</button>
     </div>
 
-
 <script>
-      const questionInput = document.getElementById("question");
-        const answerInput = document.getElementById("answer");
-        const gameBoardDiv = document.getElementById("gameBoard");
-        const scoreDiv = document.getElementById("score");
-        const endMessage = document.getElementById("endMessage");
-        const finalScoreSpan = document.getElementById("finalScore");
-        const pairsListDiv = document.getElementById("pairsList");
+    const questionInput = document.getElementById("question");
+    const answerInput = document.getElementById("answer");
+    const pointsInput = document.getElementById("points");
+    const enableTimerCheckbox = document.getElementById("enableTimer");
+    const timeLimitInput = document.getElementById("timeLimit");
+    const grade1Input = document.getElementById("grade1");
+    const grade2Input = document.getElementById("grade2");
+    const grade3Input = document.getElementById("grade3");
 
-        let pairs = [];
-        let flippedCards = [];
-        let score = 0;
-        let gameActive = false;
+    const gameBoardDiv = document.getElementById("gameBoard");
+    const scoreDiv = document.getElementById("score");
+    const endMessage = document.getElementById("endMessage");
+    const finalScoreSpan = document.getElementById("finalScore");
+    const gradeSpan = document.getElementById("grade");
+    const pairsListDiv = document.getElementById("pairsList");
 
-        // Funkce pro přidání páru otázek a odpovědí
-        function addPair() {
-            const question = questionInput.value.trim();
-            const answer = answerInput.value.trim();
+    let pairs = [];
+    let flippedCards = [];
+    let score = 0;
+    let gameActive = false;
+    let timer;
+    let totalPoints = 0;
 
-            if (question && answer) {
-                pairs.push({ question, answer });
-                updatePairsList();
-                questionInput.value = "";
-                answerInput.value = "";
-            } else {
-                alert("Zadejte prosím otázku a odpověď.");
-            }
-        }
+    enableTimerCheckbox.addEventListener("change", () => {
+        timeLimitInput.disabled = !enableTimerCheckbox.checked;
+    });
+    
+    
 
-        // Funkce pro aktualizaci seznamu přidaných párů
-        function updatePairsList() {
-            pairsListDiv.innerHTML = '';
-            pairs.forEach((pair, index) => {
-                const pairDiv = document.createElement("div");
-                pairDiv.classList.add("pair-item");
-                pairDiv.innerHTML = `${pair.question} - ${pair.answer}
-                    <button onclick="removePair(${index})">Odstranit</button>`;
-                pairsListDiv.appendChild(pairDiv);
-            });
-        }
+    function addPair() {
+        const question = questionInput.value.trim();
+        const answer = answerInput.value.trim();
+        const points = parseInt(pointsInput.value, 10);
 
-        // Funkce pro odstranění specifického páru
-        function removePair(index) {
-            pairs.splice(index, 1);
+        if (question && answer && points > 0) {
+            pairs.push({ question, answer, points });
+            totalPoints += points;
             updatePairsList();
+            questionInput.value = "";
+            answerInput.value = "";
+            pointsInput.value = "";
+        } else {
+            alert("Zadejte prosím otázku, odpověď a počet bodů.");
+        }
+    }
+    
+
+    function updatePairsList() {
+        pairsListDiv.innerHTML = '';
+        pairs.forEach((pair, index) => {
+            const pairDiv = document.createElement("div");
+            pairDiv.classList.add("pair-item");
+            pairDiv.innerHTML = `${pair.question} - ${pair.answer} (Body: ${pair.points})
+                <button onclick="removePair(${index})">Odstranit</button>`;
+            pairsListDiv.appendChild(pairDiv);
+        });
+    }
+
+    function removePair(index) {
+        totalPoints -= pairs[index].points;
+        pairs.splice(index, 1);
+        updatePairsList();
+    }
+
+    function startGame() {
+        if (pairs.length < 1) {
+            alert("Pro spuštění hry je potřeba alespoň 1 pár!");
+            return;
         }
 
-        // Funkce pro zahájení hry
-function startGame() {
-    if (pairs.length < 1) {
-        alert("Pro spuštění hry je potřeba alespoň 1 pár!");
+        gameActive = true;
+        score = 0;
+        flippedCards = [];
+        gameBoardDiv.innerHTML = '';
+        gameBoardDiv.classList.remove("hidden");
+        endMessage.classList.add("hidden");
+        scoreDiv.textContent = `Skóre: ${score}`;
+
+        if (enableTimerCheckbox.checked) {
+            const timeLimit = parseInt(timeLimitInput.value, 10);
+            if (isNaN(timeLimit) || timeLimit <= 0) {
+                alert("Zadejte platný čas v sekundách.");
+                return;
+            }
+            startTimer(timeLimit);
+        }
+
+        const cards = [];
+        pairs.forEach((pair, index) => {
+            cards.push({ content: pair.question, type: 'question', pairId: index });
+            cards.push({ content: pair.answer, type: 'answer', pairId: index });
+        });
+
+        shuffle(cards);
+
+        cards.forEach((card, index) => {
+            const cardDiv = document.createElement("div");
+            cardDiv.classList.add("card");
+            cardDiv.dataset.index = index;
+            cardDiv.dataset.content = card.content;
+            cardDiv.dataset.type = card.type;
+            cardDiv.dataset.pairId = card.pairId;
+            cardDiv.addEventListener("click", flipCard);
+            gameBoardDiv.appendChild(cardDiv);
+        });
+    }
+
+    function startTimer(seconds) {
+        let timeRemaining = seconds;
+        const timerDiv = document.createElement("div");
+        timerDiv.id = "timerDiv";
+        timerDiv.textContent = `Zbývající čas: ${timeRemaining}s`;
+        timerDiv.style.fontSize = "20px";
+        document.body.insertBefore(timerDiv, gameBoardDiv);
+
+        timer = setInterval(() => {
+            timeRemaining--;
+            timerDiv.textContent = `Zbývající čas: ${timeRemaining}s`;
+
+            if (timeRemaining <= 0) {
+                clearInterval(timer);
+                timerDiv.remove();
+                endGame();
+            }
+        }, 1000);
+    }
+
+    function flipCard(event) {
+        if (!gameActive || flippedCards.length === 2) {
+            return;
+        }
+
+        const card = event.target;
+        if (card.classList.contains("flipped") || card.classList.contains("matched")) {
+            return;
+        }
+
+        card.classList.add("flipped");
+        card.textContent = card.dataset.content;
+
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+            checkMatch();
+        }
+    }
+
+    function checkMatch() {
+        const [firstCard, secondCard] = flippedCards;
+
+        if (firstCard.dataset.pairId === secondCard.dataset.pairId) {
+            firstCard.classList.add("matched");
+            secondCard.classList.add("matched");
+
+            const pairId = parseInt(firstCard.dataset.pairId, 10);
+            score += pairs[pairId].points;
+            scoreDiv.textContent = `Skóre: ${score}`;
+            flippedCards = [];
+
+            if (document.querySelectorAll(".matched").length === document.querySelectorAll(".card").length) {
+                endGame();
+            }
+        } else {
+            setTimeout(() => {
+                firstCard.classList.remove("flipped");
+                secondCard.classList.remove("flipped");
+                firstCard.textContent = '';
+                secondCard.textContent = '';
+                flippedCards = [];
+            }, 1000);
+        }
+    }
+
+    function calculateGrade(score, totalPoints) {
+    const grade1 = parseInt(grade1Input.value, 10) || 90; // 90 % a více = 1
+    const grade2 = parseInt(grade2Input.value, 10) || 75; // 75 % a více = 2
+    const grade3 = parseInt(grade3Input.value, 10) || 50; // 50 % a více = 3
+    const grade4 = parseInt(grade3Input.value, 10) / 2 || 25; // 25 % a více = 4
+
+    const percentage = (score / totalPoints) * 100;
+
+    if (percentage >= grade1) return "1 (Výborný)";
+    if (percentage >= grade2) return "2 (Chvalitebný)";
+    if (percentage >= grade3) return "3 (Dobrý)";
+    if (percentage >= grade4) return "4 (Dostatečný)";
+    return "5 (Nedostatečný)";
+}
+
+
+    function endGame() {
+        gameActive = false;
+        if (timer) {
+            clearInterval(timer);
+            const timerDiv = document.getElementById("timerDiv");
+            if (timerDiv) timerDiv.remove();
+        }
+        finalScoreSpan.textContent = score;
+        const grade = calculateGrade(score, totalPoints);
+        gradeSpan.textContent = grade;
+        endMessage.classList.remove("hidden");
+    }
+
+    function resetGame() {
+        pairs = [];
+        score = 0;
+        totalPoints = 0;
+        gameActive = false;
+        flippedCards = [];
+        gameBoardDiv.classList.add("hidden");
+        endMessage.classList.add("hidden");
+        scoreDiv.textContent = `Skóre: ${score}`;
+        updatePairsList();
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    
+    
+   
+
+
+    function exportToJSON() {
+    if (pairs.length === 0) {
+        alert("Nemáte žádné vytvořené otázky pro export!");
         return;
     }
 
-    gameActive = true;
-    score = 0;
-    flippedCards = [];
-    gameBoardDiv.innerHTML = '';
-    gameBoardDiv.classList.remove("hidden");
-    endMessage.classList.add("hidden");
-    scoreDiv.textContent = `Skóre: ${score}`;
+    const jsonData = {
+        pairs: pairs,
+        score: score
+    };
 
-    // Vytvoření karet pro pexeso (dvojice otázek a odpovědí)
-    const cards = [];
-    pairs.forEach((pair, index) => {
-        cards.push({ content: pair.question, type: 'question', pairId: index });
-        cards.push({ content: pair.answer, type: 'answer', pairId: index });
-    });
-
-    // Zamíchání karet
-    shuffle(cards);
-
-    // Vytvoření karet na herní desce
-    cards.forEach((card, index) => {
-        const cardDiv = document.createElement("div");
-        cardDiv.classList.add("card");
-        cardDiv.dataset.index = index;
-        cardDiv.dataset.content = card.content;
-        cardDiv.dataset.type = card.type;
-        cardDiv.dataset.pairId = card.pairId;  // Přidání pairId
-        cardDiv.addEventListener("click", flipCard);
-        gameBoardDiv.appendChild(cardDiv);
-    });
+    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'pexeso_hra.json';
+    link.click();
 }
 
-        // Funkce pro otočení karty
-        function flipCard(event) {
-            if (!gameActive || flippedCards.length === 2) {
-                return;
-            }
 
-            const card = event.target;
-            if (card.classList.contains("flipped") || card.classList.contains("matched")) {
-                return;
-            }
+ function exportToMoodleXML() {
+    if (pairs.length === 0) {
+        alert("Nemáte žádné vytvořené otázky pro export!");
+        return;
+    }
 
-            card.classList.add("flipped");
-            card.textContent = card.dataset.content;
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
 
-            flippedCards.push(card);
+    pairs.forEach((pair, index) => {
+        xmlContent += `
+        <question type="matching">
+            <name>
+                <text>Pár ${index + 1}</text>
+            </name>
+            <questiontext format="html">
+                <text><![CDATA[<p>${pair.question}</p>]]></text>
+            </questiontext>
+            <answer>
+                <text><![CDATA[<p>${pair.answer}</p>]]></text>
+            </answer>
+            <defaultgrade>${pair.points}</defaultgrade>
+        </question>`;
+    });
 
-            if (flippedCards.length === 2) {
-                checkMatch();
-            }
-        }
+    xmlContent += `\n</quiz>`;
 
-       // Funkce pro kontrolu, zda jsou dvě otočené karty správně spárované
-function checkMatch() {
-    const [firstCard, secondCard] = flippedCards;
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "pexeso_moodle_quiz.xml";
+    a.click();
+}
+function loadFromJSON(file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const data = JSON.parse(event.target.result);
+        pairs = data.pairs;
+        score = data.score;
+        startGame();
+    };
+    reader.readAsText(file);
+}
 
-    // Porovnáme pairId místo obsahu
-    if (firstCard.dataset.pairId === secondCard.dataset.pairId) {
-        // Správný pár
-        firstCard.classList.add("matched");
-        secondCard.classList.add("matched");
-        score += 10;
-        scoreDiv.textContent = `Skóre: ${score}`;
-        flippedCards = [];
-        if (document.querySelectorAll(".matched").length === document.querySelectorAll(".card").length) {
-            endGame();
-        }
-    } else {
-        // Nesprávný pár, skrytí karet
-        setTimeout(() => {
-            firstCard.classList.remove("flipped");
-            secondCard.classList.remove("flipped");
-            firstCard.textContent = '';
-            secondCard.textContent = '';
-            flippedCards = [];
-        }, 1000);
+    function loadGame() {
+    const fileInput = document.getElementById("loadJSON");
+    const file = fileInput.files[0];
+    if (file) {
+        loadFromJSON(file);
     }
 }
+    
+
+</script>
 
 
-        // Funkce pro zamíchání políčka
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        // Funkce pro dokončení hry
-        function endGame() {
-            gameActive = false;
-            finalScoreSpan.textContent = score;
-            endMessage.classList.remove("hidden");
-        }
-
-        // Funkce pro resetování hry
-        function resetGame() {
-            pairs = [];
-            score = 0;
-            gameActive = false;
-            flippedCards = [];
-            gameBoardDiv.classList.add("hidden");
-            endMessage.classList.add("hidden");
-            scoreDiv.textContent = `Skóre: ${score}`;
-            updatePairsList();
-        }
-    </script>
 </body>
 </html>
 {% endblock %}
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
