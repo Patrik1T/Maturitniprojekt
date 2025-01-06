@@ -239,16 +239,7 @@ function checkForQuestion() {
         questions.splice(index, 1);
         displayQuestions();
     }
-
-    // Funkce pro zobrazení náhledu testu a generování labyrintu
-    function startPreview() {
-        if (questions.length === 0) {
-            alert("Nejdříve přidejte alespoň jednu otázku.");
-            return;
-        }
-        createGameArea();  // Vytvoření labyrintu s odpovídajícím počtem šedých kostek
-        startTimer();  // Spuštění časovače
-    }
+    
 
     // Funkce pro inicializaci šedých čtverců
 function createGameArea() {
@@ -432,7 +423,7 @@ function checkAnswer(selectedIndex, correctIndex) {
     }
 }
 
-// Startovací časovač
+// Funkce pro spuštění časovače
 function startTimer() {
     gameInterval = setInterval(() => {
         timeLeft--;
@@ -444,6 +435,22 @@ function startTimer() {
         }
     }, 1000);
 }
+
+// Funkce pro zobrazení náhledu testu a generování labyrintu
+function startPreview() {
+    if (questions.length === 0) {
+        alert("Nejdříve přidejte alespoň jednu otázku.");
+        return;
+    }
+    createGameArea();  // Vytvoření labyrintu s odpovídajícím počtem šedých kostek
+    score = 0;  // Reset skóre
+    timeLeft = parseInt(document.getElementById("timerDuration").value) || 60;  // Načteme čas z nastavení
+    scoreElement.textContent = "Body: 0";
+    timerElement.textContent = `Čas: ${timeLeft}`;  // Nastavíme počáteční čas
+
+    startTimer();  // Spuštění časovače až po vytvoření herní plochy
+}
+
 
 // Přidání tlačítka pro reset do UI
 function addResetButton() {

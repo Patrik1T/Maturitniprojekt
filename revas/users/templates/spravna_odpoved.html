@@ -1,557 +1,359 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vytvořit test</title>
-    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+    <title>Test: Přiřazování odpovědí</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .add-btn {
+            margin: 10px 0;
+        }
+        .draggable-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .draggable {
+            padding: 5px;
+            margin: 5px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            min-height: 100px;
+            margin-top: 20px;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .answer-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .answer-item {
+            margin: 5px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .remove-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            margin-left: 10px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .timer {
+            margin-top: 20px;
+        }
+        .timer span {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
-    <strong>Chyba:</strong> Něco je špatně, zkontrolujte formulář.
-</div>
-<div id="successContainer" style="display:none; color: white; background-color: green; padding: 10px; text-align: center;">
-    <strong>Úspěch:</strong> Test byl úspěšně uložen.
-</div>
+    <div class="container">
+        <h1>Test s přiřazováním odpovědí</h1>
 
-<div class="container">
-    <h1>Vytvořit test</h1>
-    <h2>Popisek k testu</h2>
-    <div class="test-name">
-        <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu" required>
-    </div>
-    <label for="testImage">Obrázek testu (nahrát soubor):</label>
-    <input type="file" id="testImage" accept="image/*">
-    <label for="testDescription">Popis testu:</label>
-    <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-    <h2>Tvoření testu</h2>
-    <div class="timer">
-        <label for="timer">Nastavit časovač (v minutách):</label>
-        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
-        <label for="enableTimer">Povolit časovač</label>
-        <input type="checkbox" id="enableTimer">
-    </div>
-    <div class="grade-settings">
-        <h3>Počet bodů pro každou známku</h3>
-        <label for="grade1">Známka 1 (minimální body):</label>
-        <input type="number" id="grade1" min="1" value="90">
-        <label for="grade2">Známka 2 (minimální body):</label>
-        <input type="number" id="grade2" min="1" value="70">
-        <label for="grade3">Známka 3 (minimální body):</label>
-        <input type="number" id="grade3" min="1" value="50">
-        <label for="grade4">Známka 4 (minimální body):</label>
-        <input type="number" id="grade4" min="1" value="30">
-        <label for="grade5">Známka 5 (minimální body):</label>
-        <input type="number" id="grade5" min="1" value="0">
-    </div>
-    <form id="testForm">
-        <div id="questionsContainer"></div>
-        <h2>Tvorba testu</h2>
-        <button type="button" onclick="addQuestion()">Přidat otázku</button>
-        <h2>Ukázka testu</h2>
-        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-        <h2>Typ uložení</h2>
-        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
-        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" onclick="saveTestToHtml()">Uložit jako HTML</button>
-        <button type="button" onclick="saveTestToXml()">Uložit jako Moodle XML</button>
-        <button type="button" onclick="saveTestToJson()">Uložit jako JSON</button>
-    </form>
-    <div id="previewTest" class="test-section">
-        <h2>Náhled testu</h2>
-        <div id="testContent"></div>
-    </div>
-    <div class="results" id="resultsSection" style="display:none;">
-        <h2>Výsledky testu</h2>
-        <div id="resultsContainer"></div>
-    </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
-<script>
-      let questionCount = 0;
-    let timerInterval;
-    let totalTime = 0;
-    let timeRemaining = 0;
-    let totalPoints = 0;
-    let correctAnswers = 0;
-
-  function addQuestion() {
-    questionCount++;
-    const questionHTML = `
-        <div class="question-wrapper" id="question${questionCount}">
-            <label>Otázka ${questionCount}:</label>
-            <textarea name="question${questionCount}_text" placeholder="Zadejte otázku" required></textarea>
-            <div class="error-message" id="errorQuestion${questionCount}">Tato otázka musí mít text.</div>
-            
-            <label>Odpovědi:</label>
-            <div id="answers${questionCount}">
-                <input type="text" name="question${questionCount}_answer_1" placeholder="Zadejte odpověď" required>
-                <input type="checkbox" name="question${questionCount}_correct_1"> Správná odpověď
-            </div>
-            
-            <button type="button" onclick="addAnswer(${questionCount})">Přidat odpověď</button>
-            <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        <!-- Nastavení časomíry -->
+        <div class="timer">
+            <label for="timer">Nastavit časovač (v minutách):</label>
+            <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+            <label for="enableTimer">Povolit časovač</label>
+            <input type="checkbox" id="enableTimer">
         </div>
-    `;
-    document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
-}
 
+        <!-- Formulář pro nastavení bodování -->
+        <h2>Bodování</h2>
+        <label for="grade1">Známka 1 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade1" name="grades[1]" min="1" value="90">
+        <br>
+        <label for="grade2">Známka 2 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade2" name="grades[2]" min="1" value="70">
+        <br>
+        <label for="grade3">Známka 3 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade3" name="grades[3]" min="1" value="50">
+        <br>
+        <label for="grade4">Známka 4 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade4" name="grades[4]" min="1" value="30">
+        <br>
+        <label for="grade5">Známka 5 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade5" name="grades[5]" min="1" value="0">
+        <br>
 
-// Funkce pro přidání odpovědi k otázce
-function addAnswer(questionId) {
-    const answerContainer = document.getElementById(`answers${questionId}`);
-    const answerCount = answerContainer.children.length / 2 + 1; // odpověď + zaškrtávátko
-    const answerHTML = `
-        <div class="answer" id="answer_${questionId}_${answerCount}">
-            <input type="text" name="question${questionId}_answer_${answerCount}" placeholder="Zadejte odpověď" required>
-            <input type="checkbox" name="question${questionId}_correct_${answerCount}"> Správná odpověď
-            <button type="button" onclick="deleteAnswer(${questionId}, ${answerCount})">Smazat odpověď</button>
-        </div>`;
-    answerContainer.insertAdjacentHTML('beforeend', answerHTML);
-}
+        <button class="add-btn" onclick="addTable()">Přidat tabulku</button>
 
-function deleteAnswer(questionId, answerId) {
-    const answerElement = document.getElementById(`answer_${questionId}_${answerId}`);
-    if (answerElement) {
-        answerElement.remove();
-    }
-}
+        <div id="tablesContainer"></div>
 
+        <button class="add-btn" onclick="previewTest()">Náhled testu</button>
+        <div id="testPreview" style="display: none;">
+            <h2>Náhled testu</h2>
+            <div id="answersList" class="answer-container"></div>
+            <div id="tablesForDrag"></div>
 
-// Funkce pro smazání otázky
-function deleteQuestion(questionId) {
-    const questionElement = document.getElementById(`question${questionId}`);
-    questionElement.remove();
-}
+            <button class="add-btn" onclick="submitTest()">Odeslat odpovědi</button>
+        </div>
 
+        <div id="results" class="result-container" style="display: none;">
+            <h3>Výsledky testu:</h3>
+            <div id="resultContent"></div>
+        </div>
 
-// Funkce pro zobrazení výsledků testu
-function showResults() {
-    const questions = gatherQuestions();
-    let resultsHTML = '';
-    let totalScore = 0;
-    questions.forEach((q, index) => {
-        let questionScore = 0;
-        const correctAnswers = q.answers.filter(a => a.correct).map(a => a.text);
-        const userAnswers = [...document.querySelectorAll(`[name^="preview_question_${index}"]`)]
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.nextSibling.textContent.trim());
+        <!-- Časomíra -->
+        <div id="countdown" class="timer">
+            <span id="timerDisplay">00:00</span>
+        </div>
+    </div>
 
-        const isCorrect = userAnswers.every(answer => correctAnswers.includes(answer)) &&
-                          correctAnswers.every(answer => userAnswers.includes(answer));
+    <script>
+        let tables = [];
+        let allAnswers = [];
+        let timerInterval;
+        let timeLeft = 0;
 
-        questionScore = isCorrect ? 1 : 0;
-        totalScore += questionScore;
+        // Funkce pro přidání tabulky
+        function addTable() {
+            const tableId = `table-${tables.length + 1}`;
+            const tableContainer = document.createElement('div');
+            tableContainer.classList.add('table-container');
+            tableContainer.id = tableId;
 
-        resultsHTML += `
-            <div>
-                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
-                <p><strong>Vaše odpovědi:</strong> ${userAnswers.join(', ')}</p>
-                <p><strong>Správné odpovědi:</strong> ${correctAnswers.join(', ')}</p>
-                <p><strong>Body:</strong> ${questionScore}</p>
-            </div>`;
-    });
-
-    resultsHTML += `<p><strong>Celkové skóre:</strong> ${totalScore} / ${questions.length}</p>`;
-    document.getElementById('resultsContainer').innerHTML = resultsHTML;
-    document.getElementById('resultsSection').style.display = 'block';
-}
-
-
-
-  // Funkce pro porovnání odpovědi
-function checkAnswer(userAnswer, correctAnswer) {
-    return userAnswer.toLowerCase() === correctAnswer.toLowerCase();
-}
-
-// Funkce pro získání otázek
-function gatherQuestions() {
-    const questions = [];
-    for (let i = 1; i <= questionCount; i++) {
-        const questionText = document.querySelector(`[name="question${i}_text"]`).value;
-        const answers = [];
-        const answerElements = document.querySelectorAll(`[name^="question${i}_answer_"]`);
-        
-        answerElements.forEach((answerElement, index) => {
-            const answerText = answerElement.value;
-            answers.push({ text: answerText });
-        });
-
-        questions.push({
-            text: questionText,
-            answers: answers
-        });
-    }
-    return questions;
-}
-
-// Funkce pro výpočet celkových bodů
-function calculateTotalPoints(questions) {
-    return questions.reduce((total, q) => total + q.points, 0);
-}
-
-// Funkce pro náhled testu
-function previewTest() {
-    const questions = gatherQuestions();
-    let previewHTML = '<h3>Náhled na test:</h3>';
-    
-    questions.forEach((q, index) => {
-        previewHTML += 
-            `<div>
-                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>`;
-
-        // Vytvoření textového pole pro odpověď
-        q.answers.forEach((answer, ansIndex) => {
-            previewHTML += `
-                <label>
-                    <input type="checkbox" name="preview_question_${index}_${ansIndex}" /> ${answer.text}
-                </label><br>
-                <label>
-                    Vaše odpověď:
-                    <input type="text" name="preview_answer_${index}_${ansIndex}" placeholder="Napište odpověď" />
-                </label><br>
+            tableContainer.innerHTML = `
+                <label for="tableName-${tableId}">Název tabulky:</label>
+                <input type="text" id="tableName-${tableId}" placeholder="Zadejte název tabulky">
+                <br>
+                <label for="answer-${tableId}">Odpověď:</label>
+                <input type="text" id="answer-${tableId}" placeholder="Zadejte odpověď">
+                <br>
+                <button onclick="addAnswer('${tableId}')">Přidat odpověď</button>
+                <ul id="answersList-${tableId}"></ul>
             `;
-        });
 
-        previewHTML += `</div>`;
-    });
-
-    previewHTML += '<button type="button" onclick="evaluateTest()">Vyhodnotit test</button>';
-    document.getElementById('testContent').innerHTML = previewHTML;
-}
-
-// Funkce pro vyhodnocení odpovědí
-function evaluateTest() {
-    const questions = gatherQuestions();
-    let totalScore = 0;
-    let resultsHTML = '';
-
-    questions.forEach((q, index) => {
-        let questionScore = 0;
-        let userAnswers = [];
-
-        // Získání odpovědí uživatele
-        q.answers.forEach((answer, ansIndex) => {
-            const userAnswer = document.querySelector(`input[name="preview_answer_${index}_${ansIndex}"]`).value.trim();
-            const isAnswerCorrect = checkAnswer(userAnswer, answer.text);
-
-            // Získání, zda uživatel zaškrtnul odpověď jako správnou
-            const isAnswerChecked = document.querySelector(`input[name="preview_question_${index}_${ansIndex}"]`).checked;
-
-            // Body za správně napsanou odpověď
-            if (isAnswerCorrect) {
-                questionScore += 1; // Jeden bod za správně napsanou odpověď
-            }
-
-            // Body za správně zaškrtnutou odpověď
-            if (isAnswerChecked) {
-                questionScore += 1; // Jeden bod za správně zaškrtnutou odpověď
-            }
-
-            userAnswers.push({ 
-                answer: answer.text, 
-                isAnswerCorrect, 
-                isAnswerChecked,
-                userAnswer
-            });
-        });
-
-        totalScore += questionScore;
-
-        resultsHTML += `
-            <div>
-                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
-                <p><strong>Vaše odpovědi:</strong></p>
-                ${userAnswers.map((a, i) => `
-                    <p>
-                        Odpověd ${i + 1}: ${a.userAnswer} 
-                        (Správná odpověď: ${a.answer}) - 
-                        ${a.isAnswerCorrect ? 'Správně napsáno' : 'Špatně napsáno'} 
-                        ${a.isAnswerChecked ? '(Zaškrtnuto)' : '(Není zaškrtnuto)'}
-                    </p>
-                `).join('')}
-                <p><strong>Body pro tuto otázku:</strong> ${questionScore}</p>
-            </div>
-        `;
-    });
-
-    resultsHTML += `<p><strong>Celkové skóre:</strong> ${totalScore} / ${questions.length * 2}</p>`;
-    document.getElementById('resultsContainer').innerHTML = resultsHTML;
-    document.getElementById('resultsSection').style.display = 'block';
-}
-
-// Funkce pro porovnání odpovědi
-function checkAnswer(userAnswer, correctAnswer) {
-    return userAnswer.toLowerCase() === correctAnswer.toLowerCase();
-}
-
-
-function getGrade(score) {
-    const grade1 = parseInt(document.getElementById('grade1').value);
-    const grade2 = parseInt(document.getElementById('grade2').value);
-    const grade3 = parseInt(document.getElementById('grade3').value);
-    const grade4 = parseInt(document.getElementById('grade4').value);
-    const grade5 = parseInt(document.getElementById('grade5').value);
-    if (score >= grade1) return '1';
-    if (score >= grade2) return '2';
-    if (score >= grade3) return '3';
-    if (score >= grade4) return '4';
-    return '5';
-}
-
-      
-    
-
-    // Funkce pro odeslání testu
-    function submitTest() {
-        const answers = getAnswers();
-        const score = calculateScore(answers);
-        const grade = getGrade(score);
-
-        document.getElementById('scoreDisplay').innerText = `Počet bodů: ${score}`;
-        document.getElementById('gradeDisplay').innerText = `Známka: ${grade}`;
-        document.getElementById('resultsSection').style.display = 'block';
-    }
-
-    // Funkce pro získání odpovědí
-    function getAnswers() {
-        const answers = [];
-        const questions = document.querySelectorAll('.question-wrapper');
-        questions.forEach((question, index) => {
-            const answer = document.querySelector(`input[name="question${index + 1}_answer"]:checked`);
-            if (answer) {
-                answers.push(answer.value);
-            }
-        });
-        return answers;
-    }
-
-    // Funkce pro výpočet skóre
-    function calculateScore(answers) {
-        totalPoints = 0;
-        correctAnswers = 0;
-
-        answers.forEach(answer => {
-            if (answer === 'Ano') {
-                totalPoints += 1;
-                correctAnswers += 1;
-            }
-        });
-
-        return correctAnswers;
-    }
-      
-        document.getElementById('enableTimer').addEventListener('change', (e) => {
-            if (e.target.checked) {
-                totalTime = parseInt(document.getElementById('timer').value) * 60;
-                document.getElementById('timerDisplay').style.display = 'block';
-                startTimer();
-            } else {
-                clearInterval(timerInterval);
-                document.getElementById('timerDisplay').style.display = 'none';
-            }
-        });
-
-    // Funkce pro získání otázek
-    function getQuestions() {
-        const questions = [];
-        const questionElements = document.querySelectorAll('.question-wrapper');
-        questionElements.forEach((questionElement, index) => {
-            const questionText = questionElement.querySelector(`input[name="question${index + 1}_text"]`).value;
-            const points = parseInt(questionElement.querySelector(`input[name="question${index + 1}_points"]`).value);
-            questions.push({
-                text: questionText,
-                points: points
-            });
-        });
-        return questions;
-    }
-
-    function displayResults(correctAnswers, userAnswers) {
-    const correctDisplay = document.getElementById('correctAnswersDisplay');
-    const wrongDisplay = document.getElementById('wrongAnswersDisplay');
-    let correctHTML = '';
-    let wrongHTML = '';
-    let correctCount = 0;
-    let wrongCount = 0;
-
-    correctAnswers.forEach((answer, index) => {
-        const userAnswer = userAnswers[index];
-        if (userAnswer.toLowerCase() === answer.toLowerCase()) {
-            correctHTML += `<span class="correct">Otázka ${index + 1}: Správně - Odpověď: ${userAnswer}</span><br>`;
-            correctCount++;
-        } else {
-            wrongHTML += `<span class="wrong">Otázka ${index + 1}: Špatně - Odpověď: ${userAnswer} (Správně: ${answer})</span><br>`;
-            wrongCount++;
+            document.getElementById('tablesContainer').appendChild(tableContainer);
+            tables.push({ id: tableId, name: '', answers: [] });
         }
-    });
 
-    correctDisplay.innerHTML = `Úplně správně: ${correctCount} otázek<br>${correctHTML}`;
-    wrongDisplay.innerHTML = `Úplně špatně: ${wrongCount} otázek<br>${wrongHTML}`;
-}
+        // Funkce pro přidání odpovědi do tabulky
+        function addAnswer(tableId) {
+            const answerInput = document.getElementById(`answer-${tableId}`).value;
+            const tableNameInput = document.getElementById(`tableName-${tableId}`).value;
+            const answersList = document.getElementById(`answersList-${tableId}`);
 
+            if (answerInput.trim() !== '') {
+                const table = tables.find(t => t.id === tableId);
+                table.name = tableNameInput.trim() || `Tabulka ${tableId}`;
 
-// Zavolání funkce při kliknutí na tlačítko pro zobrazení výsledků
-function showResults() {
-    const questions = gatherQuestions();
-    let resultsHTML = '';
-    let totalScore = 0;
-    questions.forEach((q, index) => {
-        let questionScore = 0;
-        const correctAnswers = q.answers.filter(a => a.correct).map(a => a.text);
-        const userAnswers = [...document.querySelectorAll(`[name^="preview_question_${index}"]`)]
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.nextSibling.textContent.trim());
+                const answerObj = { id: `answer-${table.answers.length + 1}`, text: answerInput };
+                table.answers.push(answerObj);
 
-        const isCorrect = userAnswers.every(answer => correctAnswers.includes(answer)) &&
-                          correctAnswers.every(answer => userAnswers.includes(answer));
+                const answerItem = document.createElement('li');
+                answerItem.id = answerObj.id;
+                answerItem.innerHTML = `${answerObj.text}`;
 
-        questionScore = isCorrect ? 1 : 0;  // 1 bod za správnou odpověď
-        totalScore += questionScore;
+                // Add remove button to each answer
+                const removeButton = document.createElement('button');
+                removeButton.classList.add('remove-btn');
+                removeButton.textContent = 'Smazat';
+                removeButton.onclick = () => removeAnswer(answerItem, tableId, answerObj);
 
-        resultsHTML += `
-            <div>
-                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
-                <p><strong>Vaše odpovědi:</strong> ${userAnswers.join(', ')}</p>
-                <p><strong>Správné odpovědi:</strong> ${correctAnswers.join(', ')}</p>
-                <p><strong>Body:</strong> ${questionScore}</p>
-            </div>
-        `;
-    });
+                answerItem.appendChild(removeButton);
+                answersList.appendChild(answerItem);
 
-    resultsHTML += `<p><strong>Celkové skóre:</strong> ${totalScore} / ${questions.length}</p>`;
-    document.getElementById('resultsContainer').innerHTML = resultsHTML;
-    document.getElementById('resultsSection').style.display = 'block';
-}
+                document.getElementById(`answer-${tableId}`).value = '';
+            }
+        }
 
-    
-  // Function to save the test as Moodle XML
-function saveTestToXml() {
-    const testName = document.getElementById('testName').value;
-    const testDescription = document.getElementById('testDescription').value;
-    const questions = gatherQuestions();
+        // Funkce pro odstranění odpovědi
+        function removeAnswer(answerItem, tableId, answerObj) {
+            // Remove the answer from the list and table
+            const table = tables.find(t => t.id === tableId);
+            table.answers = table.answers.filter(a => a.id !== answerObj.id);
+            answerItem.remove();
+        }
 
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<quiz>
-    <name>${testName}</name>
-    <description>${testDescription}</description>`;
+        // Funkce pro náhled testu
+        function previewTest() {
+            // Pokud je povolený časomíra, nastavíme odpočítávání
+            if (document.getElementById('enableTimer').checked) {
+                timeLeft = parseInt(document.getElementById('timer').value) * 60; // převedení minut na sekundy
+                startTimer();
+            }
 
-    questions.forEach((question, index) => {
-        xmlContent += `
-    <question type="multichoice">
-        <name>
-            <text>Otázka ${index + 1}</text>
-        </name>
-        <questiontext format="html">
-            <text>${question.text}</text>
-        </questiontext>`;
-        
-        // Answers (you may add additional logic for correct answers, feedback, etc.)
-        question.answers.forEach(answer => {
-            xmlContent += `
-        <answer>
-            <text>${answer}</text>
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-        </answer>`;
-        });
+            const answersListContainer = document.getElementById('answersList');
+            answersListContainer.innerHTML = '';
+            allAnswers = [];
 
-        xmlContent += `
-    </question>`;
-    });
+            tables.forEach(table => {
+                table.answers.forEach(answer => {
+                    allAnswers.push(answer.text);
+                });
+            });
 
-    xmlContent += `
-</quiz>`;
+            // Náhodně zamíchejte odpovědi
+            allAnswers = shuffleArray(allAnswers);
 
-    const blob = new Blob([xmlContent], { type: 'application/xml' });
-    saveAs(blob, `${testName}.xml`);
-}
+            allAnswers.forEach(answer => {
+                const answerElement = document.createElement('div');
+                answerElement.classList.add('answer-item');
+                answerElement.setAttribute('draggable', true);
+                answerElement.textContent = answer;
+                answerElement.ondragstart = drag;
+                answersListContainer.appendChild(answerElement);
+            });
 
-// Function to save the test as JSON
-function saveTestToJson() {
-    const testName = document.getElementById('testName').value;
-    const testDescription = document.getElementById('testDescription').value;
-    const questions = gatherQuestions();
+            // Vytvoření tabulek pro přiřazování odpovědí
+            const tablesForDrag = document.getElementById('tablesForDrag');
+            tablesForDrag.innerHTML = '';
 
-    const testData = {
-        name: testName,
-        description: testDescription,
-        questions: questions
-    };
+            tables.forEach((table, index) => {
+                const dropArea = document.createElement('div');
+                dropArea.classList.add('drop-area');
+                dropArea.setAttribute('id', `dropArea-${index}`);
+                dropArea.setAttribute('ondrop', 'drop(event)');
+                dropArea.setAttribute('ondragover', 'allowDrop(event)');
 
-    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
-    saveAs(blob, `${testName}.json`);
-}
+                dropArea.innerHTML = `<h3>${table.name}</h3>`;
+                tablesForDrag.appendChild(dropArea);
+            });
 
-// Function to save the test as HTML
-function saveTestToHtml() {
-    const testName = document.getElementById('testName').value;
-    const testDescription = document.getElementById('testDescription').value;
-    const questions = gatherQuestions();
+            document.getElementById('testPreview').style.display = 'block';
+        }
 
-    let htmlContent = `
-    <html>
-        <head>
-            <title>${testName}</title>
-            <style>
-                body { font-family: Arial, sans-serif; }
-                .question { margin-bottom: 20px; }
-                .question label { font-weight: bold; }
-                .result { margin-top: 20px; }
-            </style>
-        </head>
-        <body>
-            <h1>${testName}</h1>
-            <p>${testDescription}</p>
-            <form id="testForm">`;
+        // Funkce pro zamíchání odpovědí
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
 
-    questions.forEach((question, index) => {
-        htmlContent += `
-            <div class="question">
-                <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
-                <div class="answers">
-                    ${question.answers.map((answer, idx) => `
-                        <p><textarea placeholder="Zadejte odpověď" required>${answer}</textarea></p>
-                    `).join('')}
-                </div>
-            </div>`;
-    });
+        // Funkce pro povolení dropu
+        function allowDrop(event) {
+            event.preventDefault();
+        }
 
-    htmlContent += `
-            <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
-            <div id="resultsContainer"></div>
-        </form>
-        </body>
-    </html>`;
+        // Funkce pro dragování
+        function drag(event) {
+            event.dataTransfer.setData('text', event.target.textContent);
+        }
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    saveAs(blob, `${testName}.html`);
-}
-function gatherQuestions() {
-    const questions = [];
-    const questionsContainer = document.getElementById('questionsContainer');
-    const questionWrappers = questionsContainer.querySelectorAll('.question-wrapper');
+        // Funkce pro spuštění dropu
+        function drop(event) {
+            event.preventDefault();
+            const answerText = event.dataTransfer.getData('text');
+            const dropArea = event.target.closest('.drop-area');
+            if (!dropArea) return;
 
-    questionWrappers.forEach(questionWrapper => {
-        const questionText = questionWrapper.querySelector('textarea').value;
-        const answers = [];
-        const answerElements = questionWrapper.querySelectorAll('.answers textarea');
+            // Přidání odpovědi do tabulky
+            const resultItem = document.createElement('div');
+            resultItem.textContent = answerText;
 
-        answerElements.forEach(answerElement => {
-            answers.push(answerElement.value);
-        });
+            // Přidání tlačítka pro smazání
+            const removeButton = document.createElement('button');
+            removeButton.classList.add('remove-btn');
+            removeButton.textContent = 'Smazat';
+            removeButton.onclick = () => resultItem.remove();
 
-        questions.push({
-            text: questionText,
-            answers: answers
-        });
-    });
+            resultItem.appendChild(removeButton);
+            dropArea.appendChild(resultItem);
+        }
 
-    return questions;
-}
-</script>
+        // Funkce pro odeslání testu a zobrazení výsledků
+        function submitTest() {
+            let correctAnswers = 0;
+            let incorrectAnswers = 0;
+            let totalAnswers = 0;
+
+            tables.forEach((table, index) => {
+                const dropArea = document.getElementById(`dropArea-${index}`);
+                const assignedAnswers = Array.from(dropArea.children).map(child => child.textContent);
+
+                table.answers.forEach(answer => {
+                    totalAnswers++;
+                    if (assignedAnswers.includes(answer.text)) {
+                        correctAnswers++;
+                    } else {
+                        incorrectAnswers++;
+                    }
+                });
+            });
+
+            // Výpočet známky
+            const grade = calculateGrade(correctAnswers);
+
+            // Zobrazení výsledků
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `
+                <p>Celkem: ${totalAnswers} odpovědí</p>
+                <p>Správně: ${correctAnswers} odpovědí</p>
+                <p>Špatně: ${incorrectAnswers} odpovědí</p>
+                <p>Vaše známka: ${grade}</p>
+            `;
+            document.getElementById('results').style.display = 'block';
+
+            // Zastavení časomíry po odeslání
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
+        // Funkce pro výpočet známky na základě počtu správných odpovědí
+        function calculateGrade(correctAnswers) {
+            const grade1 = parseInt(document.getElementById('grade1').value);
+            const grade2 = parseInt(document.getElementById('grade2').value);
+            const grade3 = parseInt(document.getElementById('grade3').value);
+            const grade4 = parseInt(document.getElementById('grade4').value);
+            const grade5 = parseInt(document.getElementById('grade5').value);
+
+            if (correctAnswers >= grade1) return "1 (výborný)";
+            if (correctAnswers >= grade2) return "2 (chvalitebný)";
+            if (correctAnswers >= grade3) return "3 (dobrý)";
+            if (correctAnswers >= grade4) return "4 (dostatečný)";
+            return "5 (nedostatečný)";
+        }
+
+        // Funkce pro spuštění časomíry
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Čas vypršel!");
+                } else {
+                    timeLeft--;
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    document.getElementById('timerDisplay').textContent = `${formatTime(minutes)}:${formatTime(seconds)}`;
+                }
+            }, 1000);
+        }
+
+        // Funkce pro formátování času na MM:SS
+        function formatTime(time) {
+            return time < 10 ? `0${time}` : time;
+        }
+    </script>
+</body>
+</html>
+

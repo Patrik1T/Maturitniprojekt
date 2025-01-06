@@ -90,21 +90,21 @@
     </div>
     
     <!-- Přidat vstupy pro známky -->
-<label for="grade1">Známka 1 (minimální procento):</label>
-<input type="number" id="grade1" min="0" max="100" value="90">
+<label for="grade1">Známka 1 (procenta):</label>
+<input type="number" id="grade1" value="90">
 <br>
-<label for="grade2">Známka 2 (minimální procento):</label>
-<input type="number" id="grade2" min="0" max="100" value="75">
+<label for="grade2">Známka 2 (procenta):</label>
+<input type="number" id="grade2" value="80">
 <br>
-<label for="grade3">Známka 3 (minimální procento):</label>
-<input type="number" id="grade3" min="0" max="100" value="50">
+<label for="grade3">Známka 3 (procenta):</label>
+<input type="number" id="grade3" value="70">
 <br>
-<label for="grade4">Známka 4 (minimální procento):</label>
-<input type="number" id="grade4" min="0" max="100" value="30">
+<label for="grade4">Známka 4 (procenta):</label>
+<input type="number" id="grade4" value="60">
 <br>
-<label for="grade5">Známka 5 (minimální procento):</label>
-<input type="number" id="grade5" min="0" max="100" value="0">
-<br>
+<label for="grade5">Známka 5 (procenta):</label>
+<input type="number" id="grade5" value="50">
+
 
 
     <label for="timeLimit">Nastavit časomíru (minuty, 0 pro vypnutí):</label>
@@ -288,9 +288,14 @@ function deleteQuestion(index) {
             updateTestQuestion();
             updateProgress();
         } else {
+            // Pokud všechny otázky byly zodpovězeny, zastavit časomíru a zobrazit výsledek
+            if (interval) {
+                clearInterval(interval);
+            }
             showResult();
         }
     }
+
 
     // Funkce pro návrat zpět k předchozí otázce
     function backQuestion() {
@@ -301,17 +306,19 @@ function deleteQuestion(index) {
         }
     }
     
-   // Funkce pro zobrazení výsledků
+  // Funkce pro zobrazení výsledků
 function showResult() {
     const totalPoints = questions.reduce((sum, question) => sum + question.points, 0);
-    const gradeBoundary1 = parseInt(document.getElementById('grade1').value);
-    const gradeBoundary2 = parseInt(document.getElementById('grade2').value);
-    const gradeBoundary3 = parseInt(document.getElementById('grade3').value);
-    const gradeBoundary4 = parseInt(document.getElementById('grade4').value);
-    const gradeBoundary5 = parseInt(document.getElementById('grade5').value);
+    const gradeBoundary1 = parseInt(document.getElementById('grade1').value); // Například 90%
+    const gradeBoundary2 = parseInt(document.getElementById('grade2').value); // Například 80%
+    const gradeBoundary3 = parseInt(document.getElementById('grade3').value); // Například 70%
+    const gradeBoundary4 = parseInt(document.getElementById('grade4').value); // Například 60%
+    const gradeBoundary5 = parseInt(document.getElementById('grade5').value); // Například 50%
 
+    // Výpočet procenta správně zodpovězených odpovědí
     const gradePercentage = (correctAnswers / totalPoints) * 100;
 
+    // Určení známky podle procenta
     let gradeMessage = '';
 
     if (gradePercentage >= gradeBoundary1) {
@@ -322,13 +329,16 @@ function showResult() {
         gradeMessage = 'Známka: 3';
     } else if (gradePercentage >= gradeBoundary4) {
         gradeMessage = 'Známka: 4';
-    } else {
+    } else if (gradePercentage >= gradeBoundary5) {
         gradeMessage = 'Známka: 5';
+    } else {
+        gradeMessage = 'Známka: 5'; // Pokud je méně než gradeBoundary5, je to 5
     }
 
     const resultMessage = `Správně ${correctAnswers} z ${totalPoints} bodů.`;
     const scoreMessage = `Celkové skóre: ${correctAnswers} z ${totalPoints} bodů.`;
 
+    // Zobrazení výsledků
     document.getElementById('resultMessage').textContent = resultMessage;
     document.getElementById('scoreMessage').textContent = scoreMessage;
     document.getElementById('gradeMessage').textContent = gradeMessage;
@@ -339,11 +349,24 @@ function showResult() {
 
     // Funkce pro restartování testu
     function restartTest() {
+        // Zastavit časomíru, pokud je aktivní
+        if (interval) {
+            clearInterval(interval);
+        }
+
         currentQuestionIndex = 0;
         correctAnswers = 0;
         updateTestQuestion();
         updateProgress();
         document.getElementById('resultContainer').style.display = 'none';
+
+        // Pokud je časomíra aktivní, nastavíme správný čas
+        const useTimer = document.getElementById('useTimer').checked;
+        if (useTimer && timeLimit > 0) {
+            timeLeft = timeLimit * 60; // Obnovíme původní čas
+            document.getElementById('timeLeft').textContent = timeLeft;
+            startTimer();
+        }
     }
 
     // Funkce pro aktualizaci pokroku
