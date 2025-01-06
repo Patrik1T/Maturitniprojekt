@@ -164,6 +164,7 @@
 <h2>Uložení testu</h2>
     <form id="testForm">
         <div id="questionsContainer"></div>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
         <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
         <button type="button" class="submit-btn" onclick="saveTest('ulozene_testy')">Uložit jako soukromý test</button>
         <button type="button" class="submit-btn" onclick="saveAsHtml()">Uložit jako HTML</button>
@@ -184,9 +185,16 @@
     <div class="timer-display" id="timerDisplay" style="display:none;">
         <p>Čas zbývající: <span id="timerCount"></span></p>
     </div>
-
+<button type="button" class="end-test-btn" onclick="displayResults()">Dokončit test</button>
+    
+<div class="results" id="resultsSection" style="display:none;">
+    <h2>Výsledky testu</h2>
+    <p id="scoreDisplay"></p>
+    <p id="gradeDisplay"></p>
 </div>
 
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
     let questionCount = 0;
 
@@ -203,6 +211,10 @@
                 <label><input type="radio" name="question${questionCount}_answer" value="1" required> Ano</label>
                 <label><input type="radio" name="question${questionCount}_answer" value="2" required> Ne</label>
             </div>
+     <div>
+        <label for="question${questionCount}_points">Body za otázku:</label>
+        <input type="number" id="question${questionCount}_points" name="question${questionCount}_points" min="1" value="1" required>
+    </div>
             <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
         </div>`;
         document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
@@ -227,6 +239,10 @@
                 <label><input type="radio" name="question${questionCount}_answer" value="4" required>
                 <input type="text" name="question${questionCount}_option4" placeholder="Odpověď 4" required></label>
             </div>
+<div>
+        <label for="question${questionCount}_points">Body za otázku:</label>
+        <input type="number" id="question${questionCount}_points" name="question${questionCount}_points" min="1" value="1" required>
+    </div>
             <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
         </div>`;
         document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
@@ -245,6 +261,10 @@
                 <label for="question${questionCount}_text_answer">Odpověď:</label>
                 <textarea name="question${questionCount}_text_answer" placeholder="Zadejte odpověď" required></textarea>
             </div>
+<div>
+        <label for="question${questionCount}_points">Body za otázku:</label>
+        <input type="number" id="question${questionCount}_points" name="question${questionCount}_points" min="1" value="1" required>
+    </div>
             <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
         </div>`;
         document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
@@ -263,6 +283,10 @@
                 <label for="fileUpload">Přidat soubor:</label>
                 <input type="file" name="fileUpload" required>
             </div>
+<div>
+        <label for="question${questionCount}_points">Body za otázku:</label>
+        <input type="number" id="question${questionCount}_points" name="question${questionCount}_points" min="1" value="1" required>
+    </div>
             <button type="button" class="delete-question-btn" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
         </div>`;
         document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionTemplate);
@@ -309,6 +333,195 @@
         document.getElementById('testContent').innerHTML = '';
         alert('Test byl ukončen');
     }
+    
+ function previewTest() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+    const questionsContainer = document.getElementById('questionsContainer').innerHTML;
+
+    if (!testName.trim()) {
+        alert('Prosím, zadejte název testu.');
+        return;
+    }
+
+    // Vytvoření obsahu náhledu
+    const previewContent = `
+        <h1>${testName}</h1>
+        <p>${testDescription}</p>
+        <div>${questionsContainer}</div>
+    `;
+
+    // Vložení obsahu do sekce pro náhled
+    const previewSection = document.getElementById('previewTest');
+    previewSection.style.display = 'block';
+    document.getElementById('testContent').innerHTML = previewContent;
+
+    // Scroll do sekce náhledu
+    previewSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+function displayResults() {
+    const totalQuestions = document.querySelectorAll('.question-wrapper').length;
+    let totalPoints = 0;
+    let earnedPoints = 0;
+
+    // Procházíme otázky a kontrolujeme odpovědi
+    for (let i = 1; i <= totalQuestions; i++) {
+        const selectedAnswer = document.querySelector(`input[name="question${i}_answer"]:checked`);
+        const questionPoints = parseInt(document.querySelector(`input[name="question${i}_points"]`).value) || 0;
+        totalPoints += questionPoints;
+
+        if (selectedAnswer) {
+            // Pokud je odpověď správná (hodnota 1 jako příklad správné odpovědi)
+            if (selectedAnswer.value === "1") {
+                earnedPoints += questionPoints;
+            }
+        }
+    }
+
+    // Výpočet procent
+    const score = Math.round((earnedPoints / totalPoints) * 100);
+
+    // Získání hranic pro známky
+    const grade1 = parseInt(document.getElementById('grade1').value) || 90;
+    const grade2 = parseInt(document.getElementById('grade2').value) || 70;
+    const grade3 = parseInt(document.getElementById('grade3').value) || 50;
+    const grade4 = parseInt(document.getElementById('grade4').value) || 30;
+
+    let grade;
+    if (score >= grade1) {
+        grade = 1;
+    } else if (score >= grade2) {
+        grade = 2;
+    } else if (score >= grade3) {
+        grade = 3;
+    } else if (score >= grade4) {
+        grade = 4;
+    } else {
+        grade = 5;
+    }
+
+    // Zobrazení výsledků
+    const resultsSection = document.getElementById('resultsSection');
+    document.getElementById('scoreDisplay').innerText = `Vaše skóre: ${score}% (${earnedPoints} bodů z ${totalPoints})`;
+    document.getElementById('gradeDisplay').innerText = `Vaše známka: ${grade}`;
+    resultsSection.style.display = 'block';
+
+    // Scroll do sekce výsledků
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Funkce pro uložení jako Moodle XML
+    function saveTestToXml() {
+            const testName = document.getElementById('testName').value;
+            const testDescription = document.getElementById('testDescription').value;
+            const questions = gatherQuestions();
+
+            let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <name>${testName}</name>
+    <description>${testDescription}</description>`;
+
+            questions.forEach((question, index) => {
+                xmlContent += `
+    <question type="multichoice">
+        <name>
+            <text>Otázka ${index + 1}</text>
+        </name>
+        <questiontext format="html">
+            <text>${question.text}</text>
+        </questiontext>
+        <answer>
+            <text>${question.correctAnswer}</text>
+            <feedback>
+                <text>Správná odpověď!</text>
+            </feedback>
+        </answer>
+    </question>`;
+            });
+
+            xmlContent += `
+</quiz>`;
+
+            const blob = new Blob([xmlContent], { type: 'application/xml' });
+            saveAs(blob, `${testName}.xml`);
+        }
+
+
+// Funkce pro uložení jako JSON
+ function saveTestToJson() {
+            const testName = document.getElementById('testName').value;
+            const testDescription = document.getElementById('testDescription').value;
+            const questions = gatherQuestions();
+
+            const testData = {
+                name: testName,
+                description: testDescription,
+                questions: questions
+            };
+
+            const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+            saveAs(blob, `${testName}.json`);
+        }
+      
+
+
+
+function saveTestToHtml() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+    const questions = gatherQuestions(); // Funkce pro získání všech otázek
+
+    let htmlContent = `
+        <html>
+            <head>
+                <title>${testName}</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    .question {
+                        margin-bottom: 20px;
+                    }
+                    .question label {
+                        font-weight: bold;
+                    }
+                    .result {
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>${testName}</h1>
+                <p>${testDescription}</p>
+                <form id="testForm">
+    `;
+
+    // Generování otázek
+    questions.forEach((question, index) => {
+        htmlContent += `
+            <div class="question">
+                <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
+                <label for="answer_${index}">Odpověď:</label>
+                <input type="text" name="answer_${index}" placeholder="Zadejte odpověď">
+            </div>
+        `;
+    });
+    
+
+    htmlContent += `
+            <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
+            <div id="resultsContainer"></div> <!-- Kontejner pro výsledky -->
+        </form>
+        </body>
+    </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName}.html`);
+}
+
+
 </script>
 
 </body>

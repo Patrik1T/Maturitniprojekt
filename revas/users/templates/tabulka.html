@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test s přetahováním</title>
+    <title>Test: Přiřazování otázek</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,24 +16,8 @@
         .table-container {
             margin-bottom: 20px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
         .add-btn {
             margin: 10px 0;
-        }
-        .table-header {
-            margin-top: 10px;
         }
         .draggable-container {
             display: flex;
@@ -53,224 +37,470 @@
             min-height: 100px;
             margin-top: 20px;
         }
-        .question {
-            padding: 10px;
-            margin: 5px;
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            cursor: pointer;
-        }
-        .active {
-            background-color: #d3ffd3;
-        }
         .result-container {
             margin-top: 20px;
             padding: 10px;
             border: 1px solid #ccc;
             background-color: #f9f9f9;
         }
-        .result-item {
-            margin: 5px 0;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Vytvoření Testu s přetahováním otázek</h1>
+        <h1>Test s přetahováním otázek</h1>
 
-        <!-- Tlačítko pro přidání nové tabulky -->
         <button class="add-btn" onclick="addTable()">Přidat tabulku</button>
 
-        <!-- Místo pro dynamicky přidávané tabulky -->
         <div id="tablesContainer"></div>
 
-        <!-- Tlačítko pro náhled testu -->
         <button class="add-btn" onclick="previewTest()">Náhled testu</button>
-
-        <!-- Sekce pro náhled testu -->
+    <button class="add-btn" onclick="saveTestToHtml()">Uložit do HTML</button>
+    <button class="add-btn" onclick="saveTestToXml()">Uložit do XML</button>
+    <button class="add-btn" onclick="saveTestToJson()">Uložit do JSON</button>
         <div id="testPreview" style="display: none;">
             <h2>Náhled testu</h2>
             <div id="draggableQuestions" class="draggable-container"></div>
-            <div id="dropArea" class="drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <h3>Přetáhněte otázky sem:</h3>
-            </div>
+            <div id="tablesForDrag"></div>
+
             <button class="add-btn" onclick="submitTest()">Odeslat odpovědi</button>
         </div>
 
-        <!-- Sekce pro zobrazení výsledků -->
         <div id="results" class="result-container" style="display: none;">
             <h3>Výsledky testu:</h3>
             <div id="resultContent"></div>
         </div>
     </div>
 
+
     <script>
         let tables = [];
         let questions = [];
 
-        // Funkce pro přidání nové tabulky
         function addTable() {
-            const tableId = `table-${tables.length + 1}`;
-            const tableContainer = document.createElement('div');
-            tableContainer.classList.add('table-container');
-            tableContainer.id = tableId;
+    const tableId = `table-${tables.length + 1}`;
+    const tableContainer = document.createElement('div');
+    tableContainer.classList.add('table-container');
+    tableContainer.id = tableId;
 
-            const tableHeader = document.createElement('div');
-            tableHeader.classList.add('table-header');
-            tableHeader.innerHTML = `
-                <label for="tableName-${tableId}">Název tabulky:</label>
-                <input type="text" id="tableName-${tableId}" placeholder="Zadejte název tabulky">
-                <button onclick="addAnswer('${tableId}')">Přidat odpověď</button>
-            `;
+    tableContainer.innerHTML = `
+        <label for="tableName-${tableId}">Název tabulky:</label>
+        <input type="text" id="tableName-${tableId}" placeholder="Zadejte název tabulky">
+        <br>
+        <label for="question-${tableId}">Otázka:</label>
+        <input type="text" id="question-${tableId}" placeholder="Zadejte otázku">
+        <br>
+        <button onclick="addQuestion('${tableId}')">Přidat otázku</button>
+        <ul id="questionsList-${tableId}"></ul>
+    `;
 
-            const table = document.createElement('table');
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Odpověď</th>
-                        <th>Akce</th>
-                    </tr>
-                </thead>
-                <tbody id="answersBody-${tableId}">
-                    <!-- Odpovědi budou přidávány zde -->
-                </tbody>
-            `;
+    document.getElementById('tablesContainer').appendChild(tableContainer);
+    tables.push({ id: tableId, name: '', questions: [] });
+}
 
-            tableContainer.appendChild(tableHeader);
-            tableContainer.appendChild(table);
-            document.getElementById('tablesContainer').appendChild(tableContainer);
+function addQuestion(tableId) {
+    const questionInput = document.getElementById(`question-${tableId}`).value;
+    const tableNameInput = document.getElementById(`tableName-${tableId}`);
+    const questionList = document.getElementById(`questionsList-${tableId}`);
 
-            // Uložit tabulku
-            tables.push({ id: tableId, name: '', answers: [] });
-        }
+    if (questionInput.trim() !== '') {
+        const table = tables.find(t => t.id === tableId);
 
-        // Funkce pro přidání odpovědi do tabulky
-        function addAnswer(tableId) {
-            const answerInput = document.createElement('input');
-            answerInput.type = 'text';
-            answerInput.placeholder = 'Zadejte odpověď';
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${answerInput.outerHTML}</td>
-                <td><button onclick="removeAnswer(this, '${tableId}')">Smazat</button></td>
-            `;
-            document.getElementById(`answersBody-${tableId}`).appendChild(row);
+        // Aktualizace názvu tabulky
+        table.name = tableNameInput.value.trim() || `Tabulka ${tableId}`;
 
-            // Uložit odpověď do tabulky
-            const table = tables.find(t => t.id === tableId);
-            table.answers.push(answerInput);
-        }
+        // Přidání hlavní otázky
+        const questionObj = { id: `question-${table.questions.length + 1}`, text: questionInput, visible: true };
+        table.questions.push(questionObj);
 
-        // Funkce pro odstranění odpovědi
-        function removeAnswer(button, tableId) {
-            const row = button.closest('tr');
-            row.remove();
+        // Přidání otázky do viditelného seznamu
+        const questionItem = document.createElement('li');
+        questionItem.id = questionObj.id;
+        questionItem.innerHTML = `
+            ${questionObj.text} 
+            <button onclick="editQuestion('${tableId}', '${questionObj.id}')">Editovat</button>
+            <button onclick="deleteQuestion('${tableId}', '${questionObj.id}')">Smazat</button>
+        `;
+        questionList.appendChild(questionItem);
 
-            // Odstranit odpověď ze seznamu odpovědí tabulky
-            const table = tables.find(t => t.id === tableId);
-            const index = Array.from(row.parentNode.children).indexOf(row);
-            table.answers.splice(index, 1);
-        }
+        // Vymazání vstupu otázky
+        document.getElementById(`question-${tableId}`).value = '';
 
-        // Funkce pro náhled testu
-        function previewTest() {
-            const allQuestions = [];
+        // Přidání dvou neviditelných otázek s tečkou
+        addHiddenQuestions(tableId);
+    }
+}
 
-            // Získání odpovědí ze všech tabulek
-            tables.forEach(table => {
-                table.answers.forEach(answerInput => {
-                    allQuestions.push({ question: table.name, answer: answerInput.value });
-                });
+function addHiddenQuestions(tableId) {
+    const table = tables.find(t => t.id === tableId);
+
+    // Přidání dvou neviditelných otázek s textem "•"
+    for (let i = 1; i <= 2; i++) {
+        const hiddenQuestion = {
+            id: `hidden-${table.questions.length + 1}`,
+            text: "•",  // Neviditelná otázka s tečkou
+            visible: false,
+        };
+        table.questions.push(hiddenQuestion);
+    }
+}
+
+
+
+
+
+function editQuestion(tableId, questionId) {
+    const table = tables.find(t => t.id === tableId);
+    const question = table.questions.find(q => q.id === questionId);
+
+    if (question) {
+        const questionItem = document.getElementById(questionId);
+        questionItem.innerHTML = `
+            <input type="text" id="editInput-${questionId}" value="${question.text}" />
+            <button onclick="saveEdit('${tableId}', '${questionId}')">Uložit</button>
+            <button onclick="cancelEdit('${tableId}', '${questionId}')">Zrušit</button>
+        `;
+    }
+}
+
+function saveEdit(tableId, questionId) {
+    const table = tables.find(t => t.id === tableId);
+    const question = table.questions.find(q => q.id === questionId);
+    const editInput = document.getElementById(`editInput-${questionId}`);
+
+    if (question && editInput.value.trim() !== '') {
+        question.text = editInput.value.trim();
+        const questionItem = document.getElementById(questionId);
+        questionItem.innerHTML = `
+            ${question.text} 
+            <button onclick="editQuestion('${tableId}', '${questionId}')">Editovat</button>
+            <button onclick="deleteQuestion('${tableId}', '${questionId}')">Smazat</button>
+        `;
+    }
+}
+
+function cancelEdit(tableId, questionId) {
+    const table = tables.find(t => t.id === tableId);
+    const question = table.questions.find(q => q.id === questionId);
+
+    if (question) {
+        const questionItem = document.getElementById(questionId);
+        questionItem.innerHTML = `
+            ${question.text} 
+            <button onclick="editQuestion('${tableId}', '${questionId}')">Editovat</button>
+            <button onclick="deleteQuestion('${tableId}', '${questionId}')">Smazat</button>
+        `;
+    }
+}
+
+
+function deleteQuestion(tableId, questionId) {
+    const table = tables.find(t => t.id === tableId);
+    const questionIndex = table.questions.findIndex(q => q.id === questionId);
+
+    if (questionIndex > -1) {
+        table.questions.splice(questionIndex, 1);
+        document.getElementById(questionId).remove();
+    }
+}
+
+function previewTest() {
+    const draggableQuestionsContainer = document.getElementById('draggableQuestions');
+    draggableQuestionsContainer.innerHTML = '';
+
+    // Vyčištění a vytvoření seznamu otázek
+    questions = []; // Resetování globálního pole
+    tables.forEach(table => {
+        table.questions
+            .filter(q => q.visible) // Pouze viditelné otázky
+            .forEach(question => {
+                questions.push({ question: question.text, tableName: table.name });
             });
+    });
 
-            if (allQuestions.length < 1) {
-                alert('Musíte zadat alespoň jednu otázku!');
-                return;
-            }
+    // Vytvoření přetahovatelných otázek
+    questions.forEach((q, index) => {
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('draggable');
+        questionElement.setAttribute('draggable', true);
+        questionElement.textContent = q.question; // Zobrazení textu otázky
+        questionElement.ondragstart = drag;
+        questionElement.setAttribute('data-index', index); // Ukládáme index otázky pro manipulaci
+        draggableQuestionsContainer.appendChild(questionElement);
+    });
 
-            // Zobrazit otázky pro přetahování
-            const draggableQuestionsContainer = document.getElementById('draggableQuestions');
-            draggableQuestionsContainer.innerHTML = '';
+    // Vytvoření tabulek pro přetažení otázek
+    const tablesForDrag = document.getElementById('tablesForDrag');
+    tablesForDrag.innerHTML = '';
 
-            questions = allQuestions.slice(); // Uchováme otázky pro test
+    tables.forEach((table, index) => {
+        const dropArea = document.createElement('div');
+        dropArea.classList.add('drop-area');
+        dropArea.setAttribute('id', `dropArea-${index}`);
+        dropArea.setAttribute('ondrop', 'drop(event)');
+        dropArea.setAttribute('ondragover', 'allowDrop(event)');
 
-            // Zobrazit otázky jako "draggable" elementy
-            questions.forEach((questionObj, index) => {
-                const questionElement = document.createElement('div');
-                questionElement.classList.add('draggable', 'question');
-                questionElement.setAttribute('draggable', true);
-                questionElement.textContent = questionObj.question;
-                questionElement.ondragstart = drag;
-                questionElement.setAttribute('data-index', index); // Uložení indexu pro pozdější kontrolu
-                draggableQuestionsContainer.appendChild(questionElement);
-            });
+        // Použití názvu tabulky
+        dropArea.innerHTML = `<h3>${table.name}</h3>`;
+        tablesForDrag.appendChild(dropArea);
+    });
 
-            // Zobrazit test
-            document.getElementById('testPreview').style.display = 'block';
-        }
+    // Zobrazení náhledu
+    document.getElementById('testPreview').style.display = 'block';
+}
 
-        // Funkce pro povolení přetahování
+
+
         function allowDrop(event) {
             event.preventDefault();
         }
 
-        // Funkce pro přetahování odpovědí
         function drag(event) {
-            event.dataTransfer.setData('text', event.target.textContent);
             event.dataTransfer.setData('index', event.target.getAttribute('data-index'));
         }
 
-        // Funkce pro umístění odpovědí do oblasti pro přetahování
         function drop(event) {
-            event.preventDefault();
-            const data = event.dataTransfer.getData('text');
-            const questionIndex = event.dataTransfer.getData('index');
-            const questionObj = questions[questionIndex];
+    event.preventDefault();
+    const questionIndex = event.dataTransfer.getData('index');
+    const questionObj = questions[questionIndex];
 
-            // Najít odpovídající tabulku a přidat otázku do ní
-            const targetTable = event.target.closest('.drop-area');
+    if (questionObj) {
+        const dropArea = event.target.closest('.drop-area'); // Ujistíme se, že přetahujeme na správné místo
+        if (!dropArea) return;
 
-            if (targetTable && targetTable.id === 'dropArea') {
-                const targetTableId = event.target.id;
-                const targetTableElement = document.querySelector(`#table-${targetTableId} tbody`);
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td>${questionObj.question}</td>
-                    <td><button onclick="removeFromTable(this, '${targetTableId}')">Smazat</button></td>
-                `;
-                targetTableElement.appendChild(newRow);
-                questions.splice(questionIndex, 1); // Smazat otázku ze seznamu
+        const tableName = dropArea.querySelector('h3').textContent;
 
-                // Odebrat přetáhnutou otázku z oblasti přetahování
-                event.target.remove();
-            }
-        }
+        const resultItem = document.createElement('div');
+        resultItem.textContent = questionObj.question;
+        resultItem.classList.add('result-item');
+        dropArea.appendChild(resultItem);
 
-        // Funkce pro odstranění otázky z tabulky
-        function removeFromTable(button, tableId) {
-            const row = button.closest('tr');
-            row.remove();
-            // Otázka je zpět v seznamu pro přetahování
-        }
+        dropArea.setAttribute('data-question', questionObj.question);
+        dropArea.setAttribute('data-table', tableName);
 
-        // Funkce pro odeslání testu (kontrola)
+        questions.splice(questionIndex, 1);
+        document.querySelector(`.draggable[data-index='${questionIndex}']`).remove();
+    }
+}
+
+
         function submitTest() {
-            // Zobrazí všechny tabulky a jejich odpovědi
-            const resultContent = document.getElementById('resultContent');
-            resultContent.innerHTML = '';
-            tables.forEach(table => {
-                const tableResult = document.createElement('div');
-                tableResult.classList.add('result-item');
-                tableResult.innerHTML = `<strong>${table.name}</strong>: <br>`;
-                table.answers.forEach(answer => {
-                    tableResult.innerHTML += `- ${answer.value}<br>`;
-                });
-                resultContent.appendChild(tableResult);
+            let correctAnswers = 0;
+            let totalAnswers = 0;
+
+            tables.forEach((table, index) => {
+                const dropArea = document.getElementById(`dropArea-${index}`);
+                const correctTableName = table.name;
+
+                const assignedQuestion = dropArea.getAttribute('data-question');
+                if (assignedQuestion) {
+                    totalAnswers++;
+                    if (correctTableName === dropArea.getAttribute('data-table')) {
+                        correctAnswers++;
+                    }
+                }
             });
 
-            // Zobrazit výsledky
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `
+                <p>Celkem: ${totalAnswers} odpovědí</p>
+                <p>Správně: ${correctAnswers} odpovědí</p>
+            `;
             document.getElementById('results').style.display = 'block';
         }
+        
+       function showHiddenQuestions() {
+    tables.forEach(table => {
+        table.questions.forEach(question => {
+            if (!question.visible) {
+                question.visible = true;
+
+                // Zobrazení otázky na stránce
+                const questionList = document.getElementById(`questionsList-${table.id}`);
+                const questionItem = document.createElement('li');
+                questionItem.id = question.id;
+                questionItem.innerHTML = `
+                    ${question.text} 
+                    <button onclick="editQuestion('${table.id}', '${question.id}')">Editovat</button>
+                    <button onclick="deleteQuestion('${table.id}', '${question.id}')">Smazat</button>
+                `;
+                questionList.appendChild(questionItem);
+            }
+        });
+    });
+}
+   // Funkce pro export do XML
+    function saveTestToXml() {
+    const testName = "Test Name";  // Dynamicky zadané hodnoty
+    const testDescription = "Test Description";
+    const questions = gatherQuestions();
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <name>${testName}</name>
+    <description>${testDescription}</description>`;
+
+    questions.forEach((question, index) => {
+        xmlContent += `
+    <question type="multichoice">
+        <name>
+            <text>Otázka ${index + 1}</text>
+        </name>
+        <questiontext format="html">
+            <text>${question.text}</text>
+        </questiontext>`;
+        
+        question.answers.forEach(answer => {
+            xmlContent += `
+        <answer>
+            <text>${answer}</text>
+            <feedback>
+                <text>Správná odpověď!</text>
+            </feedback>
+        </answer>`;
+        });
+
+        xmlContent += `
+    </question>`;
+    });
+
+    xmlContent += `
+</quiz>`;
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName}.xml`);
+}
+
+
+    // Funkce pro export do JSON
+   function saveTestToJson() {
+    const testName = "Test Name";  // Použijte dynamické hodnoty z formuláře
+    const testDescription = "Test Description";  // Stejně tak
+    const questions = gatherQuestions();  // Ujistěte se, že sbíráte správně otázky a odpovědi
+
+    const testData = {
+        name: testName,
+        description: testDescription,
+        questions: questions
+    };
+
+    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+    saveAs(blob, `${testName}.json`);
+}
+
+
+    // Funkce pro export do HTML
+    function saveTestToHtml() {
+    const testName = "Test Name";  // Dynamicky zadané hodnoty
+    const testDescription = "Test Description";  // Dynamické hodnoty, pokud je to možné
+    const questions = gatherQuestions();  // Získání dat o otázkách
+
+    let htmlContent = `
+    <html>
+        <head>
+            <title>${testName}</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .question { margin-bottom: 20px; }
+                .question label { font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <h1>${testName}</h1>
+            <p>${testDescription}</p>
+            <form id="testForm">`;
+
+    // Pro každou otázku generujeme HTML
+    questions.forEach((question, index) => {
+        htmlContent += `
+            <div class="question">
+                <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
+                <textarea placeholder="Zadejte odpověď" required></textarea>
+            </div>`;
+    });
+
+    htmlContent += `
+            <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
+        </form>
+        </body>
+    </html>`;
+
+    // Vytvoření souboru a uložení
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName}.html`);
+}
+
+function saveTestToJson() {
+    const testName = "Test Name";  // Dynamicky zadané hodnoty
+    const testDescription = "Test Description";  // Dynamické hodnoty
+    const questions = gatherQuestions();  // Získání dat o otázkách
+
+    const testData = {
+        name: testName,
+        description: testDescription,
+        questions: questions
+    };
+
+    // Vytvoření JSON souboru a uložení
+    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+    saveAs(blob, `${testName}.json`);
+}
+function saveTestToXml() {
+    const testName = "Test Name";  // Dynamicky zadané hodnoty
+    const testDescription = "Test Description";  // Dynamické hodnoty
+    const questions = gatherQuestions();  // Získání dat o otázkách
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <name>${testName}</name>
+    <description>${testDescription}</description>`;
+
+    questions.forEach((question, index) => {
+        xmlContent += `
+    <question>
+        <name>
+            <text>Otázka ${index + 1}</text>
+        </name>
+        <questiontext>
+            <text>${question.text}</text>
+        </questiontext>
+        <answer>
+            <text>Odpověď</text>
+        </answer>
+    </question>`;
+    });
+
+    xmlContent += `</quiz>`;
+
+    // Vytvoření XML souboru a uložení
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName}.xml`);
+}
+
+function gatherQuestions() {
+    const questions = [];
+    
+    // Procházíme všechny tabulky a získáváme jejich otázky
+    tables.forEach(table => {
+        table.questions.forEach(question => {
+            if (question.visible) {  // Pouze viditelné otázky
+                questions.push({
+                    text: question.text,
+                    answers: []  // Zde byste měli přidat logiku pro odpovědi, pokud jsou
+                });
+            }
+        });
+    });
+    
+    return questions;
+}
+
+
     </script>
 </body>
 </html>
+
+
+
+
+
+
