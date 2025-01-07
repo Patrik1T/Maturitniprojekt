@@ -1,3 +1,9 @@
+  {% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -87,7 +93,10 @@
 <h1>Flappy Quiz Bird</h1>
 
 <div id="questionManager">
+    
     <h2>Správa otázek</h2>
+    
+    
     <div>
         <label for="newQuestion">Otázka:</label>
         <input type="text" id="newQuestion">
@@ -426,4 +435,4 @@ function updateLocalStorage() {
 
 </body>
 </html>
-
+{% endblock %}

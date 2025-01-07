@@ -11,8 +11,9 @@
 <body>
 
 <div class="form-container">
-    <h2>Registrace</h2>
-
+   
+ <h1>Registrace</h1>
+  
     {% if messages %}
         <div class="alert">
             {% for message in messages %}
@@ -75,7 +76,7 @@
         <button type="submit">Registrovat</button>
     </form>
 
-    <p><a href="{% url 'login' %}">Přihlaste se zde</a></p>
+    <p><a href="{% url 'login' %}">Přihlaste se zde</a> /t/t/t/t/t/t/t <a href="{% url 'github_log' %}">Přihlaste přes github</a></p>
 </div>
 
 </body>
