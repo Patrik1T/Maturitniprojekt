@@ -1,11 +1,9 @@
-
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Quiz Bird - Editor</title>
+    <title>Flappy Quiz Bird</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,37 +12,8 @@
             padding: 20px;
         }
 
-        #gameEditor {
-            margin-bottom: 20px;
-        }
-
-        .questionContainer {
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: #fff;
-        }
-
-        .questionContainer h3 {
-            margin: 0;
-        }
-
-        .questionContainer .answers {
-            margin: 10px 0;
-        }
-
-        .questionContainer .answers div {
-            margin-bottom: 5px;
-        }
-
-        .button {
-            padding: 10px 15px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
+        h1 {
+            text-align: center;
         }
 
         #gameCanvas {
@@ -55,575 +24,406 @@
             width: 600px;
             height: 400px;
         }
+
+        .button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #questionPopup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #questionText {
+            margin-bottom: 20px;
+        }
+
+        #answerOptions button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        #questionManager {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#questionManager input[type="text"] {
+    width: calc(100% - 10px);
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+#answersContainer .answer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
     </style>
 </head>
 <body>
 
-<h1>Flappy Quiz Bird - Editor</h1>
+<h1>Flappy Quiz Bird</h1>
 
- <div class="test-name">
-            <label for="testName">Název testu:</label>
-            <input type="text" id="testName" placeholder="Zadejte název testu" required>
-        </div>
-
-        <label for="testImage">Obrázek testu (nahrát soubor):</label>
-        <input type="file" id="testImage" accept="image/*">
-
-        <label for="testDescription">Popis testu:</label>
-        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-         <!-- Nastavení pro známky -->
-    <div class="button-container">
-        <label for="grade1">Bodů pro 1: </label>
-        <input type="number" id="grade1" placeholder="90" min="1" />
-        <label for="grade2">Bodů pro 2: </label>
-        <input type="number" id="grade2" placeholder="75" min="1" />
-        <label for="grade3">Bodů pro 3: </label>
-        <input type="number" id="grade3" placeholder="50" min="1" />
-        <label for="grade4">Bodů pro 4: </label>
-        <input type="number" id="grade4" placeholder="25" min="1" />
-        <label for="grade5">Bodů pro 5: </label>
-        <input type="number" id="grade5" placeholder="0" min="1" />
-    </div>
-
-    <!-- Nastavení časovače -->
-    <div class="button-container">
-        <input type="checkbox" id="enableTimer" />
-        <label for="enableTimer">Použít časovač</label>
-        <input type="number" id="timeLimit" placeholder="Čas (v sekundách)" min="10" disabled />
-    </div>
-
-<div id="gameEditor">
-    <h2>Přidat otázku</h2>
+<div id="questionManager">
+    <h2>Správa otázek</h2>
     <div>
-        <input type="text" id="newQuestion" placeholder="Zadejte otázku" style="width: 100%; margin-bottom: 10px;" />
-        <div id="answersContainer">
-            <div>
-                <input type="text" placeholder="Odpověď" class="answerInput" />
-                <label>
-                    <input type="checkbox" class="correctCheckbox" /> Správná odpověď
-                </label>
-            </div>
-        </div>
-        <button onclick="addAnswer()">Přidat odpověď</button>
-        <button onclick="saveQuestion()">Uložit otázku</button>
+        <label for="newQuestion">Otázka:</label>
+        <input type="text" id="newQuestion">
     </div>
+    <div id="answersContainer">
+        <div class="answer">
+            <input type="text" placeholder="Odpověď">
+            <input type="checkbox"> Správná odpověď
+            <button onclick="removeAnswer(this)">Odebrat</button>
+        </div>
+    </div>
+    <button onclick="addAnswer()">Přidat odpověď</button>
+    <button onclick="addQuestion()">Přidat otázku</button>
+    <hr>
 </div>
 
-<h2>Konfigurace hry</h2>
-<div>
-    <label for="timerCheckbox">Povolit časomíru?</label>
-    <input type="checkbox" id="timerCheckbox" />
-    <br>
-    <label for="pointsPerQuestion">Body za správnou odpověď:</label>
-    <input type="number" id="pointsPerQuestion" value="10" />
-</div>
 
-<button onclick="exportToJSON()">Exportuj do JSON</button>
-<button onclick="exportToMoodleXML()">Exportuj do XML</button>
-<div id="questionPopup" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-    <h2 id="questionText">Otázka se zobrazí zde</h2>
-    <div id="answerOptions" style="margin-top: 10px;"></div>
-    <button onclick="closeQuestion()">Zavřít</button>
-</div>
-<button id="restartButton" style="display:none;">Zkusit znovu</button>
+<button class="button" onclick="startGame()">Začít hru</button>
 
-
-<h2>Seznam otázek</h2>
-<div id="questionList"></div>
-
-<h2>Hra</h2>
-<button class="button" onclick="startGame()">Vyzkoušet hru</button>
 <canvas id="gameCanvas" width="600" height="400"></canvas>
 
+<div id="questionPopup">
+    <h2 id="questionText">Otázka se zobrazí zde</h2>
+    <div id="answerOptions"></div>
+    <button onclick="closeQuestion()">Zavřít otázku</button>
+</div>
+
 <script>
-    let customQuestions = [];
-    let questions = []; // Seznam otázek použitých ve hře
-
-    function addAnswer() {
-        const answersContainer = document.getElementById("answersContainer");
-        const div = document.createElement("div");
-        div.innerHTML = `
-            <input type="text" placeholder="Odpověď" class="answerInput" />
-            <label>
-                <input type="checkbox" class="correctCheckbox" /> Správná odpověď
-            </label>
-            <button onclick="this.parentNode.remove()">Odstranit</button>
-        `;
-        answersContainer.appendChild(div);
-    }
-
-    function saveQuestion() {
-        const questionText = document.getElementById("newQuestion").value.trim();
-        const answersInputs = document.querySelectorAll(".answerInput");
-        const correctCheckboxes = document.querySelectorAll(".correctCheckbox");
-
-        if (!questionText) {
-            alert("Zadejte otázku.");
-            return;
-        }
-
-        const answers = Array.from(answersInputs).map((input, index) => ({
-            text: input.value.trim(),
-            correct: correctCheckboxes[index].checked,
-        }));
-
-        if (answers.length < 2 || !answers.some(a => a.correct)) {
-            alert("Otázka musí mít alespoň jednu správnou odpověď.");
-            return;
-        }
-
-        customQuestions.push({ question: questionText, answers });
-        document.getElementById("newQuestion").value = "";
-        document.getElementById("answersContainer").innerHTML = `
-            <div>
-                <input type="text" placeholder="Odpověď" class="answerInput" />
-                <label>
-                    <input type="checkbox" class="correctCheckbox" /> Správná odpověď
-                </label>
-            </div>
-        `;
-        updateQuestionList();
-    }
-
-    function updateQuestionList() {
-        const questionList = document.getElementById("questionList");
-        questionList.innerHTML = "";
-
-        customQuestions.forEach((q, index) => {
-            const div = document.createElement("div");
-            div.classList.add("questionContainer");
-            div.innerHTML = `
-                <h3>${q.question}</h3>
-                <div class="answers">
-                    ${q.answers.map(a => `
-                        <div>
-                            ${a.text} ${a.correct ? "(správná)" : ""}
-                            <button onclick="removeAnswer(${index}, ${q.answers.indexOf(a)})">Odstranit</button>
-                        </div>
-                    `).join("")}
-                </div>
-                <button onclick="removeQuestion(${index})">Odstranit otázku</button>
-            `;
-            questionList.appendChild(div);
-        });
-    }
-
-    function removeAnswer(questionIndex, answerIndex) {
-        customQuestions[questionIndex].answers.splice(answerIndex, 1);
-        updateQuestionList();
-    }
-
-    function removeQuestion(index) {
-        customQuestions.splice(index, 1);
-        updateQuestionList();
-    }
-
-    function startGame() {
-    if (gameInterval) {
-        return; // Pokud hra již běží, funkce se ukončí
-    }
-
-    if (customQuestions.length === 0) {
-        alert("Před spuštěním hry vytvořte alespoň jednu otázku.");
-        return;
-    }
-
-    questions = [...customQuestions];
-    bird.alive = true;
-    bird.y = 150;
-    bird.velocity = 0;
-    pipes.length = 0;
-    score = 0;
-    gameInterval = setInterval(gameLoop, 1000 / 60); // Nastavení herního cyklu
-}
-
-
-    // Stávající kód pro hru (nezměněn)
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const bird = { x: 100, y: 150, width: 30, height: 30, gravity: 0.5, lift: -10, velocity: 0, alive: true };
-    const pipes = [];
-    const pipeWidth = 50;
-    const pipeGap = 250;
-    let pipeSpeed = 2;
+    let questions = [];
     let score = 0;
     let gameInterval;
+    let pipes = [];
+    const pipeWidth = 50;
+    const pipeGap = 200;
+    const bird = { x: 100, y: 150, width: 30, height: 30, gravity: 0.5, lift: -10, velocity: 0, alive: true };
+    let currentQuestion;
+    
+    // Načtení otázek z Local Storage při spuštění hry
+window.addEventListener("load", function() {
+    const savedQuestions = localStorage.getItem("questions");
+    if (savedQuestions) {
+        questions = JSON.parse(savedQuestions);
+        console.log("Načtené otázky:", questions);
+    }
+});
 
-    function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    bird.velocity += bird.gravity;
-    bird.y += bird.velocity;
+    // Funkce pro spuštění hry
+    function startGame() {
+        // Pokud hra již běží, nic neuděláme
+        if (gameInterval) {
+            return;
+        }
 
-    if (bird.y + bird.height >= canvas.height) {
-        bird.y = canvas.height - bird.height;
+        // Resetujeme skóre a trubky
+        score = 0;
+        pipes = [];
+        bird.alive = true;
+        bird.y = 150;
         bird.velocity = 0;
+
+        // Inicializace herního intervalového cyklu
+        gameInterval = setInterval(gameLoop, 1000 / 60);
     }
 
-    pipes.forEach(pipe => {
-        pipe.x -= pipeSpeed;
-
-        if (pipe.x + pipeWidth <= 0) {
-            pipes.shift();
-            score++;
+    // Funkce pro skákání ptáka
+    function flap() {
+        // Pták může skákat jen pokud není příliš vysoko (aby se zabránilo "double jumpům")
+        if (bird.alive && bird.velocity >= 0) {
+            bird.velocity = bird.lift; // Změníme rychlost ptáka na zápornou (skok)
         }
+    }
 
-        if (
-            bird.x + bird.width > pipe.x &&
-            bird.x < pipe.x + pipeWidth &&
-            (bird.y < pipe.y || bird.y + bird.height > pipe.y + pipeGap) &&
-            !pipe.passed
-        ) {
-            endGame();
-        }
-
-        if (bird.x + bird.width > pipe.x + pipeWidth && !pipe.passed) {
-            pipe.passed = true;
-            askQuestion(pipe);
+    // Funkce pro obsluhu události stisknutí klávesy
+    window.addEventListener('keydown', function(event) {
+        if (event.code === 'Space') { // Když stiskneš mezerník
+            flap();
         }
     });
 
-    if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 150) {
-        createPipe();
+    // Funkce pro obsluhu kliknutí myší
+    window.addEventListener('click', function() {
+        flap();
+    });
+
+    // Herní smyčka
+    function gameLoop() {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Nastavení gravitace a pohybu ptáčka
+        bird.velocity += bird.gravity;
+        bird.y += bird.velocity;
+
+        // Kontrola kolize s dolní hranou obrazovky
+        if (bird.y + bird.height >= canvas.height) {
+            bird.y = canvas.height - bird.height;
+            bird.velocity = 0;
+        }
+
+        // Pohyb trubek
+        pipes.forEach(pipe => {
+            pipe.x -= 2; // Rychlost pohybu trubek
+
+            // Kontrola kolize s trubkami
+            if (
+                bird.x + bird.width > pipe.x &&
+                bird.x < pipe.x + pipeWidth &&
+                (bird.y < pipe.y || bird.y + bird.height > pipe.y + pipeGap)
+            ) {
+                endGame(); // Hra končí při kolizi
+            }
+
+            // Pokud pták proletí mezi trubkami, zobrazí se otázka
+            if (bird.x + bird.width > pipe.x + pipeWidth && !pipe.passed) {
+                pipe.passed = true;
+                askQuestion(pipe); // Zobrazí se otázka
+            }
+        });
+
+        // Vytvoření nové trubky, pokud je potřeba
+        if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 150) {
+            createPipe();
+        }
+
+        // Kreslení ptáčka a trubek
+        drawBird();
+        drawPipes();
+
+        // Zobrazení skóre
+        ctx.fillStyle = "#000";
+        ctx.font = "20px Arial";
+        ctx.fillText(`Skóre: ${score}`, 20, 30);
     }
 
-    drawBird();
-    drawPipes();
-
-    ctx.fillStyle = "#000";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Score: ${score}`, 20, 30);
-}
-
+    // Funkce pro vytvoření nové trubky
     function createPipe() {
-    const height = Math.floor(Math.random() * (canvas.height - pipeGap - 60)) + 30;
-    const question = getRandomQuestion();
-    pipes.push({ x: canvas.width, y: height, question: question, passed: false });
+        const canvas = document.getElementById("gameCanvas");
+        const height = Math.floor(Math.random() * (canvas.height - pipeGap - 60)) + 30;
+        pipes.push({ x: canvas.width, y: height, passed: false });
+    }
+
+    // Funkce pro zobrazení ptáčka
+    function drawBird() {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#FFD700"; // Barva ptáčka
+        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+    }
+
+    // Funkce pro vykreslení trubek
+    function drawPipes() {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#228B22"; // Barva trubek
+
+        pipes.forEach(pipe => {
+            ctx.fillRect(pipe.x, 0, pipeWidth, pipe.y); // Horní trubka
+            ctx.fillRect(pipe.x, pipe.y + pipeGap, pipeWidth, canvas.height - pipe.y - pipeGap); // Spodní trubka
+        });
+    }
+    
+    function addAnswer() {
+    const container = document.getElementById("answersContainer");
+    const answerDiv = document.createElement("div");
+    answerDiv.classList.add("answer");
+
+    answerDiv.innerHTML = `
+        <input type="text" placeholder="Odpověď">
+        <input type="checkbox"> Správná odpověď
+        <button onclick="removeAnswer(this)">Odebrat</button>
+    `;
+    container.appendChild(answerDiv);
 }
 
-   function askQuestion(pipe) {
-    clearInterval(gameInterval); // Zastavíme herní smyčku
+function removeQuestion(index) {
+    if (confirm("Opravdu chcete tuto otázku odstranit?")) {
+        questions.splice(index, 1); // Odebrání otázky na základě indexu
+        updateLocalStorage(); // Aktualizace Local Storage
+        alert("Otázka byla odstraněna.");
+    }
+}
+
+
+function removeAnswer(button) {
+    const answerDiv = button.parentElement;
+    answerDiv.remove();
+}
+function askQuestion(pipe) {
+    clearInterval(gameInterval);
+
+    // Vybereme náhodnou otázku
+    currentQuestion = getRandomQuestion();
+
+    // Debugovací výpis
+    console.log("Zobrazená otázka:", currentQuestion);
 
     // Zobrazíme popup s otázkou
     const questionPopup = document.getElementById("questionPopup");
     const questionText = document.getElementById("questionText");
     const answerOptions = document.getElementById("answerOptions");
 
-    questionText.textContent = pipe.question.question;
-    answerOptions.innerHTML = "";
+    if (!currentQuestion) {
+        console.error("Žádné otázky nejsou dostupné.");
+        return;
+    }
 
-    pipe.question.answers.forEach(answer => {
+    questionText.textContent = currentQuestion.question;
+    answerOptions.innerHTML = ""; // Vyčistíme předchozí odpovědi
+
+    currentQuestion.answers.forEach(answer => {
         const button = document.createElement("button");
         button.textContent = answer.text;
-        button.style.margin = "5px";
-        button.style.padding = "10px";
-        button.style.fontSize = "16px";
-
         button.onclick = () => {
             if (answer.correct) {
-                score += pointsPerQuestion; // Přidáme body
-            } else {
-                endGame(); // Pokud je odpověď špatná, hra končí
+                score += 10; // Přičteme body za správnou odpověď
             }
-            closeQuestion(); // Zavřeme popup
+            closeQuestion(); // Zavřeme otázku
         };
-
         answerOptions.appendChild(button);
     });
 
     questionPopup.style.display = "block";
+}
 
-    if (timerEnabled) {
-        startTimer(30, () => { // Pokud je časomíra povolena, nastavíme 30 vteřin
-            endGame(); // Čas vypršel, hra končí
-        });
+
+   function addQuestion() {
+    const questionInput = document.getElementById("newQuestion");
+    const answersContainer = document.getElementById("answersContainer");
+    const questionText = questionInput.value.trim();
+
+    if (!questionText) {
+        alert("Zadejte text otázky.");
+        return;
     }
-}
 
+    const answers = [];
+    answersContainer.querySelectorAll(".answer").forEach(answerDiv => {
+        const answerText = answerDiv.querySelector("input[type='text']").value.trim();
+        const isCorrect = answerDiv.querySelector("input[type='checkbox']").checked;
 
-
-
-
-function getRandomQuestion() {
-    const question = questions[Math.floor(Math.random() * questions.length)];
-    return {
-        question: question.question,
-        answers: question.answers.map(a => ({
-            text: a.text,
-            correct: a.correct,
-        })),
-    };
-}
-
-
-
-function drawBird() {
-    ctx.fillStyle = "#FFD700";
-    ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-}
-
-
-function drawPipes() {
-    ctx.fillStyle = "#228B22";
-    pipes.forEach(pipe => {
-        ctx.fillRect(pipe.x, 0, pipeWidth, pipe.y);
-        ctx.fillRect(pipe.x, pipe.y + pipeGap, pipeWidth, canvas.height - pipe.y - pipeGap);
+        if (answerText) {
+            answers.push({ text: answerText, correct: isCorrect });
+        }
     });
+
+    if (answers.length === 0) {
+        alert("Přidejte alespoň jednu odpověď.");
+        return;
+    }
+
+    // Přidáme otázku do pole a aktualizujeme Local Storage
+    questions.push({ question: questionText, answers });
+    updateLocalStorage();
+
+    // Reset formuláře
+    questionInput.value = "";
+    answersContainer.innerHTML = `
+        <div class="answer">
+            <input type="text" placeholder="Odpověď">
+            <input type="checkbox"> Správná odpověď
+            <button onclick="removeAnswer(this)">Odebrat</button>
+        </div>
+    `;
+    alert("Otázka byla přidána.");
 }
 
-function endGame() {
+
+
+
+
+    // Funkce pro uzavření otázky
+    function closeQuestion() {
+        const questionPopup = document.getElementById("questionPopup");
+        questionPopup.style.display = "none"; // Skryjeme popup
+        gameInterval = setInterval(gameLoop, 1000 / 60); // Obnovíme herní smyčku
+    }
+
+    // Funkce pro výběr náhodné otázky
+    function getRandomQuestion() {
+        return questions[Math.floor(Math.random() * questions.length)];
+    }
+
+    function endGame() {
     bird.alive = false;
     clearInterval(gameInterval);
 
-    // Zobrazíme zprávu o skončení hry a skóre
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Zobrazíme zprávu o skončení hry
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.fillStyle = "#FFF";
     ctx.font = "36px Arial";
     ctx.textAlign = "center";
     ctx.fillText("Hra skončila!", canvas.width / 2, canvas.height / 2 - 20);
     ctx.fillText(`Skóre: ${score}`, canvas.width / 2, canvas.height / 2 + 20);
 
-    // Zobrazíme výsledky
-    showResult();
+    // Přidáme tlačítko pro restart
+    const restartButton = document.createElement("button");
+    restartButton.textContent = "Restartovat hru";
+    restartButton.classList.add("button");
+    restartButton.onclick = restartGame;
+    document.body.appendChild(restartButton);
 }
 
-
-
-
-
-function startGame() {
-    if (gameInterval) {
-        clearInterval(gameInterval); // Zastavíme starý interval
-    }
-
-    loadGameConfig(); // Načteme nastavení hry
-
-    if (customQuestions.length === 0) {
-        alert("Před spuštěním hry vytvořte alespoň jednu otázku.");
-        return;
-    }
-
-    questions = [...customQuestions];
+function restartGame() {
+    // Reset ptáka, trubek a skóre
     bird.alive = true;
     bird.y = 150;
     bird.velocity = 0;
-    pipes.length = 0;
     score = 0;
+    pipes = [];
 
-    // Spustíme herní smyčku
+    // Odstraníme tlačítko pro restart
+    document.querySelector(".button").remove();
+
+    // Spustíme hru znovu
     gameInterval = setInterval(gameLoop, 1000 / 60);
 }
 
-
-
-
-
-
-
-function updateGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    bird.velocity += bird.gravity;
-    bird.y += bird.velocity;
-
-    // Pokud ptáček spadne na zem, hra končí
-    if (bird.y + bird.height >= canvas.height) {
-        endGame();
-        return;
-    }
-
-   pipes.forEach(pipe => {
-    pipe.x -= pipeSpeed;
-
-    // Detekce kolize
-    if (
-        bird.x + bird.width > pipe.x &&
-        bird.x < pipe.x + pipeWidth &&
-        (bird.y < pipe.y || bird.y + bird.height > pipe.y + pipeGap)
-    ) {
-        endGame(); // Hra končí při nárazu
-        return;
-    }
-
-    // Zobrazení otázky při průletu
-    if (bird.x > pipe.x + pipeWidth && !pipe.passed) {
-        pipe.passed = true; // Označíme, že ptáček prošel mezi trubkami
-        askQuestion(pipe); // Zobrazíme otázku
-    }
-});
-
-
-
-    // Přidání nové trubky, pokud je potřeba
-    if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - pipeFrequency) {
-        createPipe();
-    }
-
-    // Kreslení ptáčka a trubek
-    drawBird();
-    drawPipes();
-
-    // Zobrazení skóre
-    ctx.fillStyle = "#000";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Score: ${score}`, 20, 30);
+function clearQuestions() {
+    localStorage.removeItem("questions");
+    questions = [];
+    alert("Všechny otázky byly smazány.");
 }
 
-
-function closeQuestion() {
-    const questionPopup = document.getElementById("questionPopup");
-    questionPopup.style.display = "none"; // Skryjeme popup
-    gameInterval = setInterval(gameLoop, 1000 / 60); // Obnovíme herní smyčku
+function updateLocalStorage() {
+    localStorage.setItem("questions", JSON.stringify(questions));
 }
 
-let timerEnabled = false; // Stav časomíry
-let pointsPerQuestion = 10; // Počet bodů za správnou odpověď
-
-// Funkce pro načtení konfigurace hry
-function loadGameConfig() {
-    const timerCheckbox = document.getElementById("timerCheckbox");
-    const pointsInput = document.getElementById("pointsPerQuestion");
-
-    timerEnabled = timerCheckbox.checked; // Zjišťujeme, zda je časomíra povolena
-    pointsPerQuestion = parseInt(pointsInput.value, 10); // Zjišťujeme body za odpověď
-}
-
-// Funkce pro nastavení časomíry
-function startTimer(duration, callback) {
-    let timeLeft = duration;
-    const timerDisplay = document.createElement('div');
-    timerDisplay.style.position = 'absolute';
-    timerDisplay.style.top = '20px';
-    timerDisplay.style.right = '20px';
-    timerDisplay.style.fontSize = '24px';
-    document.body.appendChild(timerDisplay);
-
-    const interval = setInterval(() => {
-        timerDisplay.textContent = `Čas: ${timeLeft}s`;
-        timeLeft--;
-        if (timeLeft < 0) {
-            clearInterval(interval);
-            callback();
-        }
-    }, 1000);
-}
-
-// Funkce pro zobrazení výsledku a známky
-function showResult() {
-    const grade = getGrade(score);
-    const resultPopup = document.createElement('div');
-    resultPopup.innerHTML = `
-        <h3>Výsledek:</h3>
-        <p>Skóre: ${score}</p>
-        <p>Známka: ${grade}</p>
-        <button onclick="restartGame()">Restartovat hru</button>
-    `;
-    document.body.appendChild(resultPopup);
-}
-
-// Funkce pro určení známky
-function getGrade(score) {
-    if (score >= 90) return 'A';
-    if (score >= 80) return 'B';
-    if (score >= 70) return 'C';
-    if (score >= 60) return 'D';
-    return 'F';
-}
-
-// Funkce pro restartování hry
-function restartGame() {
-    score = 0;
-    pipes.length = 0;
-    bird.y = 150;
-    bird.velocity = 0;
-    bird.alive = true;
-    startGame(); // Znovu spustí hru
-}
-
-
-
-
-
-document.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
-        if (bird.alive) {
-            bird.velocity = bird.lift; // Ptáček vyskočí
-        } else if (!gameInterval) {
-            startGame(); // Spustí hru pouze tehdy, pokud není aktivní
-        }
-    }
-});
-
-restartButton.onclick = () => {
-    console.log("Restart tlačítko bylo kliknuto");
-    document.body.removeChild(restartButton); // Odstraníme tlačítko
-    startGame(); // Restartujeme hru
-};
-    function exportToJSON() {
-    if (customQuestions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
-
-    const jsonData = {
-        questions: customQuestions,  // Export otázek a odpovědí
-        score: score,  // Export aktuálního skóre
-        timerEnabled: timerEnabled,  // Stav časovače
-        pointsPerQuestion: pointsPerQuestion  // Body za správnou odpověď
-    };
-
-    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'flappy_quiz_data.json';
-    link.click();
-}
-
-function exportToMoodleXML() {
-    if (customQuestions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
-
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
-
-    customQuestions.forEach((question, index) => {
-        xmlContent += `
-        <question type="multichoice">
-            <name>
-                <text>Otázka ${index + 1}</text>
-            </name>
-            <questiontext format="html">
-                <text><![CDATA[<p>${question.question}</p>]]></text>
-            </questiontext>
-            ${question.answers.map((answer, answerIndex) => `
-                <answer fraction="${answer.correct ? 100 : 0}">
-                    <text><![CDATA[${answer.text}]]></text>
-                </answer>
-            `).join('')}
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-            <defaultgrade>1</defaultgrade>
-        </question>`;
-    });
-
-    xmlContent += `\n</quiz>`;
-
-    const blob = new Blob([xmlContent], { type: 'application/xml' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "flappy_quiz_data.xml";
-    link.click();
-}
-
-
-
-    startGame();
 </script>
+
 </body>
 </html>
-  
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+

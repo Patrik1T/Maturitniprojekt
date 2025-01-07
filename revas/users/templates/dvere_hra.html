@@ -392,12 +392,113 @@
         player.style.top = `${playerPosition.y}px`;
     }
 
-    function endGame() {
-        clearInterval(timerId);
-        alert(`Hra skončila! Získali jste ${score} bodů.`);
-        document.removeEventListener('keydown', handleMovement);
-        questionDisplay.textContent = '';
+  function endGame() {
+    clearInterval(timerId);
+    document.removeEventListener('keydown', handleMovement);
+    questionDisplay.textContent = '';
+    timerDisplay.textContent = '';
+    displayResults();
+}
+
+function displayResults() {
+    const resultsContainer = document.createElement('div');
+    resultsContainer.id = 'resultsContainer';
+    resultsContainer.style.marginTop = '20px';
+    resultsContainer.style.padding = '20px';
+    resultsContainer.style.border = '1px solid #ccc';
+    resultsContainer.style.borderRadius = '10px';
+    resultsContainer.style.backgroundColor = '#fff';
+
+    // Výpočet známky
+    const grade = calculateGrade(score);
+
+    // Hlavní nadpis
+    const title = document.createElement('h3');
+    title.textContent = 'Výsledky hry';
+    resultsContainer.appendChild(title);
+
+    // Zobrazení bodů a známky
+    const scoreParagraph = document.createElement('p');
+    scoreParagraph.innerHTML = `<strong>Body:</strong> ${score}`;
+    resultsContainer.appendChild(scoreParagraph);
+
+    const gradeParagraph = document.createElement('p');
+    gradeParagraph.innerHTML = `<strong>Známka:</strong> ${grade}`;
+    resultsContainer.appendChild(gradeParagraph);
+
+    // Seznam chyb
+    const wrongAnswers = [];
+    questions.forEach((q, index) => {
+        const selectedAnswer = q.selectedAnswer;
+        if (selectedAnswer && selectedAnswer !== q.correctAnswer) {
+            wrongAnswers.push({ question: q.question, selectedAnswer, correctAnswer: q.correctAnswer });
+        }
+    });
+
+    if (wrongAnswers.length > 0) {
+        const wrongAnswersTitle = document.createElement('h4');
+        wrongAnswersTitle.textContent = 'Špatně zodpovězené otázky:';
+        resultsContainer.appendChild(wrongAnswersTitle);
+
+        const wrongAnswersList = document.createElement('ul');
+        wrongAnswers.forEach(wrong => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <strong>Otázka:</strong> ${wrong.question}<br>
+                <strong>Vaše odpověď:</strong> ${wrong.selectedAnswer}<br>
+                <strong>Správná odpověď:</strong> ${wrong.correctAnswer}
+            `;
+            wrongAnswersList.appendChild(listItem);
+        });
+        resultsContainer.appendChild(wrongAnswersList);
+    } else {
+        const noErrorsMessage = document.createElement('p');
+        noErrorsMessage.textContent = 'Gratulujeme! Nemáte žádné špatné odpovědi.';
+        resultsContainer.appendChild(noErrorsMessage);
     }
+
+    document.querySelector('.container').appendChild(resultsContainer);
+}
+
+function calculateGrade(score) {
+    const grade1Min = parseInt(document.getElementById('grade1Min').value, 10);
+    const grade1Max = parseInt(document.getElementById('grade1Max').value, 10);
+    const grade2Min = parseInt(document.getElementById('grade2Min').value, 10);
+    const grade2Max = parseInt(document.getElementById('grade2Max').value, 10);
+    const grade3Min = parseInt(document.getElementById('grade3Min').value, 10);
+    const grade3Max = parseInt(document.getElementById('grade3Max').value, 10);
+    const grade4Min = parseInt(document.getElementById('grade4Min').value, 10);
+    const grade4Max = parseInt(document.getElementById('grade4Max').value, 10);
+    const grade5Min = parseInt(document.getElementById('grade5Min').value, 10);
+    const grade5Max = parseInt(document.getElementById('grade5Max').value, 10);
+
+    if (score >= grade1Min && score <= grade1Max) return '1';
+    if (score >= grade2Min && score <= grade2Max) return '2';
+    if (score >= grade3Min && score <= grade3Max) return '3';
+    if (score >= grade4Min && score <= grade4Max) return '4';
+    return '5';
+}
+
+// Přidání zvolené odpovědi k otázce
+function evaluateAnswer(selectedAnswer) {
+    const { correctAnswer, points } = questions[currentQuestionIndex];
+    questions[currentQuestionIndex].selectedAnswer = selectedAnswer;
+
+    if (selectedAnswer === correctAnswer) {
+        score += points;
+        alert('Správně!');
+    } else {
+        alert('Špatně!');
+    }
+
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        resetPlayerPosition();
+        displayQuestion();
+    } else {
+        endGame();
+    }
+}
     
      function displayGrade(score) {
         const gradeText = document.getElementById('gradeText');

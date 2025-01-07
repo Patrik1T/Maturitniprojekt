@@ -63,11 +63,26 @@
             cursor: pointer;
             padding: 5px;
         }
+        .timer {
+            margin-top: 20px;
+        }
+        .timer span {
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Test s přiřazováním odpovědí</h1>
+
+        <!-- Nastavení časomíry -->
+        <div class="timer">
+            <label for="timer">Nastavit časovač (v minutách):</label>
+            <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+            <label for="enableTimer">Povolit časovač</label>
+            <input type="checkbox" id="enableTimer">
+        </div>
 
         <!-- Formulář pro nastavení bodování -->
         <h2>Bodování</h2>
@@ -104,11 +119,18 @@
             <h3>Výsledky testu:</h3>
             <div id="resultContent"></div>
         </div>
+
+        <!-- Časomíra -->
+        <div id="countdown" class="timer">
+            <span id="timerDisplay">00:00</span>
+        </div>
     </div>
 
     <script>
         let tables = [];
         let allAnswers = [];
+        let timerInterval;
+        let timeLeft = 0;
 
         // Funkce pro přidání tabulky
         function addTable() {
@@ -172,6 +194,12 @@
 
         // Funkce pro náhled testu
         function previewTest() {
+            // Pokud je povolený časomíra, nastavíme odpočítávání
+            if (document.getElementById('enableTimer').checked) {
+                timeLeft = parseInt(document.getElementById('timer').value) * 60; // převedení minut na sekundy
+                startTimer();
+            }
+
             const answersListContainer = document.getElementById('answersList');
             answersListContainer.innerHTML = '';
             allAnswers = [];
@@ -284,6 +312,11 @@
                 <p>Vaše známka: ${grade}</p>
             `;
             document.getElementById('results').style.display = 'block';
+
+            // Zastavení časomíry po odeslání
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
         }
 
         // Funkce pro výpočet známky na základě počtu správných odpovědí
@@ -299,6 +332,26 @@
             if (correctAnswers >= grade3) return "3 (dobrý)";
             if (correctAnswers >= grade4) return "4 (dostatečný)";
             return "5 (nedostatečný)";
+        }
+
+        // Funkce pro spuštění časomíry
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Čas vypršel!");
+                } else {
+                    timeLeft--;
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    document.getElementById('timerDisplay').textContent = `${formatTime(minutes)}:${formatTime(seconds)}`;
+                }
+            }, 1000);
+        }
+
+        // Funkce pro formátování času na MM:SS
+        function formatTime(time) {
+            return time < 10 ? `0${time}` : time;
         }
     </script>
 </body>

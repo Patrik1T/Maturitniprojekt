@@ -107,9 +107,7 @@
         <br>
         <button onclick="startPreview()">Náhled testu</button>
     </div>
-<input type="file" id="fileInput" onchange="loadFromJSON(this.files[0])">
-<button onclick="exportToJSON()">Exportuj do JSON</button>
-<button onclick="exportToMoodleXML()">Exportuj do XML</button>
+
 
     <div id="currentQuestion"></div>
 
@@ -125,12 +123,12 @@
     const scoreElement = document.getElementById("score");
     const currentQuestionElement = document.getElementById("currentQuestion");
 
-    let playerPosition = { x: -1, y: 0 };  // Hráč začíná mimo labyrint na levé straně (x = -1)
+    let playerPosition = { x: -1, y: 0 };
     let score = 0;
     let timeLeft = 0;
     let gameInterval;
-    let totalTreasures = 0;  // Počet pokladů
-    let foundTreasures = 0;  // Počet nalezených pokladů
+    let totalTreasures = 0;
+    let foundTreasures = 0;
 
     // Data pro otázky
     let questions = [];
@@ -142,7 +140,36 @@
 
     let isAnsweringQuestion = false; // Proměnná pro kontrolu odpovídání na otázku
     
-// Funkce pro kontrolu otázky
+    let totalQuestions = 5; // Počet otázek (nebo záleží na počtu mapových bodů)
+    let answeredQuestions = 0; // Počet zodpovězených otázek
+    
+    // Funkce pro zkontrolování, zda všechny otázky byly zodpovězeny
+function checkAllAnswered() {
+    if (answeredQuestions === totalQuestions) {
+        // Pokud byly všechny otázky zodpovězeny, přejdeme na finále
+        showFinalScreen();
+    } else {
+        // Pokud ještě nejsou všechny otázky zodpovězeny
+        alert("Ještě musíte odpovědět na všechny otázky!");
+    }
+}
+
+// Funkce pro zobrazení finální obrazovky
+function showFinalScreen() {
+    // Můžete zde provést cokoli, např. zobrazit zprávu, přesměrovat na jinou stránku nebo ukázat výsledek
+    alert("Gratuluji, odpověděl jste na všechny otázky! Nyní přejdete do finále.");
+    window.location.href = "final_screen.html"; // Můžete přesměrovat uživatele na stránku finále
+}
+
+// Funkce pro zodpovězení otázky
+function answerQuestion(isCorrect) {
+    if (isCorrect) {
+        answeredQuestions++;
+    }
+    // Po zodpovězení otázky zkontrolujeme, jestli byly všechny odpovědi zodpovězeny
+    checkAllAnswered();
+}
+    
 function checkForQuestion() {
     const tile = grid.find(t => t.x === playerPosition.x && t.y === playerPosition.y);
     if (tile.element.classList.contains("question")) {
@@ -151,11 +178,11 @@ function checkForQuestion() {
         tile.element.style.backgroundColor = "#d3d3d3"; // Zesvětlíme ho
         answeredQuestions++; // Zvýšíme počet zodpovězených otázek
         if (answeredQuestions === totalQuestions) {
-            allQuestionsAnswered = true;
             alert("Všechny otázky byly zodpovězeny. Nyní najděte zelený čtverec k dokončení testu.");
         }
     }
 }
+
 
 
     // Funkce pro přidání odpovědi
@@ -175,80 +202,123 @@ function checkForQuestion() {
         answerInput.remove();
     }
 
-    // Funkce pro přidání otázky
-    function addQuestion() {
-        const questionText = document.getElementById("questionInput").value.trim();
-        const answerInputs = document.getElementsByClassName("answerOption");
-        const correctAnswers = document.getElementsByClassName("correctAnswer");
-        const answers = [];
-        let correctAnswerIndex = -1;
+// Funkce pro přidání otázky (nebo úpravu)
+function addQuestion() {
+    const questionText = document.getElementById("questionInput").value.trim();
+    const answerInputs = document.getElementsByClassName("answerOption");
+    const correctAnswers = document.getElementsByClassName("correctAnswer");
+    const answers = [];
+    let correctAnswerIndex = -1;
 
-        // Získání odpovědí a označení správné odpovědi
-        for (let i = 0; i < answerInputs.length; i++) {
-            const answerText = answerInputs[i].value.trim();
-            const isCorrect = correctAnswers[i].checked;
-            if (answerText) {
-                answers.push(answerText);
-                if (isCorrect) {
-                    correctAnswerIndex = i;
-                }
+    // Získání odpovědí a označení správné odpovědi
+    for (let i = 0; i < answerInputs.length; i++) {
+        const answerText = answerInputs[i].value.trim();
+        const isCorrect = correctAnswers[i].checked;
+        if (answerText) {
+            answers.push(answerText);
+            if (isCorrect) {
+                correctAnswerIndex = i;
             }
         }
+    }
 
-        if (answers.length < 2) {
-            alert("Musíte přidat alespoň dvě odpovědi.");
-            return;
-        }
+    if (answers.length < 2) {
+        alert("Musíte přidat alespoň dvě odpovědi.");
+        return;
+    }
 
-        if (correctAnswerIndex === -1) {
-            alert("Musíte označit správnou odpověď.");
-            return;
-        }
+    if (correctAnswerIndex === -1) {
+        alert("Musíte označit správnou odpověď.");
+        return;
+    }
 
-        const question = {
-            question: questionText,
-            options: answers,
-            correctIndex: correctAnswerIndex // Uložení indexu správné odpovědi
-        };
+    const question = {
+        question: questionText,
+        options: answers,
+        correctIndex: correctAnswerIndex // Uložení indexu správné odpovědi
+    };
 
+    // Pokud je otázka upravována (má index), upravíme ji
+    if (currentQuestionIndex !== -1) {
+        questions[currentQuestionIndex] = question;
+    } else {
+        // Pokud je nová otázka, přidáme ji
         questions.push(question);
-        displayQuestions();
-        clearAnswerInputs(); // Vyčistíme vstupy po přidání otázky
     }
 
-    // Funkce pro zobrazení otázek
-    function displayQuestions() {
-        const questionList = document.getElementById("questionList");
-        questionList.innerHTML = '';
-        questions.forEach((item, index) => {
-            const questionItem = document.createElement("div");
-            questionItem.classList.add("questionItem");
-            questionItem.innerHTML = `
-                <strong>${item.question}</strong><br>
-                Odpovědi: ${item.options.map((opt, i) => {
-                    return `${opt} ${i === item.correctIndex ? "(Správná)" : ""}`;
-                }).join(", ")}<br>
-                <button onclick="deleteQuestion(${index})">Smazat</button>
-            `;
-            questionList.appendChild(questionItem);
-        });
+    displayQuestions();
+    clearAnswerInputs(); // Vyčistíme vstupy po přidání otázky
+    currentQuestionIndex = -1; // Resetujeme index pro úpravu
+}
+
+
+// Funkce pro vyčištění vstupů pro otázky a odpovědi
+function clearAnswerInputs() {
+    document.getElementById("questionInput").value = ''; // Vymazání textu otázky
+    const answerInputs = document.getElementsByClassName("answerOption");
+    const correctAnswers = document.getElementsByClassName("correctAnswer");
+
+    // Vymazání odpovědí
+    for (let i = 0; i < answerInputs.length; i++) {
+        answerInputs[i].value = '';  // Vymazání textu odpovědi
+        correctAnswers[i].checked = false;  // Zrušení označení správné odpovědi
+    }
+}
+    // Funkce pro zobrazení otázek v seznamu s možností editace a mazání
+function displayQuestions() {
+    const questionList = document.getElementById("questionList");
+    questionList.innerHTML = ''; // Vymazání předchozího seznamu otázek
+    questions.forEach((item, index) => {
+        const questionItem = document.createElement("div");
+        questionItem.classList.add("questionItem");
+        questionItem.innerHTML = `
+            <strong>${item.question}</strong><br>
+            Odpovědi: ${item.options.map((opt, i) => {
+                return `${opt} ${i === item.correctIndex ? "(Správná)" : ""}`; 
+            }).join(", ")}<br>
+            <button onclick="editQuestion(${index})">Upravit</button>
+            <button onclick="deleteQuestion(${index})">Smazat</button>
+        `;
+        questionList.appendChild(questionItem);
+    });
+}
+// Funkce pro editaci otázky
+function editQuestion(index) {
+    const question = questions[index];
+    const questionInput = document.getElementById("questionInput");
+    const answerInputs = document.getElementsByClassName("answerOption");
+    const correctAnswers = document.getElementsByClassName("correctAnswer");
+
+    // Naplnění vstupů pro otázku a odpovědi
+    questionInput.value = question.question;
+    
+    for (let i = 0; i < answerInputs.length; i++) {
+        if (question.options[i]) {
+            answerInputs[i].value = question.options[i];
+            correctAnswers[i].checked = i === question.correctIndex; // Označení správné odpovědi
+        }
     }
 
-    // Funkce pro odstranění otázky
-    function deleteQuestion(index) {
-        questions.splice(index, 1);
-        displayQuestions();
-    }
+    // Smazání původní otázky, aby ji mohl uživatel upravit
+    questions.splice(index, 1);
+    displayQuestions(); // Zaktualizování seznamu
+}
+
+   // Funkce pro odstranění otázky
+function deleteQuestion(index) {
+    questions.splice(index, 1);
+    displayQuestions(); // Zaktualizování seznamu
+}
     
 
-    // Funkce pro inicializaci šedých čtverců
+  // Funkce pro generování herní plochy s menším počtem otázek
 function createGameArea() {
     gameArea.innerHTML = '';
     grid = [];
-
-    let questionCount = questions.length;
-    totalQuestions = questionCount; // Počet šedých čtverců odpovídá počtu otázek
-    answeredQuestions = 0; // Resetujeme počet zodpovězených otázek
+    
+    let questionCount = Math.min(questions.length, 5); // Limitujeme počet otázek na 5
+    totalQuestions = questionCount; 
+    answeredQuestions = 0; 
     allQuestionsAnswered = false;
 
     for (let y = 0; y < gridSize; y++) {
@@ -260,28 +330,20 @@ function createGameArea() {
             gameArea.appendChild(tile);
             grid.push({ x, y, element: tile });
 
-            // Začátek - červená kostka
             if (x === 0 && y === 0) {
                 tile.classList.add('path');
-            }
-            // Exit - zelená kostka
-            else if (x === exitPosition.x && y === exitPosition.y) {
+            } else if (x === exitPosition.x && y === exitPosition.y) {
                 tile.classList.add('exit');
-            }
-            // Náhodně generujeme zdi, cesty a otázky
-            else if (Math.random() < 0.2) {
+            } else if (Math.random() < 0.2) {
                 tile.classList.add('wall');
-            }
-            else if (Math.random() < (0.1 * questionCount)) {
+            } else if (Math.random() < (0.1 * questionCount)) { // Menší pravděpodobnost pro otázky
                 tile.classList.add('question');
-                totalQuestions++; // Zvýšíme počet otázek
-            }
-            else {
+                totalQuestions++;
+            } else {
                 tile.classList.add('path');
             }
         }
     }
-
     setPlayerStartPosition(); // Nastavení hráče na start
 }
 
@@ -334,14 +396,14 @@ window.onload = () => {
     startTimer(); // Spustíme časovač
 };
 
-// Funkce pro kontrolu, zda hráč dosáhl exitu
+// Funkce pro kontrolu východu
 function checkForExit() {
     const tile = grid.find(t => t.x === playerPosition.x && t.y === playerPosition.y);
     if (tile.element.classList.contains("exit")) {
         if (allQuestionsAnswered) {
-            endGame(); // Ukončení hry
+            endGame(); // Ukončení hry, pokud byly všechny otázky zodpovězeny
         } else {
-            alert("Musíte nejdříve zodpovědět všechny otázky.");
+            alert("Musíte odpovědět na všechny otázky před dokončením hry.");
         }
     }
 }
@@ -371,17 +433,40 @@ function endGame() {
     resetGame(); // Restartujeme hru
 }
 
-// Reset hry
+// Funkce pro zobrazení tlačítka pro spuštění hry
+function showStartButton() {
+    const startButton = document.createElement("button");
+    startButton.textContent = "Spustit hru";
+    startButton.onclick = startGame;
+    document.body.appendChild(startButton);
+}
+
+// Funkce pro spuštění hry
+function startGame() {
+    // Skrytí tlačítka pro spuštění
+    const startButton = document.querySelector("button");
+    if (startButton) startButton.style.display = "none";
+
+    // Iniciace hry
+    resetGame(); // Resetujeme hru a začneme novou
+    createGameArea(); // Vytvoříme herní plochu
+    startTimer(); // Spustíme časovač
+}
+
+// Funkce pro resetování hry
 function resetGame() {
-    playerPosition = { x: 0, y: 0 };
-    score = 0;
-    timeLeft = parseInt(document.getElementById("timerDuration").value) || 60; // Využijeme délku časovače z nastavení
+    playerPosition = { x: 0, y: 0 }; // Nastavení počáteční pozice hráče
+    score = 0; // Reset skóre
+    timeLeft = parseInt(document.getElementById("timerDuration").value) || 60; // Načteme časový limit
+    answeredQuestions = 0; // Reset odpovědí
+    totalQuestions = questions.length; // Počet otázek závisí na tom, kolik jich je
     scoreElement.textContent = "Body: 0";
     timerElement.textContent = `Čas: ${timeLeft}`;
-    createGameArea(); // Znovu vytvoříme hrací plochu
-    startTimer(); // Restartujeme časovač
-    exportToJSON();  // Automaticky exportujeme stav do JSON při resetování
+    createGameArea(); // Vytvoření herní plochy
+    startTimer(); // Restart časovače
 }
+
+
 
 
 // Funkce pro zesvětlení zodpovězených šedých čtverečků
@@ -392,9 +477,9 @@ function markQuestionAsAnswered() {
     }
 }
 
-// Funkce pro zobrazení otázky a odpovědí
+// Funkce pro zobrazení otázky bez alertů
 function showQuestion(question) {
-    isAnsweringQuestion = true; // Zamezíme pohybu během odpovědi
+    isAnsweringQuestion = true;
     currentQuestionElement.innerHTML = `
         <h3>${question.question}</h3>
         ${question.options.map((option, index) => `
@@ -403,38 +488,43 @@ function showQuestion(question) {
     `;
 }
 
-// Funkce pro kontrolu odpovědi
+// Funkce pro kontrolu odpovědi bez alertu
 function checkAnswer(selectedIndex, correctIndex) {
     if (selectedIndex === correctIndex) {
         score++;
         scoreElement.textContent = `Body: ${score}`;
-        alert("Správná odpověď!");
-        markQuestionAsAnswered(); // Zesvětlíme čtvereček
+        currentQuestionElement.innerHTML = `<p>Správná odpověď!</p>`;
     } else {
-        alert("Špatná odpověď.");
+        currentQuestionElement.innerHTML = `<p>Špatná odpověď, zkus to znovu.</p>`;
     }
 
-    currentQuestionElement.innerHTML = ''; // Vymažeme otázku
-    isAnsweringQuestion = false; // Umožníme opět pohyb
+    // Po zodpovězení otázky umožníme pohyb
+    currentQuestionElement.innerHTML += '<p>Pokračujte v pohybu.</p>';
+    isAnsweringQuestion = false;
 
     // Kontrola, zda byly zodpovězeny všechny otázky
     if (questions.every(q => q.answered)) {
-        alert("Všechny otázky byly zodpovězeny! Najděte východ.");
+        currentQuestionElement.innerHTML = "Všechny otázky byly zodpovězeny! Najděte východ.";
+    }
+}
+// Funkce pro spuštění časovače
+function startTimer() {
+    if (document.getElementById("enableTimer").checked) {
+        clearInterval(gameInterval);
+        timeLeft = parseInt(document.getElementById("timerDuration").value) || 60;
+        timerElement.textContent = `Čas: ${timeLeft}`;
+        gameInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `Čas: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                clearInterval(gameInterval);
+                alert("Čas vypršel! Hra končí.");
+                endGame(); // Ukončí hru při vypršení časového limitu
+            }
+        }, 1000);
     }
 }
 
-// Funkce pro spuštění časovače
-function startTimer() {
-    gameInterval = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = `Čas: ${timeLeft}`;
-        if (timeLeft <= 0) {
-            clearInterval(gameInterval);
-            alert("Čas vypršel! Zkuste to znovu.");
-            endGame();
-        }
-    }, 1000);
-}
 
 // Funkce pro zobrazení náhledu testu a generování labyrintu
 function startPreview() {
@@ -466,115 +556,31 @@ window.onload = () => {
     resetGame(); // Inicializace hry
 };
 
-function exportToJSON() {
-    if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
 
-    const jsonData = {
-        questions: questions,  // Export otázek, odpovědí a bodů
-        score: score,  // Export aktuálních bodů
-        timeLeft: timeLeft  // Export zbývajícího času
-    };
-
-    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'labyrint_hra.json';
-    link.click();
+    // Funkce pro zobrazení výsledků
+function showResults(grade) {
+    let correctAnswers = questions.filter(q => q.answered && q.correctIndex === q.selectedAnswer).length;
+    let wrongAnswers = questions.filter(q => q.answered && q.correctIndex !== q.selectedAnswer).length;
+    
+    const resultContent = `
+        <h3>Výsledky</h3>
+        <p><strong>Skóre:</strong> ${score} / ${totalQuestions}</p>
+        <p><strong>Známka:</strong> ${grade}</p>
+        <p><strong>Správné odpovědi:</strong> ${correctAnswers}</p>
+        <p><strong>Špatné odpovědi:</strong> ${wrongAnswers}</p>
+        <button onclick="resetGame()">Zahájit novou hru</button>
+    `;
+    currentQuestionElement.innerHTML = resultContent;
 }
 
-
-function exportToMoodleXML() {
-    if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
-
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
-
-    questions.forEach((item, index) => {
-        xmlContent += `
-        <question type="multichoice">
-            <name>
-                <text>Otázka ${index + 1}</text>
-            </name>
-            <questiontext format="html">
-                <text><![CDATA[<p>${item.question}</p>]]></text>
-            </questiontext>
-            <answer fraction="100">
-                <text><![CDATA[${item.options[item.correctIndex]}]]></text>
-            </answer>
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-            <defaultgrade>${item.points || 1}</defaultgrade>
-        </question>`;
-
-    });
-
-    xmlContent += `\n</quiz>`;
-
-    const blob = new Blob([xmlContent], { type: 'application/xml' });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "labyrint_moodle_quiz.xml";
-    a.click();
-}
-
-
-function loadFromJSON(file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const data = JSON.parse(event.target.result);
-        
-        // Obnovení otázek a bodů z JSON dat
-        questions = data.questions || [];
-        score = data.score || 0;
-        timeLeft = data.timeLeft || 60;
-
-        alert("Hra byla úspěšně načtena.");
-        displayQuestions(); // Zobrazení otázek
-        setPlayerStartPosition(); // Nastavení pozice hráče
-        createGameArea(); // Vytvoření hrací oblasti
-        startTimer(); // Obnovení časovače
-    };
-    reader.readAsText(file);
-}
-
-function loadFromMoodleXML(file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(event.target.result, "application/xml");
-        const questionsData = xmlDoc.getElementsByTagName("question");
-
-        questions = [];
-        Array.from(questionsData).forEach((questionElement) => {
-            const questionText = questionElement.getElementsByTagName("questiontext")[0].textContent;
-            const answers = questionElement.getElementsByTagName("answer");
-            const options = [];
-            let correctIndex = -1;
-
-            Array.from(answers).forEach((answerElement, index) => {
-                options.push(answerElement.textContent);
-                if (answerElement.getAttribute("fraction") === "100") {
-                    correctIndex = index;
-                }
-            });
-
-            questions.push({
-                question: questionText,
-                options: options,
-                correctIndex: correctIndex
-            });
-        });
-
-        alert("Otázky byly načteny z XML souboru.");
-        displayQuestions(); // Zobrazení otázek
-    };
-    reader.readAsText(file);
+// Funkce pro výpočet známky
+function calculateGrade(score, totalQuestions) {
+    const percentage = (score / totalQuestions) * 100;
+    if (percentage >= 90) return "1";
+    if (percentage >= 80) return "2";
+    if (percentage >= 70) return "3";
+    if (percentage >= 60) return "4";
+    return "5";
 }
 
 </script>

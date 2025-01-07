@@ -364,6 +364,64 @@ questions.push({
             }
         });
         
+        function showGameResults() {
+    const resultsPopup = document.createElement('div');
+    resultsPopup.style.position = "fixed";
+    resultsPopup.style.top = "50%";
+    resultsPopup.style.left = "50%";
+    resultsPopup.style.transform = "translate(-50%, -50%)";
+    resultsPopup.style.backgroundColor = "white";
+    resultsPopup.style.padding = "20px";
+    resultsPopup.style.border = "2px solid black";
+    resultsPopup.style.zIndex = 1000;
+
+    // Celkové skóre
+    const scoreElement = document.createElement('h2');
+    scoreElement.textContent = `Celkové body: ${score}`;
+    resultsPopup.appendChild(scoreElement);
+
+    // Výsledek hodnocení (známka)
+    const grade = calculateGrade(score);
+    const gradeElement = document.createElement('p');
+    gradeElement.textContent = `Známka: ${grade}`;
+    resultsPopup.appendChild(gradeElement);
+
+    // Seznam chybně zodpovězených otázek
+    const wrongQuestions = getWrongQuestions();
+    if (wrongQuestions.length > 0) {
+        const wrongQuestionsList = document.createElement('ul');
+        wrongQuestionsList.innerHTML = '<h3>Chybně zodpovězené otázky:</h3>';
+        wrongQuestions.forEach(question => {
+            const li = document.createElement('li');
+            li.textContent = question;
+            wrongQuestionsList.appendChild(li);
+        });
+        resultsPopup.appendChild(wrongQuestionsList);
+    }
+
+    // Tlačítko pro zavření výsledků
+    const closeButton = document.createElement('button');
+    closeButton.textContent = "Zavřít";
+    closeButton.onclick = function() {
+        resultsPopup.style.display = "none";
+    };
+    resultsPopup.appendChild(closeButton);
+
+    document.body.appendChild(resultsPopup);
+}
+
+function calculateGrade(score) {
+    if (score >= 90) return "1";
+    if (score >= 75) return "2";
+    if (score >= 50) return "3";
+    if (score >= 25) return "4";
+    return "5";
+}
+     function gameOverSequence() {
+    // Při ukončení hry se zobrazí výsledky
+    showGameResults();
+}
+   
  function exportToJSON() {
     if (questions.length === 0) {
         alert("Nemáte žádné otázky pro export!");
