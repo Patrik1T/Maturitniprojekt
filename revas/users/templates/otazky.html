@@ -1,0 +1,137 @@
+{% extends 'struktura/base.html' %}
+{% load static %}
+{% block title %}
+Moje konkrétní stránka
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Levý panel -->
+        <aside class="col-lg-2 col-md-4 col-sm-12 bg-light p-3">
+            {% include 'struktura/tabulky.html' %}
+        </aside>
+
+        <!-- Hlavní obsah s kartami -->
+        <div class="main-content col-lg-10 col-md-8 col-sm-12">
+            <div class="main-content">
+                <h1>Testy</h1>
+                <div class="container">
+                    <!-- Karty pro Testy -->
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Rozhodovací test</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 1.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Ano nebo ne test</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 2.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Psací test</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 3.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nadpis a karty pro Herní testy -->
+                <h1>Herní testy</h1>
+                <div class="container">
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Pexeso</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 1.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Oběšenec</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 2.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Dveře hra</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 3.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nadpis a karty pro Herní testy procvičovací -->
+                <h1>Herní testy procvičovací</h1>
+                <div class="container">
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Lov pokladů</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 1.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Labyrint</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 2.</p>
+                        </div>
+                    </div>
+                    <div class="card" onclick="toggleContent(this)">
+                        <div class="card-title">Flappy bird</div>
+                        <div class="card-content">
+                            <p>Toto je detailní text pro kartu 3.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skript pro zajištění, že všechny karty jsou zavřené při načtení -->
+            <script>
+                function toggleContent(card) {
+                    const content = card.querySelector('.card-content');
+                    const isVisible = content.style.display === 'block';
+
+                    // Zavřít všechny karty
+                    document.querySelectorAll('.card-content').forEach((el) => {
+                        el.style.display = 'none';
+                    });
+
+                    // Otevřít pouze aktuální kartu (pokud nebyla otevřená)
+                    if (!isVisible) {
+                        content.style.display = 'block';
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+
+                // Ujistíme se, že všechny karty jsou při načtení skryté
+                document.querySelectorAll('.card-content').forEach((el) => {
+                    el.style.display = 'none';
+                });
+            </script>
+
+            <!-- Stylování pro větší písmo -->
+            <style>
+                .card-title {
+                    font-size: 1.5em; /* Zvětšení písma nadpisu */
+                    font-weight: bold;
+                }
+
+                .card-content {
+                    font-size: 1.2em; /* Zvětšení písma obsahu */
+                    margin-top: 10px;
+                }
+
+                .card {
+                    margin-bottom: 15px;
+                }
+
+                .container {
+                    margin-top: 20px;
+                }
+            </style>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

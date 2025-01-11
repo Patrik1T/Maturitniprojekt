@@ -1,0 +1,15 @@
+<form method="GET">
+    <input type="text" name="q" placeholder="Hledat otázky" value="{{ search_query }}">
+    <button type="submit">Hledat</button>
+</form>
+
+<h1>Seznam otázek</h1>
+<ul>
+    {% for question in questions %}
+        <li>
+            <a href="{% url 'question_detail' question.id %}">{{ question.title }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_question' %}">Vytvořit novou otázku</a>

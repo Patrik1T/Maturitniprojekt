@@ -1,0 +1,376 @@
+  {% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+    {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .question-form, .game-board {
+            margin-bottom: 20px;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-gap: 5px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 50px;
+            cursor: pointer;
+        }
+        .correct {
+            background-color: #a8e6a1;
+        }
+        .incorrect {
+            background-color: #f6a6a6;
+        }
+        .question-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz & Minesweeper</h1>
+
+    <div class="question-form">
+        <h2>Add a Question</h2>
+        <input type="text" id="question" placeholder="Enter your question" />
+        <div id="answers"></div>
+        <button onclick="addAnswer()">Add Answer</button>
+        <button onclick="saveQuestion()">Save Question</button>
+        <div>
+            <input type="checkbox" id="enable-timer" onchange="toggleTimerOptions()"> Enable Timer
+            <input type="number" id="timer-value" placeholder="Time in seconds" style="display: none;">
+        </div>
+        <div>
+            <label for="max-clicks">Max Clicks:</label>
+            <input type="number" id="max-clicks" placeholder="Enter max clicks">
+        </div>
+    </div>
+
+    <div id="question-list">
+        <h2>Questions</h2>
+        <ul></ul>
+    </div>
+
+    <button onclick="startGame()">Start Game</button>
+
+    <div class="game-info">
+        <div id="remaining-clicks">Remaining Clicks: -</div>
+        <div id="timer-display">Time Left: -</div>
+    </div>
+    <div id="question-count">
+    Total Questions: <span id="total-questions">0</span>
+</div>
+
+
+    <div class="game-board"></div>
+
+    <div id="results">Score: 0</div>
+
+    <button onclick="resetGame()">Reset Game</button>
+
+    <div class="overlay"></div>
+    <div class="question-modal">
+        <h2 id="modal-question"></h2>
+        <div id="modal-answers"></div>
+        <button onclick="submitAnswer()">Submit</button>
+    </div>
+
+    <script>
+        const questions = [];
+        let score = 0;
+        let maxClicks = 0;
+        let remainingClicks = 0;
+        let timer = null;
+        let timeLeft = 0;
+
+        function addAnswer() {
+            const answersDiv = document.getElementById('answers');
+            const answerContainer = document.createElement('div');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter an answer';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'radio';
+            checkbox.name = 'correct-answer';
+
+            answerContainer.appendChild(input);
+            answerContainer.appendChild(checkbox);
+            answersDiv.appendChild(answerContainer);
+        }
+
+     function saveQuestion() {
+    const questionText = document.getElementById('question').value;
+    const answerContainers = document.querySelectorAll('#answers div');
+
+    const answers = Array.from(answerContainers).map(container => {
+        const input = container.querySelector('input[type="text"]');
+        const checkbox = container.querySelector('input[type="radio"]');
+        return { text: input.value, correct: checkbox.checked };
+    }).filter(a => a.text);
+
+    if (!questionText || answers.length === 0 || !answers.some(a => a.correct)) {
+        alert('Please enter a question, at least one answer, and mark a correct answer.');
+        return;
+    }
+
+    const question = { question: questionText, answers, answered: false };
+    questions.push(question);
+    renderQuestionList();
+    updateQuestionCount(); // Aktualizuje zobrazení počtu otázek
+
+    // Resetuje vstupy po uložení otázky
+    document.getElementById('question').value = '';
+    document.getElementById('answers').innerHTML = '';
+}
+
+
+
+function renderQuestionList() {
+    const list = document.querySelector('#question-list ul');
+    list.innerHTML = '';
+    questions.forEach((q, index) => {
+        const li = document.createElement('li');
+        const correctAnswer = q.answers.find(a => a.correct)?.text || 'None';
+        li.textContent = `${q.question} (Correct: ${correctAnswer})`;
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => {
+            questions.splice(index, 1);
+            renderQuestionList();
+        };
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+    });
+}
+
+
+        function toggleTimerOptions() {
+            const timerInput = document.getElementById('timer-value');
+            timerInput.style.display = document.getElementById('enable-timer').checked ? 'inline' : 'none';
+        }
+
+        function startGame() {
+            const board = document.querySelector('.game-board');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(10, 50px)`;
+
+            maxClicks = parseInt(document.getElementById('max-clicks').value) || 0;
+            remainingClicks = maxClicks;
+            updateClickDisplay();
+
+            if (document.getElementById('enable-timer').checked) {
+                timeLeft = parseInt(document.getElementById('timer-value').value) || 0;
+                startTimer();
+            }
+
+            const cells = Array.from({ length: 100 }, (_, i) => {
+                const div = document.createElement('div');
+                div.className = 'cell';
+                div.onclick = () => handleCellClick(i, cells);
+                board.appendChild(div);
+                return div;
+            });
+
+            // Randomly place questions
+            questions.forEach(q => {
+                const index = Math.floor(Math.random() * cells.length);
+                cells[index].dataset.question = JSON.stringify(q);
+                cells[index].classList.add('question-cell');
+            });
+        }
+
+function handleCellClick(index, cells) {
+    if (remainingClicks <= 0) return;
+
+    remainingClicks--;
+    updateClickDisplay();
+
+    const cell = cells[index];
+    const questionData = cell.dataset.question;
+
+    if (questionData) {
+        showQuestionModal(JSON.parse(questionData), cell);
+    } else {
+        // Seznam sousedních buněk (předpokládáme, že mřížka má 10 sloupců)
+        const adjacentIndexes = [
+            index - 1, index + 1, // Sousedé vlevo a vpravo
+            index - 10, index + 10, // Sousedé nahoře a dole
+            index - 11, index + 11, // Diagonálně
+            index - 9, index + 9 // Diagonálně
+        ];
+
+        // Filtrujeme sousední buňky, které jsou v rámci mřížky a mají otázku
+        const countNearbyQuestions = adjacentIndexes.filter(i => 
+            i >= 0 && i < cells.length && cells[i].dataset.question).length;
+
+        cell.textContent = countNearbyQuestions || 0;
+        cell.style.backgroundColor = '#f0f0f0';
+    }
+
+    if (remainingClicks === 0) {
+        endGame('No clicks remaining!');
+    }
+}
+
+
+
+        function showQuestionModal(question, cell) {
+            document.querySelector('.overlay').style.display = 'block';
+            const modal = document.querySelector('.question-modal');
+            modal.style.display = 'block';
+            modal.dataset.cellIndex = Array.from(document.querySelectorAll('.cell')).indexOf(cell);
+            document.getElementById('modal-question').textContent = question.question;
+
+            const answersDiv = document.getElementById('modal-answers');
+            answersDiv.innerHTML = '';
+            question.answers.forEach((a, i) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'answer';
+                input.value = i;
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(a.text));
+                answersDiv.appendChild(label);
+                answersDiv.appendChild(document.createElement('br'));
+            });
+        }
+
+        function submitAnswer() {
+            const selected = document.querySelector('input[name="answer"]:checked');
+            const modal = document.querySelector('.question-modal');
+            const cellIndex = modal.dataset.cellIndex;
+            const cell = document.querySelectorAll('.cell')[cellIndex];
+
+            if (!selected) {
+                alert('Please select an answer!');
+                return;
+            }
+
+            const questionData = JSON.parse(cell.dataset.question);
+            const selectedAnswerIndex = parseInt(selected.value, 10);
+            const isCorrect = questionData.answers[selectedAnswerIndex].correct;
+
+            if (isCorrect) {
+                score++;
+                cell.classList.add('correct');
+            } else {
+                cell.classList.add('incorrect');
+            }
+
+            document.getElementById('results').textContent = `Score: ${score}`;
+
+            document.querySelector('.overlay').style.display = 'none';
+            modal.style.display = 'none';
+
+            checkEndGame();
+        }
+
+        function updateClickDisplay() {
+            document.getElementById('remaining-clicks').textContent = `Remaining Clicks: ${remainingClicks}`;
+        }
+
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Time Left: ${timeLeft}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame('Time is up!');
+                }
+            }, 1000);
+        }
+        
+
+ function endGame(reason) {
+    clearInterval(timer);
+
+    // Zobrazí zprávu o konci hry
+    const gameOverMessage = document.getElementById('game-over-message');
+    const finalScoreText = document.getElementById('final-score');
+    
+    finalScoreText.textContent = `Your final score: ${score}`;
+    gameOverMessage.style.display = 'block'; // Zobrazí sekci s konečnou zprávou
+
+    // Aktualizuje skóre v sekci výsledků
+    document.getElementById('results').textContent = `Game Over! ${reason} Final Score: ${score}`;
+}
+
+
+function resetGame() {
+    clearInterval(timer);
+    score = 0;
+    remainingClicks = maxClicks;
+    document.getElementById('results').textContent = 'Score: 0';
+    document.getElementById('timer-display').textContent = 'Time Left: -';
+    updateClickDisplay();
+    startGame();
+
+    // Skrytí zprávy o konci hry při restartu
+    document.getElementById('game-over-message').style.display = 'none';
+
+    // Seznam otázek a odpovědí zůstane zachován, jen resetujeme herní hodnoty
+}
+
+function checkEndGame() {
+    if (remainingClicks <= 0) {
+        endGame('No clicks remaining!');
+    } else if (questions.every(q => q.answered)) {
+        endGame('All questions answered!');
+    }
+}
+
+function updateQuestionCount() {
+    const totalQuestions = questions.length;
+    const answeredQuestions = questions.filter(q => q.answered).length;
+
+    document.getElementById('total-questions').textContent = totalQuestions;
+    document.getElementById('answered-questions').textContent = answeredQuestions;
+}
+
+
+    </script>
+</body>
+</html>
+{% endblock %}
+

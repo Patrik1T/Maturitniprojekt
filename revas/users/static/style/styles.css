@@ -1,133 +1,203 @@
-/* Global styles */
-body, html {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    background-color: #f4f4f4; /* Přidání pozadí */
-    font-family: Arial, sans-serif; /* Standardní font */
-    color: #333; /* Barva textu */
-}
-
-/* Layout */
-.layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Layout vždy na celou výšku okna */
-}
-
-/* Main Content */
-.main-content {
+.footer {
     display: flex;
     justify-content: space-between;
-    gap: 20px; /* Mezera mezi sloupci */
-    flex: 1; /* Umožní obsahu růst */
-}
-
-.column {
-    flex: 1; /* Oba sloupce mají stejnou šířku */
-}
-
-/* Footer */
-.footer {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* Tři sloupce ve footeru */
-    gap: 20px;
+    align-items: flex-start;
+    background-color: #555; /* Šedé pozadí pro footer */
     padding: 20px;
-    background-color: #333; /* Tmavé pozadí pro footer */
+    border-top: 2px solid #ddd;
     color: white; /* Bílý text */
-    border-top: 1px solid #555;
-    width: 100%;
-    flex-shrink: 0; /* Zabraňuje smrštění */
 }
 
-.footer-left,
-.footer-center,
-.footer-right {
-    padding: 10px;
+.footer-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
 }
 
 .footer-logo {
     max-width: 150px;
     height: auto;
+    margin-right: 15px;
 }
 
-.footer-info p {
+.footer-details p {
     margin: 5px 0;
-    line-height: 1.5;
-    color: #ccc; /* Světlejší text */
+    font-size: 14px;
+    color: white; /* Bílý text pro detaily */
+}
+
+.footer-center {
+    flex: 2;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.footer-section {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.footer-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: white; /* Bílý text pro nadpisy */
+}
+
+.footer-section p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #ccc; /* Světle šedý text pro popisy */
+}
+
+.footer-button {
+    display: inline-block;
+    margin-top: 5px;
+    padding: 10px 15px;
+    background-color: #007bff; /* Modré tlačítko */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.footer-button:hover {
+    background-color: #0056b3; /* Tmavší modrá při hoveru */
+}
+
+.footer-right {
+    flex: 1;
+    text-align: center;
 }
 
 .footer-map iframe {
     width: 100%;
-    height: 250px;
-    border-radius: 10px;
-}
-
-/* Navigace */
-.navigation {
-    background-color: #007bff; /* Modré pozadí */
-    color: white;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.navigation a {
-    color: white;
-    text-decoration: none;
-    margin: 0 10px;
-}
-
-.navigation a:hover {
-    text-decoration: underline;
-}
-
-/* Ostatní */
-.footer-notes {
-    background-color: #fff;
-    color: #333;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.footer-notes h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-.footer-notes textarea {
-    width: 100%;
-    height: 120px;
-    padding: 10px;
-    border: 1px solid #ddd;
+    height: 200px;
     border-radius: 5px;
-    resize: none;
-    margin-bottom: 10px;
-}
-
-.footer-notes .btn-save {
-    background-color: #1E90FF;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.footer-notes .btn-save:hover {
-    background-color: #4682B4;
 }
 
 @media (max-width: 768px) {
     .footer {
-        grid-template-columns: 1fr; /* Footer se přizpůsobí vertikálně */
+        flex-direction: column;
+        align-items: center;
     }
 
-    .navigation {
-        flex-direction: column; /* Navigace se změní na sloupce */
+    .footer-left,
+    .footer-center,
+    .footer-right {
+        margin-bottom: 15px;
+    }
+
+    .footer-center {
+        flex-direction: column;
+    }
+
+    .footer-section {
+        margin-bottom: 15px;
     }
 }
+
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #007bff; /* Modré pozadí */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+    height: 50px;
+    width: auto;
+    cursor: pointer;
+}
+
+header .nav-links {
+    display: flex;
+    gap: 15px;
+}
+
+header .nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+header .nav-links a:hover {
+    color: #d9edf7; /* Světlejší odstín modré */
+}
+
+header .icons {
+    display: flex;
+    gap: 10px;
+}
+
+header .icon-button {
+    text-decoration: none;
+    color: white;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+header .icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
+        gap: 10px;
+    }
+
+    header .icons {
+        margin-top: 10px;
+    }
+}
+
+.resizable-image {
+    width: 100%;
+    height: auto;
+    max-width: 600px; /* Nastavte maximální šířku */
+    min-width: 100px; /* Nastavte minimální šířku */
+    resize: both; /* Povolení změny velikosti */
+    overflow: hidden;
+}
+
+ #resizable-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .resizable-image {
+        width: 300px; /* Nastavte výchozí šířku obrázku */
+        height: auto;
+        display: block;
+    }
+
+    #resize-handle {
+        width: 10px;
+        height: 10px;
+        background-color: #333;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: se-resize; /* Změna kurzoru na přetahování */
+    }

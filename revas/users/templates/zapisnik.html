@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Zápisník</h2>
+
+    <!-- Formulář pro přidání nového zápisku -->
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Uložit</button>
+    </form>
+
+    <h3>Vaše zápisky:</h3>
+    <div class="notes">
+        {% for note in notes %}
+            <div class="note">
+                <p>{{ note.content }}</p>
+                <small>Vytvořeno: {{ note.created_at }}</small>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

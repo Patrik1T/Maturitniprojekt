@@ -17,80 +17,77 @@
     <strong>Úspěch:</strong> Test byl úspěšně uložen.
 </div>
 
-    <div class="container">
-        <h1>Vytvořit test</h1>
-        <h2>Popisek k testu</h2>
+<div class="container">
+    <h1>Vytvořit test</h1>
+    <h2>Popisek k testu</h2>
 
-        <div class="test-name">
-            <label for="testName">Název testu:</label>
-            <input type="text" id="testName" placeholder="Zadejte název testu" required>
-        </div>
-
-        <label for="testImage">Obrázek testu (nahrát soubor):</label>
-        <input type="file" id="testImage" accept="image/*">
-
-        <label for="testDescription">Popis testu:</label>
-        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-
-        <h2>Tvoření testu</h2>
-
-        <div class="timer">
-            <label for="timer">Nastavit časovač (v minutách):</label>
-            <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
-            <label for="enableTimer">Povolit časovač</label>
-            <input type="checkbox" id="enableTimer">
-        </div>
-
-        <div class="grade-settings">
-            <h3>Počet bodů pro každou známku</h3>
-            <label for="grade1">Známka 1 (minimální body):</label>
-            <input type="number" id="grade1" min="1" value="90">
-            <label for="grade2">Známka 2 (minimální body):</label>
-            <input type="number" id="grade2" min="1" value="70">
-            <label for="grade3">Známka 3 (minimální body):</label>
-            <input type="number" id="grade3" min="1" value="50">
-            <label for="grade4">Známka 4 (minimální body):</label>
-            <input type="number" id="grade4" min="1" value="30">
-            <label for="grade5">Známka 5 (minimální body):</label>
-            <input type="number" id="grade5" min="1" value="0">
-        </div>
-
-        <form id="testForm">
-            <div id="questionsContainer"></div>
-            <h2>Tvorba testu</h2>
-            <button type="button" onclick="addQuestion()">Přidat otázku</button>
-
-            <h2>Ukázka testu</h2>
-            <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
-            <h2>Typ uložení</h2>
-            <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
-            <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-            <!-- Uložení jako HTML -->
-            <button type="button" onclick="saveAsHtml()">Uložit jako HTML</button>
-            <!-- Uložení jako Moodle XML -->
-            <button type="button" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
-            <button type="button" onclick="saveAsJson()">Uložit jako JSON</button>
-
-        </form>
-
-        <div id="previewTest" class="test-section">
-            <h2>Náhled testu</h2>
-            <div id="testContent"></div>
-            <div class="timer-display" id="timerDisplay" style="display:none;">
-                <p>Čas zbývající: <span id="timerCount"></span></p>
-            </div>
-        </div>
-
-        <div class="results" id="resultsSection" style="display:none;">
-    <h2>Výsledky testu</h2>
-    <p id="scoreDisplay"></p>
-    <p id="gradeDisplay"></p>
-    <p id="correctAnswersDisplay"></p>
-    <p id="partiallyCorrectDisplay"></p>
-    <p id="wrongAnswersDisplay"></p>
-</div>
-
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
     </div>
+
+    <label for="testImage">Obrázek testu (nahrát soubor):</label>
+    <input type="file" id="testImage" accept="image/*">
+
+    <label for="testDescription">Popis testu:</label>
+    <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+
+    <h2>Tvoření testu</h2>
+
+    <div class="timer">
+        <label for="timer">Nastavit časovač (v minutách):</label>
+        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+        <label for="enableTimer">Povolit časovač</label>
+        <input type="checkbox" id="enableTimer">
+    </div>
+
+    <div class="grade-settings">
+        <h3>Počet bodů pro každou známku</h3>
+        <label for="grade1">Známka 1 (minimální body):</label>
+        <input type="number" id="grade1" min="1" value="90">
+        <label for="grade2">Známka 2 (minimální body):</label>
+        <input type="number" id="grade2" min="1" value="70">
+        <label for="grade3">Známka 3 (minimální body):</label>
+        <input type="number" id="grade3" min="1" value="50">
+        <label for="grade4">Známka 4 (minimální body):</label>
+        <input type="number" id="grade4" min="1" value="30">
+        <label for="grade5">Známka 5 (minimální body):</label>
+        <input type="number" id="grade5" min="1" value="0">
+    </div>
+
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <h2>Tvorba testu</h2>
+        <button type="button" onclick="addQuestion()">Přidat otázku</button>
+
+        <h2>Ukázka testu</h2>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <h2>Typ uložení</h2>
+        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
+        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="button" onclick="exportToHTML()">Uložit jako HTML</button>
+        <button type="button" onclick="exportToMoodleXML()">Uložit jako Moodle XML</button>
+        <button type="button" onclick="exportToJSON()">Uložit jako JSON</button>
+
+    </form>
+
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <div class="timer-display" id="timerDisplay" style="display:none;">
+            <p>Čas zbývající: <span id="timerCount"></span></p>
+        </div>
+    </div>
+
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <p id="scoreDisplay"></p>
+        <p id="gradeDisplay"></p>
+        <p id="correctAnswersDisplay"></p>
+        <p id="partiallyCorrectDisplay"></p>
+        <p id="wrongAnswersDisplay"></p>
+    </div>
+</div>
 </body>
 </html>
 
@@ -106,7 +103,9 @@
     let correctAnswers = 0;
     let userAnswers = [];
 
-     // Funkce pro přidání otázky
+   
+    
+    // Funkce pro přidání otázky
     function addQuestion() {
         questionCount++;
         const questionHTML = `
@@ -146,31 +145,42 @@
 
         return questions;
     }
-        // Funkce pro zobrazení testu a přidání odpovědí
-    function previewTest() {
-        const questions = gatherQuestions();
-        if (questions.length === 0) {
-            alert("Přidejte alespoň jednu otázku.");
-            return;
-        }
-
-        let previewHTML = '<h3>Náhled na test:</h3>';
-        questions.forEach((q, index) => {
-            previewHTML += `
-                <div>
-                    <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
-                    <label><input type="radio" name="preview_question${index}" value="ano"> Ano</label>
-                    <label><input type="radio" name="preview_question${index}" value="ne"> Ne</label>
-                </div>
-            `;
-        });
-
-        previewHTML += `
-            <button type="button" onclick="endTest()">Konec</button>
-        `;
-        document.getElementById('testContent').innerHTML = previewHTML;
-        document.getElementById('previewTest').style.display = 'block';
+      // Funkce pro zobrazení testu a přidání odpovědí
+function previewTest() {
+    // Validace formuláře před zobrazením preview
+    if (!validateForm()) {
+        return; // Pokud formulář není validní, test se nezobrazí
     }
+
+    const questions = gatherQuestions();
+    
+    if (questions.length === 0) {
+        document.getElementById('errorContainer').innerText = "Přidejte alespoň jednu otázku.";
+        document.getElementById('errorContainer').style.display = 'block';
+        return;
+    }
+
+    // Vytvoření HTML pro náhled testu
+    let previewHTML = '<h3>Náhled na test:</h3>';
+    questions.forEach((q, index) => {
+        previewHTML += `
+            <div>
+                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
+                <label><input type="radio" name="preview_question${index}" value="ano"> Ano</label>
+                <label><input type="radio" name="preview_question${index}" value="ne"> Ne</label>
+            </div>
+        `;
+    });
+
+    // Přidání tlačítka pro ukončení testu
+    previewHTML += `
+        <button type="button" onclick="endTest()">Konec</button>
+    `;
+
+    // Zobrazení náhledu testu
+    document.getElementById('testContent').innerHTML = previewHTML;
+    document.getElementById('previewTest').style.display = 'block';
+}
 
         // Funkce pro vyhodnocení testu
 function evaluateTest() {
@@ -196,13 +206,84 @@ function evaluateTest() {
 }
 
 
-    // Funkce pro smazání otázky
+
+      // Funkce pro smazání otázky
     function deleteQuestion(questionId) {
         const questionElement = document.getElementById(`question${questionId}`);
         questionElement.remove();
+        reNumberQuestions();
     }
 
+    // Funkce pro přepočítání čísel otázek
+    function reNumberQuestions() {
+        const questions = document.querySelectorAll('.question-wrapper');
+        questions.forEach((question, index) => {
+            const questionNumber = index + 1;
+            question.querySelector('label').innerText = `Otázka ${questionNumber}:`;
+            question.id = `question${questionNumber}`;
+        });
+        questionCount = questions.length;
+    }
+
+    // Funkce pro validaci formuláře
+function validateForm() {
+    const testName = document.getElementById('testName').value;
+    const grade1 = parseInt(document.getElementById('grade1').value);
+    const grade2 = parseInt(document.getElementById('grade2').value);
+    const grade3 = parseInt(document.getElementById('grade3').value);
+    const grade4 = parseInt(document.getElementById('grade4').value);
+    const grade5 = parseInt(document.getElementById('grade5').value);
+    const enableTimer = document.getElementById('enableTimer').checked;
+    const timerValue = document.getElementById('timer').value;
     
+    // Kontrola název testu
+    if (!testName) {
+        document.getElementById('errorContainer').innerText = 'Název testu je povinný!';
+        document.getElementById('errorContainer').style.display = 'block';
+        return false;
+    }
+    
+    // Kontrola známek
+    if (grade1 <= grade2 || grade2 <= grade3 || grade3 <= grade4 || grade4 <= grade5) {
+        document.getElementById('errorContainer').innerText = 'Známky musí být ve správném pořadí a musí být reálné!';
+        document.getElementById('errorContainer').style.display = 'block';
+        return false;
+    }
+    
+    // Kontrola časovače
+    if (enableTimer && !timerValue) {
+        document.getElementById('errorContainer').innerText = 'Pokud povolíte časovač, musíte zadat dobu!';
+        document.getElementById('errorContainer').style.display = 'block';
+        return false;
+    }
+
+    // Kontrola otázek
+    const questions = document.querySelectorAll('.question-wrapper');
+    if (questions.length < 1) {
+        document.getElementById('errorContainer').innerText = 'Musíte přidat alespoň jednu otázku!';
+        document.getElementById('errorContainer').style.display = 'block';
+        return false;
+    }
+
+    // Kontrola každé otázky
+    for (let i = 0; i < questions.length; i++) {
+        const questionText = questions[i].querySelector('input[type="text"]').value;
+        const answers = questions[i].querySelector('select').value;
+        if (!questionText) {
+            document.getElementById('errorContainer').innerText = `Otázka ${i+1} nemá text!`;
+            document.getElementById('errorContainer').style.display = 'block';
+            return false;
+        }
+
+        if (answers.length < 2) {
+            document.getElementById('errorContainer').innerText = `Otázka ${i+1} musí mít alespoň dvě možnosti odpovědí!`;
+            document.getElementById('errorContainer').style.display = 'block';
+            return false;
+        }
+    }
+
+    return true;
+}
 
     // Funkce pro odeslání testu
     function submitTest() {
@@ -362,66 +443,105 @@ function calculateScore(userAnswers, questions) {
         displayResults(questions, userAnswers, score, grade);
     }
     
-function saveAsHtml() {
-            const questions = gatherQuestions();
-            let htmlContent = `
-                <html>
-                <head><title>Test</title></head>
-                <body>
-                    <h1>Test</h1>
-                    <form>
-            `;
+function exportToHTML() {
+    const questions = gatherQuestions();
+    const testName = document.getElementById('testName').value;
 
-            questions.forEach((q, index) => {
-                htmlContent += `
-                    <div>
-                        <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
-                        <label><input type="radio" name="question${index}" value="ano"> Ano</label>
-                        <label><input type="radio" name="question${index}" value="ne"> Ne</label>
-                    </div>
-                `;
-            });
+    if (questions.length === 0 || !testName) {
+        alert("Musíte přidat název testu a alespoň jednu otázku.");
+        return;
+    }
 
-            htmlContent += `
-                <button type="submit">Odeslat</button>
-            </form></body></html>
-            `;
+    let htmlContent = '<!DOCTYPE html>\n<html lang="cs">\n<head>\n<title>' + testName + '</title>\n</head>\n<body>\n';
+    htmlContent += '<h1>' + testName + '</h1>\n';
+    questions.forEach((q, index) => {
+        htmlContent += `<h2>Otázka ${index + 1}</h2>\n`;
+        htmlContent += `<p>${q.text}</p>\n`;
+        htmlContent += `<p><strong>Správná odpověď:</strong> ${q.correctAnswer}</p>\n`;
+    });
+    htmlContent += '</body>\n</html>';
 
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            saveAs(blob, 'test.html');
-        }
+    // Vytvoření souboru pro stažení
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}_test.html`;
+    link.click();
+}
 
-        function saveAsMoodleXML() {
-            const questions = gatherQuestions();
-            let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
 
-            questions.forEach((q, index) => {
-                xmlContent += `
-                    <question type="truefalse">
-                        <name>
-                            <text>Otázka ${index + 1}</text>
-                        </name>
-                        <questiontext format="html">
-                            <text>${q.text}</text>
-                        </questiontext>
-                        <answer fraction="100">
-                            <text>${q.correctAnswer === 'ano' ? 'True' : 'False'}</text>
-                        </answer>
-                    </question>
-                `;
-            });
 
-            xmlContent += '</quiz>';
+function exportToMoodleXML() {
+    const questions = gatherQuestions();
+    const testName = document.getElementById('testName').value;
 
-            const blob = new Blob([xmlContent], { type: 'application/xml' });
-            saveAs(blob, 'test.xml');
-        }
+    if (questions.length === 0 || !testName) {
+        alert("Musíte přidat název testu a alespoň jednu otázku.");
+        return;
+    }
 
-        function saveAsJson() {
-            const questions = gatherQuestions();
-            const jsonContent = JSON.stringify(questions, null, 2);
-            const blob = new Blob([jsonContent], { type: 'application/json' });
-            saveAs(blob, 'test.json');
-        }
+    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xmlContent += '<quiz>\n';
+    
+    questions.forEach((q, index) => {
+        // Otázka je typu "truefalse" (Ano/Ne)
+        xmlContent += '  <question type="truefalse">\n';
+        xmlContent += '    <name>\n';
+        xmlContent += '      <text>' + q.text + '</text>\n';
+        xmlContent += '    </name>\n';
+        xmlContent += '    <questiontext format="html">\n';
+        xmlContent += '      <text><![CDATA[' + q.text + ']]></text>\n';
+        xmlContent += '    </questiontext>\n';
+
+        // Odpovědi
+        // Pokud je odpověď "Ano", nastavíme hodnotu fraction=100 (správná odpověď)
+        xmlContent += '    <answer fraction="' + (q.correctAnswer === "ano" ? 100 : 0) + '">\n';
+        xmlContent += '      <text>Ano</text>\n';
+        xmlContent += '    </answer>\n';
+
+        // Pokud je odpověď "Ne", nastavíme hodnotu fraction=0 (nesprávná odpověď)
+        xmlContent += '    <answer fraction="' + (q.correctAnswer === "ne" ? 100 : 0) + '">\n';
+        xmlContent += '      <text>Ne</text>\n';
+        xmlContent += '    </answer>\n';
+
+        xmlContent += '  </question>\n';
+    });
+
+    xmlContent += '</quiz>';
+
+    // Vytvoření souboru pro stažení
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}_test.xml`;
+    link.click();
+}
+
+
+
+
+function exportToJSON() {
+    const questions = gatherQuestions();
+    const testName = document.getElementById('testName').value;
+
+    if (questions.length === 0 || !testName) {
+        alert("Musíte přidat název testu a alespoň jednu otázku.");
+        return;
+    }
+
+    const testData = {
+        name: testName,
+        questions: questions
+    };
+
+    // Vytvoření souboru pro stažení
+    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}_test.json`;
+    link.click();
+}
+
+
 
 </script>

@@ -113,6 +113,10 @@
 <div class="game-container" id="gameContainer">
     <!-- Hra začne tady -->
 </div>
+<div id="gameResults" style="text-align: center; margin-top: 20px;">
+    <!-- Zde budou zobrazeny výsledky -->
+</div>
+
  <div class="test-name">
             <label for="testName">Název testu:</label>
             <input type="text" id="testName" placeholder="Zadejte název testu" required>
@@ -169,6 +173,7 @@
     <br />
     <button onclick="addQuestion()">Přidat otázku</button>
 </div>
+<button onclick="exportToHTML()">Exportuj do html</button>
 <button onclick="exportToJSON()">Exportuj do JSON</button>
 <button onclick="exportToMoodleXML()">Exportuj do XML</button>
 <div class="answer-list" id="questionList">
@@ -302,19 +307,22 @@
         correctAnswerIndex = question.correct;
     }
 
-    // Funkce pro kontrolu odpovědi
-    function checkAnswer(event) {
-        const selectedAnswer = parseInt(event.target.getAttribute('data-index'));
-        if (selectedAnswer === correctAnswerIndex) {
-            score += 1;
-            alert("Správně! Získal jsi bod.");
-        } else {
-            alert("Špatně! Zkus to znovu.");
-        }
-        snakeSize++; // Zvětšení hada po každé odpovědi (i při špatné odpovědi)
-        answeredQuestions++;
-        nextQuestion();
+   // Funkce pro kontrolu odpovědi
+function checkAnswer(event) {
+    const selectedAnswer = parseInt(event.target.getAttribute('data-index'));
+    if (selectedAnswer === correctAnswerIndex) {
+        score += 1;
+        // Zobrazení výsledku na obrazovce
+        document.getElementById('gameResults').innerHTML = `<h3>Správně! Získal jsi bod. Tvoje skóre: ${score}</h3>`;
+    } else {
+        // Špatná odpověď
+        document.getElementById('gameResults').innerHTML = `<h3>Špatně! Zkus to znovu. Tvoje skóre: ${score}</h3>`;
     }
+    snakeSize++; // Zvětšení hada po každé odpovědi
+    answeredQuestions++;
+    nextQuestion();
+}
+
 
     // Přejít na další otázku
     function nextQuestion() {
@@ -328,20 +336,25 @@
         }
     }
 
-    // Funkce pro zobrazení výsledků
-    function displayResults() {
-        alert(`Skončil jsi! Tvoje skóre: ${score} bodů.`);
-        const grade = getGrade(score);
-        alert(`Tvoje známka: ${grade}`);
-    }
+   // Funkce pro zobrazení výsledků
+function displayResults() {
+    // Zobrazení skóre
+    const gameResults = document.getElementById('gameResults');
+    gameResults.innerHTML = `<h3>Skončil jsi! Tvoje skóre: ${score} bodů.</h3>`;
+
+    // Získání známky podle skóre
+    const grade = getGrade(score);
+    gameResults.innerHTML += `<p>Tvoje známka: ${grade}</p>`;
+}
+
 
     // Funkce pro získání známky podle skóre
     function getGrade(score) {
-        if (score === questions.length) return 'A';
-        if (score >= questions.length * 0.8) return 'B';
-        if (score >= questions.length * 0.6) return 'C';
-        if (score >= questions.length * 0.4) return 'D';
-        return 'F';
+        if (score === questions.length) return '1';
+        if (score >= questions.length * 0.8) return '2';
+        if (score >= questions.length * 0.6) return '3';
+        if (score >= questions.length * 0.4) return '4';
+        return '5';
     }
 
     // Funkce pro spuštění časomíry
@@ -415,67 +428,149 @@
         if (event.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
     });
     
-     function exportToJSON() {
-    if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
+  function exportToHTML() {
+    const testName = document.getElementById('testName').value;
+    const testImage = document.getElementById('testImage').files[0];
+    const testDescription = document.getElementById('testDescription').value;
+    const enableTimer = document.getElementById('enableTimer').checked;
+    const timeLimit = document.getElementById('timeLimit').value;
+    
+    let htmlContent = `
+        <html lang="cs">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${testName || 'Hadí Test'}</title>
+        </head>
+        <body>
+            <h1>${testName || 'Hadí Test'}</h1>
+            <p>${testDescription || 'Popis testu není zadán.'}</p>
+            ${testImage ? `<img src="${URL.createObjectURL(testImage)}" alt="Test Image" />` : ''}
+            <h2>Seznam otázek:</h2>
+            <ul>
+    `;
 
-    // Vytvoření dat pro export
-    const jsonData = {
+    questions.forEach((question) => {
+        htmlContent += `<li><strong>Otázka:</strong> ${question.question}<br><strong>Odpovědi:</strong><ul>`;
+        question.answers.forEach((answer) => {
+            htmlContent += `<li>${answer}</li>`;
+        });
+        htmlContent += `</ul><strong>Správná odpověď:</strong> ${question.answers[question.correct]}<br>
+                        <strong>Body:</strong> ${question.points}</li>`;
+    });
+
+    htmlContent += `
+            </ul>
+            <h3>Časovač:</h3>
+            <p>${enableTimer ? `Používá se časovač: ${timeLimit} sekund` : 'Časovač není zapnutý'}</p>
+            <h3>Nastavení známek:</h3>
+            <ul>
+                <li>1: ${document.getElementById('grade1').value}</li>
+                <li>2: ${document.getElementById('grade2').value}</li>
+                <li>3: ${document.getElementById('grade3').value}</li>
+                <li>4: ${document.getElementById('grade4').value}</li>
+                <li>5: ${document.getElementById('grade5').value}</li>
+            </ul>
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName || 'Hadí Test'}.html`;
+    link.click();
+}
+
+function exportToJSON() {
+    const data = {
+        testName: document.getElementById('testName').value,
+        testDescription: document.getElementById('testDescription').value,
+        testImage: document.getElementById('testImage').files[0] ? document.getElementById('testImage').files[0].name : null,
+        enableTimer: document.getElementById('enableTimer').checked,
+        timeLimit: document.getElementById('timeLimit').value,
+        grading: {
+            grade1: document.getElementById('grade1').value,
+            grade2: document.getElementById('grade2').value,
+            grade3: document.getElementById('grade3').value,
+            grade4: document.getElementById('grade4').value,
+            grade5: document.getElementById('grade5').value
+        },
         questions: questions.map(q => ({
             question: q.question,
             answers: q.answers,
-            correct: q.correct + 1,  // Chceme číslo od 1 do 3
+            correct: q.correct,
             points: q.points
         }))
     };
 
-    // Vytvoření a stažení souboru JSON
-    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const jsonString = JSON.stringify(data, null, 4);
+    const blob = new Blob([jsonString], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'test_otazky.json';
+    link.download = `${data.testName || 'Hadí Test'}.json`;
     link.click();
 }
+
 function exportToMoodleXML() {
-    if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
+    const testName = document.getElementById('testName').value;
+    const enableTimer = document.getElementById('enableTimer').checked;
+    const timeLimit = document.getElementById('timeLimit').value;
 
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
-
-    // Generování každé otázky ve formátu Moodle XML
-    questions.forEach((item, index) => {
-        xmlContent += `
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>
+    <quiz>
+        <name>
+            <text>${testName || 'Hadí Test'}</text>
+        </name>
         <question type="multichoice">
+    `;
+
+    questions.forEach((question) => {
+        xmlContent += `
             <name>
-                <text>Otázka ${index + 1}</text>
+                <text>${question.question}</text>
             </name>
             <questiontext format="html">
-                <text><![CDATA[${item.question}]]></text>
+                <text>${question.question}</text>
             </questiontext>
+            <generalfeedback format="html">
+                <text>Správná odpověď je: ${question.answers[question.correct]}</text>
+            </generalfeedback>
+            <defaultgrade>${question.points}</defaultgrade>
             <answer fraction="100">
-                <text><![CDATA[${item.answers[item.correct]}]]></text>
+                <text>${question.answers[question.correct]}</text>
+                <feedback>
+                    <text>Správně!</text>
+                </feedback>
             </answer>
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-            <defaultgrade>${item.points || 1}</defaultgrade>
-        </question>`;
+        `;
+
+        question.answers.forEach((answer, idx) => {
+            if (idx !== question.correct) {
+                xmlContent += `
+                    <answer fraction="0">
+                        <text>${answer}</text>
+                        <feedback>
+                            <text>Špatně!</text>
+                        </feedback>
+                    </answer>
+                `;
+            }
+        });
+
+        xmlContent += `</question>`;
     });
 
-    xmlContent += `\n</quiz>`;
+    xmlContent += `
+        </quiz>
+    `;
 
-    // Vytvoření a stažení souboru XML
     const blob = new Blob([xmlContent], { type: 'application/xml' });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "test_moodle.xml";
-    a.click();
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName || 'Hadí Test'}.xml`;
+    link.click();
 }
-
 
 
 </script>

@@ -8,7 +8,7 @@
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/Maturitniprojekt/revas/users/templates" />
+        <option value="$MODULE_DIR$/revas/users/templates" />
       </list>
     </option>
   </component>

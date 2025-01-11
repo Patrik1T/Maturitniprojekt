@@ -32,11 +32,12 @@ urlpatterns = [
                   # Přihlášení a autentifikace přes GitHub a Google
                   path('auth/', include('social_django.urls', namespace='social')),
                   path('spravy/', include('users.urls')),
+                  path('psaci_testy/', views.save_test, name='save_test'),
 
                   # Další vlastní cesty
                   path('github_log/', views.github_log, name='github_log'),
                   path('kosik/', views.kosik, name='kosik'),
-                  path('login/', user_login, name='login'),
+                  path('login/', auth_views.LoginView.as_view(), name='login'),
                   path('prihlasovacistranka/', views.prihlasovacistranka, name='prihlasovacistranka'),
                   path('profil/', views.profil, name='profil'),
                   path('profile', views.edit_profile, name='edit_profile'),
@@ -47,8 +48,15 @@ urlpatterns = [
                   path('hlavni_stranka/', views.hlavni_stranka, name='hlavni_stranka'),
                   path('spravy/', chat, name='spravy'),
                   path('chat/', views.chat, name='chat'),
-                  path('create_test/', views.create_test, name='create_test'),
-                  path('save_test/', views.save_test, name='save_test'),
+
+                  path('zapisnik/', views.notes_list, name='zapisnik'),
+                  path('otazky/', views.otazky, name='otazky'),
+
+                  path('herni_testy/', views.herni_testy, name='herni_testy'),
+                  path('herni_testy_procvicovaci/', views.herni_testy_procvicovaci, name='herni_testy_procvicovaci'),
+                  path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
+
 
                   # Stránky testů aplikace
                   path('vyber_testy/', views.vyber_testy, name='vyber_testy'),
@@ -72,6 +80,7 @@ urlpatterns = [
                   path('vytvor_test/', views.vytvor_test, name='vytvor_test'),
                   path('dvere_hra/', views.dvere_hra, name='dvere_hra'),
                   path('flappy_bird/', views.flappy_bird, name='flappy_bird'),
+                  path('miny/', views.miny, name='miny'),
 
 
 

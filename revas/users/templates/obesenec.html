@@ -1,4 +1,4 @@
-  {% extends "struktura/basetests.html" %}
+{% extends "struktura/basetests.html" %}
 
 {% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
 
@@ -112,15 +112,7 @@
 
         <label for="testDescription">Popis testu:</label>
         <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-
-
-    <div id="inputArea">
-        <h3>Přidat otázky, slova a nastavení bodů</h3>
-        <input type="text" id="questionInput" placeholder="Zadejte otázku" /><br><br>
-        <input type="text" id="wordInput" placeholder="Zadejte slovo" /><br><br>
-        <input type="number" id="pointsInput" placeholder="Zadejte body" /><br><br>
-        
-        
+    
          <!-- Nastavení pro známky -->
     <div class="button-container">
         <label for="grade1">Bodů pro 1: </label>
@@ -135,6 +127,16 @@
         <input type="number" id="grade5" placeholder="0" min="1" />
     </div>
 
+
+    <div id="inputArea">
+        <h3>Přidat otázky, slova a nastavení bodů</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" /><br><br>
+        <input type="text" id="wordInput" placeholder="Zadejte slovo" /><br><br>
+        <input type="number" id="pointsInput" placeholder="Zadejte body" /><br><br>
+        <button onclick="addWord()">Přidat slovo</button>
+        
+    
+
     <!-- Nastavení časovače -->
    <div class="button-container">
     <input type="checkbox" id="enableTimer" />
@@ -143,12 +145,12 @@
 </div>
 
 
-        <button onclick="addWord()">Přidat slovo</button>
+        
         <button onclick="startGame()" id="startGameBtn">Spustit hru</button>
-        <button onclick="exportToJSON()">Exportovat do JSON</button>
-<button onclick="exportToMoodleXML()">Exportovat do Moodle XML</button>
-<input type="file" id="loadJSON" onchange="loadGame()" style="display: none;">
-<button onclick="document.getElementById('loadJSON').click();">Načíst hru z JSON</button>
+        <button onclick="saveAsHtml()">Exportovat do html</button>
+        <button onclick="saveAsJson()">Exportovat do JSON</button>
+<button onclick="saveAsMoodleXML()">Exportovat do Moodle XML</button>
+
 
         <button onclick="restartGame()" id="restartGameBtn" style="display: none;">Restartovat hru</button>
     </div>
@@ -530,133 +532,75 @@ function displayResult(score) {
 }
 
 
- function exportToMoodleXML() {
-    if (pairs.length === 0) {
-        alert("Nemáte žádné vytvořené otázky pro export!");
+// Ukládací funkce pro Moodle s využitím save.js
+function saveAsHtml(testName, data) {
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${testName}</title>
+</head>
+<body>
+    <h1>${testName}</h1>
+    <div id="content">${data}</div>
+</body>
+</html>`;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName}.html`);
+}
+
+function saveAsJson(testName, data) {
+    const jsonContent = JSON.stringify(data, null, 2); // Pretty-printed JSON
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    saveAs(blob, `${testName}.json`);
+}
+
+function saveAsMoodleXML() {
+    const testName = document.getElementById("testName").value;
+    const testDescription = document.getElementById("testDescription").value;
+    const grade1 = document.getElementById("grade1").value;
+    const grade2 = document.getElementById("grade2").value;
+    const grade3 = document.getElementById("grade3").value;
+    const grade4 = document.getElementById("grade4").value;
+    const grade5 = document.getElementById("grade5").value;
+    const enableTimer = document.getElementById("enableTimer").checked;
+    const timeLimit = document.getElementById("timeLimit").value;
+
+    if (!testName) {
+        alert("Zadejte název testu.");
         return;
     }
 
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
+    // Vytvoření Moodle XML formátu
+    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
+    xmlContent += `  <name>\n    <text>${testName}</text>\n  </name>\n`;
+    xmlContent += `  <description>\n    <text>${testDescription}</text>\n  </description>\n`;
 
-    pairs.forEach((pair, index) => {
-        xmlContent += `
-        <question type="matching">
-            <name>
-                <text>Pár ${index + 1}</text>
-            </name>
-            <questiontext format="html">
-                <text><![CDATA[<p>${pair.question}</p>]]></text>
-            </questiontext>
-            <answer>
-                <text><![CDATA[<p>${pair.answer}</p>]]></text>
-            </answer>
-            <defaultgrade>${pair.points}</defaultgrade>
-        </question>`;
-    });
-
-    xmlContent += `\n</quiz>`;
-
-    const blob = new Blob([xmlContent], { type: 'application/xml' });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "pexeso_moodle_quiz.xml";
-    a.click();
-}
-function loadFromJSON(file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const data = JSON.parse(event.target.result);
-        pairs = data.pairs;
-        score = data.score;
-        startGame();
-    };
-    reader.readAsText(file);
-}
-
-    function loadGame() {
-    const fileInput = document.getElementById("loadJSON");
-    const file = fileInput.files[0];
-    if (file) {
-        loadFromJSON(file);
-    }
-}
-
-function exportToJSON() {
-    if (words.length === 0) {
-        alert("Nemáte žádné otázky a slova pro export!");
-        return;
+    // Přidání informací o časovém limitu, pokud je zaškrtnuto
+    if (enableTimer) {
+        xmlContent += `  <timelimit>${timeLimit}</timelimit>\n`;
     }
 
-    const jsonData = {
-        words: words,    // Exportování slov, otázky a bodů
-        currentPoints: currentPoints,  // Export aktuálních bodů
-        gameStarted: gameStarted,  // Export stavu hry
-        guessedLetters: guessedLetters,  // Uložit uhodnutá písmena pro pokračování
-        wrongGuesses: wrongGuesses,  // Uložit počet chybných pokusů
-        timeLeft: timeLeft  // Uložit zbývající čas
-    };
-
-    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'obesenec_hra.json';
-    link.click();
-}
-
-function exportToMoodleXML() {
-    if (words.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
-        return;
-    }
-
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
+    // Přidání bodování pro různé známky
+    xmlContent += `  <grade>\n    <grade1>${grade1}</grade1>\n    <grade2>${grade2}</grade2>\n    <grade3>${grade3}</grade3>\n    <grade4>${grade4}</grade4>\n    <grade5>${grade5}</grade5>\n  </grade>\n`;
 
     words.forEach((item, index) => {
-        xmlContent += `
-        <question type="shortanswer">
-            <name>
-                <text>Otázka ${index + 1}</text>
-            </name>
-            <questiontext format="html">
-                <text><![CDATA[<p>${item.question}</p>]]></text>
-            </questiontext>
-            <answer fraction="100">
-                <text><![CDATA[${item.word}]]></text>
-            </answer>
-            <defaultgrade>${item.points}</defaultgrade>
-        </question>`;
+        xmlContent += `  <question type="shortanswer">\n`;
+        xmlContent += `    <name>\n      <text>${testName} - Question ${index + 1}</text>\n    </name>\n`;
+        xmlContent += `    <questiontext format="html">\n      <text><![CDATA[${item.question}]]></text>\n    </questiontext>\n`;
+        xmlContent += `    <answer fraction="100">\n      <text><![CDATA[${item.word}]]></text>\n`;
+        xmlContent += `      <feedback><text>Correct!</text></feedback>\n    </answer>\n`;
+        xmlContent += `    <defaultgrade>${item.points}</defaultgrade>\n`; // Bodování pro každou otázku
+        xmlContent += `  </question>\n`;
     });
 
-    xmlContent += `\n</quiz>`;
-
+    xmlContent += `</quiz>`;
     const blob = new Blob([xmlContent], { type: 'application/xml' });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "obesenec_moodle_quiz.xml";
-    a.click();
+    saveAs(blob, `${testName}.xml`);
 }
 
-function loadFromJSON(file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const data = JSON.parse(event.target.result);
-        
-        // Obnovení hry z JSON dat
-        words = data.words || [];
-        currentPoints = data.currentPoints || 0;
-        gameStarted = data.gameStarted || false;
-        guessedLetters = data.guessedLetters || [];
-        wrongGuesses = data.wrongGuesses || 0;
-        timeLeft = data.timeLeft || 60;
-
-        if (gameStarted) {
-            startGame(); // Pokračovat hru po načtení
-        } else {
-            alert("Hra neprobíhá. Přidejte otázky a spusťte hru.");
-        }
-    };
-    reader.readAsText(file);
-}
 
 // Načítání hry z JSON
 function loadGame() {

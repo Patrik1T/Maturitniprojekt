@@ -7,6 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vytvořit test</title>
     <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+     <style>
+        #errorContainer, #successContainer {
+            display: none;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #errorContainer {
+            color: white;
+            background-color: red;
+        }
+
+        #successContainer {
+            color: white;
+            background-color: green;
+        }
+    </style>
 </head>
 <body>
 <div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
@@ -66,9 +83,9 @@
         <button type="submit" class="submit-btn">Uložit v aplikaci</button>
         <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
         <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
-        <button type="button" onclick="saveAsHtml()">Uložit jako HTML</button>
-        <button type="button" onclick="saveAsMoodleXML()">Uložit jako Moodle XML</button>
-        <button type="button" onclick="saveAsJson()">Uložit jako JSON</button>
+        <button type="button" onclick="saveTestToHtml()">Uložit jako HTML</button>
+        <button type="button" onclick="saveTestToXml()">Uložit jako Moodle XML</button>
+        <button type="button" onclick="saveTestToJson()">Uložit jako JSON</button>
     </form>
 
     <!-- Náhled testu -->
@@ -80,6 +97,9 @@
         </div>
     </div>
 
+    <div id="timeUpContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
+    <strong>Upozornění:</strong> Čas vypršel!
+</div>
     <!-- Výsledky testu -->
     <div class="results" id="resultsSection" style="display:none;">
         <h2>Výsledky testu</h2>
@@ -155,41 +175,63 @@ function deleteQuestion(id) {
 function gatherQuestions() {
     const questions = [];
     let isValid = true;
-    let errorMessages = [];  // Pole pro uchování chybových zpráv
+    let errorMessages = [];
+
     for (let i = 1; i <= questionCount; i++) {
-        const questionText = document.querySelector(`[name="question${i}_text"]`).value;
-        const points = document.querySelector(`[name="question${i}_points"]`).value;
-        const options = [...document.querySelectorAll(`#answers${i} input[type="text"]`)].map(input => input.value);
+        const questionText = document.querySelector(`[name="question${i}_text"]`)?.value?.trim() || '';
+        const points = document.querySelector(`[name="question${i}_points"]`)?.value?.trim() || '1';
+        const options = [...document.querySelectorAll(`#answers${i} input[type="text"]`)].map(input => input.value.trim());
         const correctAnswers = [...document.querySelectorAll(`[name="question${i}_correct_answer"]:checked`)].map(input => input.value);
-        // Kontrola nadpisu otázky
+
+        // Validace otázky
         if (!questionText) {
-            errorMessages.push(`Otázka ${i} nemá název.`);  // Přidej chybu do zpráv
+            errorMessages.push(`Otázka ${i} nemá název.`);
             document.getElementById(`errorQuestion${i}`).style.display = 'block';
             isValid = false;
         } else {
             document.getElementById(`errorQuestion${i}`).style.display = 'none';
         }
-        // Kontrola správné odpovědi
+
+        // Validace odpovědí
+        if (options.length < 2) {
+            errorMessages.push(`Otázka ${i} musí mít alespoň dvě odpovědi.`);
+            isValid = false;
+        }
+        if (options.some(option => !option)) {
+            errorMessages.push(`Otázka ${i} obsahuje prázdné odpovědi.`);
+            isValid = false;
+        }
+
+        // Validace správných odpovědí
         if (correctAnswers.length === 0) {
-            errorMessages.push(`Otázka ${i} nemá správně zaškrtnuté odpovědi.`);  // Přidej chybu do zpráv
+            errorMessages.push(`Otázka ${i} nemá žádnou správnou odpověď.`);
             document.getElementById(`errorAnswer${i}`).style.display = 'block';
             isValid = false;
         } else {
             document.getElementById(`errorAnswer${i}`).style.display = 'none';
         }
-        if (questionText && correctAnswers.length > 0) {
-            questions.push({ text: questionText, options, correctAnswers, points });
+
+        if (isValid) {
+            questions.push({
+                text: questionText,
+                options,
+                correctAnswers,
+                points,
+            });
         }
     }
-    // Pokud existují chyby, zobrazíme je v errorContainer
+
     if (!isValid) {
         document.getElementById('errorContainer').style.display = 'block';
-        document.getElementById('errorContainer').innerHTML = "<strong>Chyba:</strong> " + errorMessages.join(' ');
+        document.getElementById('errorContainer').innerHTML = `<strong>Chyba:</strong><ul><li>${errorMessages.join('</li><li>')}</li></ul>`;
     } else {
         document.getElementById('errorContainer').style.display = 'none';
     }
+
     return questions;
 }
+
+
         // Funkce pro náhodné promíchání otázek
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -198,22 +240,39 @@ function gatherQuestions() {
             }
             return array;
         }
-        // Funkce pro spuštění časovače
-        function startTimer() {
-    let timeLeft = totalTime;
-    document.getElementById('timerCount').textContent = formatTime(timeLeft);
-
-    timerInterval = setInterval(() => {
-        timeLeft--;
+  // Funkce pro spuštění časovače
+    function startTimer() {
+        let timeLeft = totalTime;
         document.getElementById('timerCount').textContent = formatTime(timeLeft);
 
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            alert('Čas vypršel!');
-            endTest();  // Automatically ends the test when time runs out
-        }
-    }, 1000);
-}
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timerCount').textContent = formatTime(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showTimeUpMessage();  // Zobrazí výstrahu místo alertu
+                endTest();  // Automaticky ukončí test, když čas vyprší
+            }
+        }, 1000);
+    }
+
+    function showTimeUpMessage() {
+        const timeUpContainer = document.getElementById('timeUpContainer');
+        timeUpContainer.style.display = 'block';
+
+        // Skryje výstrahu po 5 sekundách
+        setTimeout(() => {
+            timeUpContainer.style.display = 'none';
+        }, 5000);
+    }
+
+    // Funkce pro formátování času (minuty:sekundy)
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        return `${minutes}:${sec < 10 ? '0' + sec : sec}`;
+    }
 
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
@@ -252,9 +311,10 @@ function previewTest() {
     const testName = document.getElementById('testName').value;
     const questions = gatherQuestions();
     if (!testName || questions.length === 0) {
-        alert("Zadejte název testu a alespoň jednu otázku.");
-        return;
-    }
+    showAlert('error', 'Zadejte název testu a alespoň jednu otázku.');
+    return;
+}
+
     // Náhodně promícháme otázky
     const shuffledQuestions = shuffleArray(questions);
     let previewHTML = `
@@ -292,6 +352,26 @@ function previewTest() {
         startTimer();
     }
 }
+
+// Funkce pro zobrazení upozorňovacího okna
+function showAlert(type, message) {
+    const errorContainer = document.getElementById('errorContainer');
+    const successContainer = document.getElementById('successContainer');
+
+    // Skrytí obou kontejnerů
+    errorContainer.style.display = 'none';
+    successContainer.style.display = 'none';
+
+    // Zobrazení příslušného kontejneru s textem
+    if (type === 'error') {
+        errorContainer.innerText = message;
+        errorContainer.style.display = 'block';
+    } else if (type === 'success') {
+        successContainer.innerText = message;
+        successContainer.style.display = 'block';
+    }
+}
+
        function endTest() {
     const questions = gatherQuestions();
     let score = 0;
@@ -453,74 +533,159 @@ function displayResults(correctAnswers, userAnswers, partiallyCorrectAnswers) {
 // Zavolání funkce při kliknutí na tlačítko pro zobrazení výsledků
 function showTestResults() {
     // Předpokládané testovací odpovědi
-    const correctAnswers = ['Answer 1', 'Answer 2', 'Answer 4']; // Tohle nastavte podle skutečných správných odpovědí
-    const userAnswers = ['Answer 1', 'Answer 3', 'Answer 5']; // Tohle nastavte podle odpovědí uživatele
-    const partiallyCorrectAnswers = ['Answer 2']; // Tohle nastavte podle téměř správných odpovědí
+    const correctAnswers = ['Answer 1', 'Answer 2', 'Answer 4'];
+    const userAnswers = ['Answer 1', 'Answer 3', 'Answer 5'];
+    const partiallyCorrectAnswers = ['Answer 2'];
     // Zavolání funkce pro zobrazení výsledků
     displayResults(correctAnswers, userAnswers, partiallyCorrectAnswers);
 }
 // Příklad jak zavolat tuto funkci při kliknutí na tlačítko "Ukázat test"
 document.querySelector('.preview-btn').addEventListener('click', showTestResults);
 
-// Funkce pro uložení jako Moodle XML
-    function saveTestToXml() {
-            const testName = document.getElementById('testName').value;
-            const testDescription = document.getElementById('testDescription').value;
-            const questions = gatherQuestions();
 
-            let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+ const errorContainer = document.getElementById("errorContainer");
+    const successContainer = document.getElementById("successContainer");
+    const questionsContainer = document.getElementById("questionsContainer");
+
+    function showError(message) {
+        errorContainer.textContent = message;
+        errorContainer.style.display = "block";
+        setTimeout(() => errorContainer.style.display = "none", 5000);
+    }
+
+    function showSuccess(message) {
+        successContainer.textContent = message;
+        successContainer.style.display = "block";
+        setTimeout(() => successContainer.style.display = "none", 5000);
+    }
+
+    function validateForm() {
+        const testName = document.getElementById("testName").value.trim();
+        const timer = document.getElementById("timer").checked;
+        const timerDuration = document.getElementById("timerDuration").value;
+        const questions = questionsContainer.getElementsByClassName("question");
+
+        if (!testName) {
+            showError("Název testu je povinný.");
+            return;
+        }
+
+        if (timer && !timerDuration) {
+            showError("Pokud je časovač aktivní, musíte zadat čas.");
+            return;
+        }
+
+        for (const question of questions) {
+            const questionText = question.querySelector("textarea").value.trim();
+            const answers = question.querySelectorAll(".answers input");
+
+            if (!questionText) {
+                showError("Každá otázka musí mít text.");
+                return;
+            }
+
+            if (answers.length < 2) {
+                showError("Každá otázka musí mít alespoň dvě odpovědi.");
+                return;
+            }
+
+            for (const answer of answers) {
+                if (!answer.value.trim()) {
+                    showError("Každá odpověď musí být vyplněna.");
+                    return;
+                }
+            }
+        }
+
+        showSuccess("Test byl úspěšně uložen.");
+    }
+
+
+function saveTestToXml() {
+    const testName = document.getElementById('testName').value.trim() || "Test";
+    const testDescription = document.getElementById('testDescription').value.trim();
+    const questions = gatherQuestions();
+
+    if (questions.length === 0) {
+        alert("Žádné validní otázky nebyly nalezeny.");
+        return;
+    }
+
+    // Generování XML obsahu
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <quiz>
     <name>${testName}</name>
     <description>${testDescription}</description>`;
 
-            questions.forEach((question, index) => {
-                xmlContent += `
+    questions.forEach((question, index) => {
+        xmlContent += `
     <question type="multichoice">
         <name>
             <text>Otázka ${index + 1}</text>
         </name>
         <questiontext format="html">
-            <text>${question.text}</text>
+            <text><![CDATA[${question.text}]]></text>
         </questiontext>
-        <answer>
-            <text>${question.correctAnswer}</text>
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-        </answer>
-    </question>`;
-            });
+        <defaultgrade>${question.points}</defaultgrade>
+        <single>false</single>
+        <shuffleanswers>true</shuffleanswers>
+        <answernumbering>none</answernumbering>`;
 
+        question.options.forEach((option, idx) => {
+            const isCorrect = question.correctAnswers.includes(String(idx));
             xmlContent += `
+        <answer fraction="${isCorrect ? '100' : '0'}">
+            <text><![CDATA[${option}]]></text>
+            <feedback>
+                <text>${isCorrect ? 'Správná odpověď!' : 'Špatná odpověď.'}</text>
+            </feedback>
+        </answer>`;
+        });
+
+        xmlContent += `
+    </question>`;
+    });
+
+    xmlContent += `
 </quiz>`;
 
-            const blob = new Blob([xmlContent], { type: 'application/xml' });
-            saveAs(blob, `${testName}.xml`);
-        }
+    // Vytvoření Blob objektu a nabídnutí ke stažení
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.xml`;
+    link.click();
+}
 
 
-// Funkce pro uložení jako JSON
- function saveTestToJson() {
-            const testName = document.getElementById('testName').value;
-            const testDescription = document.getElementById('testDescription').value;
-            const questions = gatherQuestions();
 
-            const testData = {
-                name: testName,
-                description: testDescription,
-                questions: questions
-            };
 
-            const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
-            saveAs(blob, `${testName}.json`);
-        }
-      
+
+function saveTestToJson() {
+    const testName = document.getElementById('testName').value.trim() || "Test";
+    const testDescription = document.getElementById('testDescription').value.trim();
+    const questions = gatherQuestions();
+
+    const testData = {
+        name: testName,
+        description: testDescription,
+        questions: questions
+    };
+
+    // Vytvoření souboru a nabídnutí ke stažení
+    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.json`;
+    link.click();
+}
+
 
 
 
 function saveTestToHtml() {
-    const testName = document.getElementById('testName').value;
-    const testDescription = document.getElementById('testDescription').value;
+    const testName = document.getElementById('testName').value.trim() || "Test";
+    const testDescription = document.getElementById('testDescription').value.trim();
     const questions = gatherQuestions(); // Funkce pro získání všech otázek
 
     let htmlContent = `
@@ -545,8 +710,7 @@ function saveTestToHtml() {
             <body>
                 <h1>${testName}</h1>
                 <p>${testDescription}</p>
-                <form id="testForm">
-    `;
+                <form id="testForm">`;
 
     // Generování otázek
     questions.forEach((question, index) => {
@@ -555,22 +719,23 @@ function saveTestToHtml() {
                 <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
                 <label for="answer_${index}">Odpověď:</label>
                 <input type="text" name="answer_${index}" placeholder="Zadejte odpověď">
-            </div>
-        `;
+            </div>`;
     });
-    
 
     htmlContent += `
             <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
             <div id="resultsContainer"></div> <!-- Kontejner pro výsledky -->
         </form>
         </body>
-    </html>
-    `;
+    </html>`;
 
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    saveAs(blob, `${testName}.html`);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.html`;
+    link.click();
 }
+
 
     
     </script>

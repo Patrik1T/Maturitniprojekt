@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -507,7 +505,7 @@ function checkAnswer(selectedIndex, correctIndex) {
 
     // Kontrola, zda byly zodpovězeny všechny otázky
     if (questions.every(q => q.answered)) {
-        currentQuestionElement.innerHTML = "Všechny otázky byly zodpovězeny! Najděte východ.";
+        currentQuestionElement.innerHTML = "Nevadí, pokračuj v hledání otázek.";
     }
 }
 // Funkce pro spuštění časovače
@@ -591,5 +589,4 @@ function calculateGrade(score, totalQuestions) {
 </body>
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
 

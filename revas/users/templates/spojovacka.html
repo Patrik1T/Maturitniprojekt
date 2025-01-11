@@ -1,8 +1,14 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+
     <title>Test - Spojení otázek a odpovědí</title>
     <style>
         body {
@@ -134,6 +140,10 @@
     </div>
 
     <button class="add-btn" onclick="startTest()">Vyzkoušet test</button>
+    <button onclick="saveToHTML()">Uložit do HTML</button>
+    <button onclick="saveToJSON()">Uložit do JSON</button>
+    <button onclick="saveToXML()">Uložit do XML</button>
+
 
     <div id="testSection" style="display: none;">
         <h2>Test: Spojte správné páry</h2>
@@ -345,6 +355,104 @@
         connections = [];
         startTest();
     }
+    
+    function saveToHTML() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+
+    let htmlContent = `
+        <html>
+            <head><title>${testName}</title></head>
+            <body>
+                <h1>${testName}</h1>
+                <p>${testDescription}</p>
+                <h2>Otázky a Odpovědi:</h2>
+                <ul>
+    `;
+
+    pairs.forEach(pair => {
+        htmlContent += `
+            <li>
+                <strong>Otázka:</strong> ${pair.question}<br>
+                <strong>Odpověď:</strong> ${pair.answer}<br>
+                <strong>Bodová hodnota:</strong> ${pair.points}
+            </li>
+        `;
+    });
+
+    htmlContent += `
+        </ul>
+    </body>
+    </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.html`;
+    link.click();
+}
+
+
+function saveToJSON() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+
+    const data = {
+        name: testName,
+        description: testDescription,
+        questionsAndAnswers: pairs
+    };
+
+    const jsonContent = JSON.stringify(data, null, 2);
+
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.json`;
+    link.click();
+}
+
+
+function saveToXML() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <name>${testName}</name>
+    <description>${testDescription}</description>
+`;
+
+    pairs.forEach(pair => {
+        xmlContent += `
+    <question type="multichoice">
+        <name>
+            <text>${pair.question}</text>
+        </name>
+        <questiontext format="html">
+            <text><![CDATA[${pair.question}]]></text>
+        </questiontext>
+        <answer fraction="100">
+            <text>${pair.answer}</text>
+        </answer>
+        <feedback>
+            <text>Správná odpověď!</text>
+        </feedback>
+        <defaultgrade>${pair.points}</defaultgrade>
+    </question>
+`;
+    });
+
+    xmlContent += `</quiz>`;
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.xml`;
+    link.click();
+}
+
 </script>
 
 </body>

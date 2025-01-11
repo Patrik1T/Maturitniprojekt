@@ -112,26 +112,9 @@
 
         <label for="testDescription">Popis testu:</label>
         <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
-         <!-- Nastavení pro známky -->
-    <div class="button-container">
-        <label for="grade1">Bodů pro 1: </label>
-        <input type="number" id="grade1" placeholder="90" min="1" />
-        <label for="grade2">Bodů pro 2: </label>
-        <input type="number" id="grade2" placeholder="75" min="1" />
-        <label for="grade3">Bodů pro 3: </label>
-        <input type="number" id="grade3" placeholder="50" min="1" />
-        <label for="grade4">Bodů pro 4: </label>
-        <input type="number" id="grade4" placeholder="25" min="1" />
-        <label for="grade5">Bodů pro 5: </label>
-        <input type="number" id="grade5" placeholder="0" min="1" />
-    </div>
+       
 
-    <!-- Nastavení časovače -->
-    <div class="button-container">
-        <input type="checkbox" id="enableTimer" />
-        <label for="enableTimer">Použít časovač</label>
-        <input type="number" id="timeLimit" placeholder="Čas (v sekundách)" min="10" disabled />
-    </div>
+ 
     <div>
         <input type="text" id="newQuestion" placeholder="Zadejte otázku" style="width: 100%; margin-bottom: 10px;" />
         <div id="answersContainer">
@@ -159,9 +142,6 @@
     <label for="gameTime">Nastavte čas (v sekundách): </label>
     <input type="number" id="gameTime" value="30" min="10" />
     <br />
-    <label for="gradeSettings">Nastavení známek (minimální bodové hranice pro jednotlivé známky): </label>
-    <input type="text" id="gradeSettings" placeholder="např. 0-50:2, 51-70:3, 71-90:4, 91-100:5" />
-    <br />
     <button onclick="startGame()">Vyzkoušet hru</button>
 </div>
 <button onclick="exportToJSON()">Exportuj do JSON</button>
@@ -171,6 +151,15 @@
     <div id="score">Body: 0</div>
     <div id="timer">Čas: 30</div>
 </div>
+
+<div id="questionsOverModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <h2>Hra skončila</h2>
+    <p>Vyčerpali jste všechny otázky!</p>
+    <p>Vaše skóre: <span id="finalScoreQuestionsOver">0</span></p>
+    <button onclick="closeQuestionsOverModal()">Zavřít</button>
+</div>
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: none; z-index: 999;" id="questionsOverlay"></div>
+
 
 <script>
     let customQuestions = [];
@@ -267,44 +256,51 @@
         updateQuestionList();
     }
 
-    function setupQuestion() {
-        if (customQuestions.length === usedQuestions.size) {
-            alert("Vyčerpali jste všechny otázky! Konec hry.");
-            location.reload();
-            return;
-        }
-
-        do {
-            currentQuestionIndex = Math.floor(Math.random() * customQuestions.length);
-        } while (usedQuestions.has(currentQuestionIndex));
-
-        usedQuestions.add(currentQuestionIndex);
-        const currentQuestion = customQuestions[currentQuestionIndex];
-        questionElement.textContent = currentQuestion.question;
-
-        currentQuestion.answers.forEach(answer => {
-            const answerElement = document.createElement("div");
-            answerElement.className = "answer";
-            answerElement.textContent = answer.text;
-            answerElement.style.top = `${Math.random() * (gameArea.clientHeight - 50)}px`;
-            answerElement.style.left = `${Math.random() * (gameArea.clientWidth - 100)}px`;
-
-            moveAnswer(answerElement);
-
-            answerElement.addEventListener("click", () => {
-                if (answer.correct) {
-                    score += answer.points;
-                } else {
-                    score -= 5;
-                }
-                scoreElement.textContent = `Body: ${score}`;
-                resetQuestion();
-            });
-
-            gameArea.appendChild(answerElement);
-            answersElements.push(answerElement);
-        });
+function setupQuestion() {
+    if (customQuestions.length === usedQuestions.size) {
+        // Zobrazí dialog místo alertu
+        document.getElementById("finalScoreQuestionsOver").textContent = score;
+        document.getElementById("questionsOverModal").style.display = "block";
+        document.getElementById("questionsOverlay").style.display = "block";
+        return;
     }
+
+    do {
+        currentQuestionIndex = Math.floor(Math.random() * customQuestions.length);
+    } while (usedQuestions.has(currentQuestionIndex));
+
+    usedQuestions.add(currentQuestionIndex);
+    const currentQuestion = customQuestions[currentQuestionIndex];
+    questionElement.textContent = currentQuestion.question;
+
+    currentQuestion.answers.forEach(answer => {
+        const answerElement = document.createElement("div");
+        answerElement.className = "answer";
+        answerElement.textContent = answer.text;
+        answerElement.style.top = `${Math.random() * (gameArea.clientHeight - 50)}px`;
+        answerElement.style.left = `${Math.random() * (gameArea.clientWidth - 100)}px`;
+
+        moveAnswer(answerElement);
+
+        answerElement.addEventListener("click", () => {
+            if (answer.correct) {
+                score += answer.points;
+            } else {
+                score -= 5;
+            }
+            scoreElement.textContent = `Body: ${score}`;
+            resetQuestion();
+        });
+
+        gameArea.appendChild(answerElement);
+        answersElements.push(answerElement);
+    });
+}
+
+function closeQuestionsOverModal() {
+    document.getElementById("questionsOverModal").style.display = "none";
+    document.getElementById("questionsOverlay").style.display = "none";
+}
 
     function moveAnswer(answerElement) {
         setInterval(() => {
@@ -337,30 +333,49 @@
         return "Neznámková";
     }
 
-    function startGame() {
-        if (customQuestions.length === 0) {
-            alert("Před spuštěním hry vytvořte alespoň jednu otázku.");
-            return;
-        }
+   function showGameOverModal(score) {
+    const grade = calculateGrade(score);
+    document.getElementById("finalScore").textContent = `Vaše skóre je: ${score}`;
+    document.getElementById("finalGrade").textContent = `Známka: ${grade}`;
+    document.getElementById("gameOverModal").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+}
 
-        score = 0;
-        timeLeft = enableTimerCheckbox.checked ? parseInt(gameTimeInput.value) : 0;
-        usedQuestions.clear();
-        scoreElement.textContent = `Body: ${score}`;
-        setupQuestion();
+function closeGameOverModal() {
+    document.getElementById("gameOverModal").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+}
 
-        if (timeLeft > 0) {
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerElement.textContent = `Čas: ${timeLeft}`;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert(`Konec hry! Vaše skóre je: ${score}. Známka: ${calculateGrade(score)}`);
-                    location.reload();
-                }
-            }, 1000);
-        }
+function startGame() {
+    if (customQuestions.length === 0) {
+        alert("Před spuštěním hry vytvořte alespoň jednu otázku.");
+        return;
     }
+
+    score = 0;
+    timeLeft = enableTimerCheckbox.checked ? parseInt(gameTimeInput.value) : 0;
+    usedQuestions.clear();
+    scoreElement.textContent = `Body: ${score}`;
+    setupQuestion();
+
+    if (timeLeft > 0) {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `Čas: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showGameOverModal(score);
+            }
+        }, 1000);
+    }
+}
+
+function resetQuestion() {
+    answersElements.forEach(el => el.remove());
+    answersElements = [];
+    setupQuestion();
+}
+
     
     // Funkce pro export do JSON
     function exportToJSON() {

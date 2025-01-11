@@ -130,8 +130,20 @@ def klikaci_hra(request):
 def spravna_odpoved(request):
     return render(request, 'spravna_odpoved.html')
 
+def zapisnik(request):
+    return render(request, 'zapisnik.html')
 
+def otazky(request):
+    return render(request, 'otazky.html')
 
+def herni_testy(request):
+    return render(request, 'herni_testy.html')
+
+def herni_testy_procvicovaci(request):
+    return render(request, 'herni_testy_procvicovaci.html')
+
+def miny(request):
+    return render(request, 'miny.html')
 
 
 def register(request):
@@ -230,89 +242,55 @@ def profile_view(request):
         'test_types': test_types,
     })
 
-# Zobrazení formuláře pro vytvoření testu
-def create_test(request):
-    if request.method == 'POST':
-        form = TestForm(request.POST, request.FILES)
-        if form.is_valid():
-            test = form.save(commit=False)
-            test.is_public = request.POST.get('is_public') == 'on'  # Pokud je zaškrtnuto, test je veřejný
-            test.save()
-            return redirect('test_success')  # Přesměrování na stránku o úspěšném uložení
-    else:
-        form = TestForm()
-    return render(request, 'create_test.html', {'form': form})
 
-def public_tests(request):
-    tests = Test.objects.filter(is_public=True)
-    return render(request, 'verejne_testy.html', {'tests': tests})
-
-def private_tests(request):
-    tests = Test.objects.filter(created_by=request.user)
-    return render(request, 'ulozene_testy.html', {'tests': tests})
-
-
-@csrf_exempt
+@login_required
 def save_test(request):
     if request.method == 'POST':
-        # Získání dat z formuláře
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        image = request.FILES.get('image')
-        is_public = request.POST.get('is_public') == 'true'
+        name = request.POST['name']
+        description = request.POST['description']
+        questions = request.POST['questions']
+        answers = request.POST['answers']
+        image = request.FILES.get('image', None)
+        is_public = 'save_public' in request.POST
 
-        # Uložení testu
-        test = Test.objects.create(
+        Test.objects.create(
             name=name,
             description=description,
+            questions=questions,
+            answers=answers,
             image=image,
-            created_by=request.user,
-            is_public=is_public
+            is_public=is_public,
+            creator=request.user
         )
 
-        return JsonResponse({'success': True, 'test_id': test.id})
-    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+        if is_public:
+            return redirect('verejne_testy')
+        else:
+            return redirect('ulozene_testy')
+
+    return render(request, 'psaci_testy.html')
 
 
+from django.shortcuts import render, redirect
+from .models import Note
+from .forms import NoteForm
 
-# Pohled pro vytvoření nové hry
-def create_game(request):
-    if request.method == "POST":
-        name = request.POST['name']
-        time_limit = int(request.POST['time_limit'])
-        points_per_pair = int(request.POST['points_per_pair'])
-        num_players = int(request.POST['num_players'])
+@login_required
+def notes_list(request):
+    # Získání zápisků aktuálního uživatele
+    notes = Note.objects.filter(user=request.user)
 
-        game = Game.objects.create(
-            name=name,
-            time_limit=time_limit,
-            points_per_pair=points_per_pair,
-            num_players=num_players
-        )
-
-        # Přidání hráčů do hry
-        for i in range(num_players):
-            player_name = f"Player {i + 1}"
-            player = Player.objects.create(username=player_name)
-            game.players.add(player)
-
-        return redirect('game_detail', game_id=game.id)
-    return render(request, 'create_game.html')
-
-# Pohled pro zobrazení detailu hry
-def game_detail(request, game_id):
-    game = Game.objects.get(id=game_id)
-    question_pairs = QuestionPair.objects.all()
-    return render(request, 'game_detail.html', {'game': game, 'question_pairs': question_pairs})
-
-# Pohled pro přidání párů otázek a odpovědí
-def add_question_pair(request):
     if request.method == 'POST':
-        form = QuestionPairForm(request.POST)
+        form = NoteForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('game_detail', game_id=form.instance.game.id)
+            # Uložení zápisku k aktuálnímu uživatelskému účtu
+            note = form.save(commit=False)
+            note.user = request.user
+            note.save()
+            return redirect('zapisnik')  # Přesměrování na stránku s poznámkami
     else:
-        form = QuestionPairForm()
-    return render(request, 'add_question_pair.html', {'form': form})
+        form = NoteForm()
+
+    return render(request, 'zapisnik.html', {'form': form, 'zapisnik': notes})
+
 

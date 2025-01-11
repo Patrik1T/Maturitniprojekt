@@ -1,22 +1,43 @@
 {% extends "struktura/base.html" %}
 
 {% load static %}
-
-{% block title %}
-Moje konkrétní stránka
-{% endblock %}
-
 {% block content %}
-<div class="card">
-     <h1>Veřejné testy</h1>
-{% for test in tests %}
-    <div>
-        <h2>{{ test.name }}</h2>
-        <p>{{ test.description }}</p>
-        <img src="{{ test.image.url }}" alt="{{ test.name }}">
-    </div>
+        <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zápisník</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style/styles.css' %}">
+    <script src="{% static 'js/kalendar.js' %}"></script>
+    <script src="{% static 'js/zapisnik.js' %}"></script>
+</head>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Levý panel s tabulkami -->
+        <aside class="col-lg-2 col-md-4 col-sm-12 bg-light p-3">
+            {% include 'struktura/tabulky.html' %}
+        </aside>
+
+        <!-- Hlavní obsah (testy) -->
+        <div class="main-content col-lg-10 col-md-8 col-sm-12">
+            <h1>Veřejné testy</h1>
+
+            <div>
+                {% for test in public_tests %}
+                <div class="test-item mb-4 p-3 border rounded">
+                    <h2>{{ test.name }}</h2>
+                    <p>{{ test.description }}</p>
+                    {% if test.image %}
+                    <img src="{{ test.image.url }}" alt="Obrázek testu" width="200" class="img-fluid">
+                    {% endif %}
+                    <a href="{% url 'psaci_testy_detail' test.id %}" class="btn btn-primary mt-2">Zobrazit test</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
-{% endfor %}
+
 {% endblock %}
+
 

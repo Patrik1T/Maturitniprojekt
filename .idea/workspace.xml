@@ -294,8 +294,7 @@
       <change beforePath="$PROJECT_DIR$/Maturitniprojekt/.idea/revas/users/views.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Maturitniprojekt/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Maturitniprojekt/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Maturitniprojekt/Maturita/revas/users/templates/struktura/base.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Maturitniprojekt/Maturita/revas/users/templates/struktura/basehtml.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Maturitniprojekt/Maturita/Dokumentace/Revas.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Maturitniprojekt/Maturita/Dokumentace/Revas.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Maturitniprojekt/README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Maturitniprojekt/gitignore.git" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Maturitniprojekt/logoRevas.png" beforeDir="false" />
@@ -494,9 +493,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="Python Script" />
         <option value="HTML File" />
       </list>
     </option>
@@ -519,6 +518,7 @@
     &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR_AND_PREVIEW&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Revas&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
@@ -533,6 +533,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Revas\revas\users\templates" />
       <recent name="C:\Revas\revas\users" />
       <recent name="C:\Revas\revas\users\templates\css" />
     </key>
@@ -649,11 +650,64 @@
       <workItem from="1734631579331" duration="1202000" />
       <workItem from="1734681542301" duration="24430000" />
       <workItem from="1734774501278" duration="23846000" />
+      <workItem from="1734863203151" duration="18719000" />
+      <workItem from="1734954992131" duration="24812000" />
+      <workItem from="1735036051544" duration="1616000" />
+      <workItem from="1735129959115" duration="4816000" />
+      <workItem from="1735303864283" duration="1535000" />
+      <workItem from="1735320693104" duration="6637000" />
+      <workItem from="1735336599922" duration="3887000" />
+      <workItem from="1735386457683" duration="18891000" />
+      <workItem from="1735473456881" duration="9750000" />
+      <workItem from="1735546688957" duration="9756000" />
+      <workItem from="1735731187684" duration="14985000" />
+      <workItem from="1735821743072" duration="11419000" />
+      <workItem from="1735895032573" duration="5080000" />
+      <workItem from="1735912271193" duration="27069000" />
+      <workItem from="1735988322897" duration="28760000" />
+      <workItem from="1736076176019" duration="32713000" />
+      <workItem from="1736171802276" duration="16770000" />
+      <workItem from="1736260296612" duration="842000" />
+      <workItem from="1736261525423" duration="22071000" />
+      <workItem from="1736346859847" duration="4735000" />
+      <workItem from="1736430900388" duration="15481000" />
+      <workItem from="1736453787818" duration="9356000" />
+      <workItem from="1736499840358" duration="53931000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/revas/users/templates/struktura/base.html</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/revas/users/templates/vyber_testy.html</url>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/revas/users/templates/programovaci_test.html</url>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/revas/users/templates/psaci_testy.html</url>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/revas/users/templates/vytvor_test.html</url>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="django-line">
+          <url>file://$PROJECT_DIR$/revas/users/templates/tetris.html</url>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Revas$main.coverage" NAME="main Coverage Results" MODIFIED="1728421786685" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

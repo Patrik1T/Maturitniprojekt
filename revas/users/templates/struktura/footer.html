@@ -3,28 +3,40 @@
 <footer class="footer">
     <div class="footer-left">
         <img src="{% static 'obrazky/logoRevas.png' %}" alt="Logo" class="footer-logo">
-    </div>
-    
-    <div class="footer-info">
-        <p><strong>Autor:</strong> Fiktivní firma</p>
-        <p><strong>Email:</strong> info@fiktivnifirma.cz</p>
-        <p><strong>Telefon:</strong> +420 123 456 789</p>
-        <p>&copy; 2024 Fiktivní firma</p>
-    </div>
-    
-    <div class="footer-center">
-        <h2>Poznámky</h2>
-        <textarea id="note-input" placeholder="Zadejte poznámku"></textarea>
-        <button class="btn-save" onclick="saveNote()">Uložit</button>
-        <div id="saved-notes">
-            <!-- Dynamicky přidané poznámky -->
+        <div class="footer-details">
+            <p><strong>Autor:</strong> Patrik Tomaštík</p>
+            <p><strong>Github:</strong> https://github.com/Patrik1T/Maturitniprojekt</p>
+            <p><strong>Telefon:</strong> +420 123 456 789</p>
+            <p>&copy; 2025 SŠPU</p>
         </div>
     </div>
-    
+
+    <div class="footer-center">
+        <div class="footer-section">
+            <h3>Testy</h3>
+            <p>Krátký popis nebo informace.</p>
+            <a href="{% url 'testy' %}" class="footer-button">Testy</a>
+        </div>
+        <div class="footer-section">
+            <h3>Herní testy</h3>
+            <p>Další stručný popis nebo informace.</p>
+            <a href="{% url 'herni_testy' %}" class="footer-button">Herní testy</a>
+        </div>
+        <div class="footer-section">
+            <h3>Testy k procvičování</h3>
+            <p>Ještě jedna informace nebo odkaz.</p>
+            <a href="{% url 'herni_testy_procvicovaci' %}" class="footer-button">Herní testy k procvičování</a>
+        </div>
+    </div>
+
     <div class="footer-right">
         <div class="footer-map">
-            <iframe src="https://www.google.com/maps/embed?pb=..." width="350" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26131.561521198376!2d17.878235481247235!3d49.937941213380774!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4713f1375a1c3c1f%3A0x400af0f6619e7c0!2sOpava!5e0!3m2!1sen!2scz!4v1678973495658!5m2!1sen!2scz" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
         </div>
     </div>
 </footer>
-

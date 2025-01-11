@@ -36,3 +36,13 @@ def user_postsave(sender, instance, created, **kwargs):
 def user_presave(sender, instance, **kwargs):
     if instance.username:
         instance.username = instance.username.lower()
+
+        # users/signals.py
+        from django.apps import apps
+        from django.db.models.signals import post_migrate
+        from django.dispatch import receiver
+
+        @receiver(post_migrate)
+        def load_models(sender, **kwargs):
+            TestModel = apps.get_model('users', 'TestModel')  # Tento kód se spustí až po migracích
+            # Tady můžeš pracovat s modelem TestModel

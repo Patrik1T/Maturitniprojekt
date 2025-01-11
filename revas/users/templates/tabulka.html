@@ -1,8 +1,12 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
     <title>Test: Přiřazování odpovědí</title>
     <style>
         body {
@@ -107,6 +111,10 @@
         <div id="tablesContainer"></div>
 
         <button class="add-btn" onclick="previewTest()">Náhled testu</button>
+        <button onclick="exportToJson()">Export do JSON</button>
+<button onclick="exportToHtml()">Export do HTML</button>
+<button onclick="exportToXml()">Export do XML</button>
+
         <div id="testPreview" style="display: none;">
             <h2>Náhled testu</h2>
             <div id="answersList" class="answer-container"></div>
@@ -353,7 +361,64 @@
         function formatTime(time) {
             return time < 10 ? `0${time}` : time;
         }
+        
+        function exportToJson() {
+    const testData = {
+        tables: tables.map(table => ({
+            name: table.name,
+            answers: table.answers.map(answer => answer.text)
+        }))
+    };
+    const jsonString = JSON.stringify(testData, null, 2);
+    saveAs(new Blob([jsonString], { type: 'application/json' }), 'test.json');
+}
+
+function exportToHtml() {
+    let htmlContent = `<html><body><h1>Test s přiřazováním odpovědí</h1>`;
+    tables.forEach(table => {
+        htmlContent += `<h2>${table.name}</h2><ul>`;
+        table.answers.forEach(answer => {
+            htmlContent += `<li>${answer.text}</li>`;
+        });
+        htmlContent += `</ul>`;
+    });
+    htmlContent += `</body></html>`;
+    saveAs(new Blob([htmlContent], { type: 'text/html' }), 'test.html');
+}
+
+function exportToXml() {
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
+
+    tables.forEach((table, index) => {
+        xmlContent += `
+        <question type="matching">
+            <name><text>${table.name}</text></name>
+            <questiontext format="html">
+                <text><![CDATA[<p>${table.name}</p>]]></text>
+            </questiontext>
+            <shuffleanswers>true</shuffleanswers>
+            <subquestions>`;
+        
+        table.answers.forEach(answer => {
+            xmlContent += `
+                <subquestion>
+                    <text>${answer.text}</text>
+                    <answer><text>${answer.text}</text></answer>
+                </subquestion>`;
+        });
+
+        xmlContent += `
+            </subquestions>
+        </question>`;
+    });
+
+    xmlContent += `\n</quiz>`;
+    saveAs(new Blob([xmlContent], { type: 'application/xml' }), 'test.xml');
+}
+
     </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
 </body>
 </html>
 

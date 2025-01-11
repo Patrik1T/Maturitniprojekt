@@ -19,17 +19,18 @@
 <div class="container">
     <h1>Vytvořit test</h1>
     <h2>Popisek k testu</h2>
-
-    <div class="test-name">
-        <label for="testName">Název testu:</label>
-        <input type="text" id="testName" placeholder="Zadejte název testu" required>
-    </div>
-
-    <label for="testImage">Obrázek testu (nahrát soubor):</label>
-    <input type="file" id="testImage" accept="image/*">
-
-    <label for="testDescription">Popis testu:</label>
-    <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+ <form method="POST" enctype="multipart/form-data" action="{% url 'save_test' %}">
+        {% csrf_token %}
+        <label for="name">Název testu:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="description">Popis testu:</label><br>
+        <textarea id="description" name="description" required></textarea><br><br>
+        
+        <label for="image">Obrázek testu:</label><br>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
+        
+    </form>
 
     <h2>Tvoření testu</h2>
 
@@ -64,6 +65,8 @@
         <h2>Typ uložení</h2>
         <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
         <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="submit" name="save_public">Uložit jako veřejný</button>
+        <button type="submit" name="save_private">Uložit jako soukromý</button>
 
         <button type="button" id="saveAsHtmlBtn">Uložit test jako HTML</button>
         <button type="button" onclick="saveTestToHtml()">Uložit html</button>
@@ -364,65 +367,25 @@ function showTestResults() {
 // Příklad jak zavolat tuto funkci při kliknutí na tlačítko "Ukázat test"
 document.querySelector('.preview-btn').addEventListener('click', showTestResults);
       
-// Funkce pro uložení jako Moodle XML
-    function saveTestToXml() {
-            const testName = document.getElementById('testName').value;
-            const testDescription = document.getElementById('testDescription').value;
-            const questions = gatherQuestions();
 
-            let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<quiz>
-    <name>${testName}</name>
-    <description>${testDescription}</description>`;
+function saveTestToJson() {
+    const testName = document.getElementById('name').value; // Získání názvu testu
+    const testDescription = document.getElementById('description').value; // Získání popisu testu
+    const questions = gatherQuestions(); // Funkce pro získání všech otázek
 
-            questions.forEach((question, index) => {
-                xmlContent += `
-    <question type="multichoice">
-        <name>
-            <text>Otázka ${index + 1}</text>
-        </name>
-        <questiontext format="html">
-            <text>${question.text}</text>
-        </questiontext>
-        <answer>
-            <text>${question.correctAnswer}</text>
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-        </answer>
-    </question>`;
-            });
+    const testData = {
+        name: testName,
+        description: testDescription,
+        questions: questions
+    };
 
-            xmlContent += `
-</quiz>`;
-
-            const blob = new Blob([xmlContent], { type: 'application/xml' });
-            saveAs(blob, `${testName}.xml`);
-        }
-
-
-// Funkce pro uložení jako JSON
- function saveTestToJson() {
-            const testName = document.getElementById('testName').value;
-            const testDescription = document.getElementById('testDescription').value;
-            const questions = gatherQuestions();
-
-            const testData = {
-                name: testName,
-                description: testDescription,
-                questions: questions
-            };
-
-            const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
-            saveAs(blob, `${testName}.json`);
-        }
+    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+    saveAs(blob, `${testName}.json`);
+}
       
-
-
-
 function saveTestToHtml() {
-    const testName = document.getElementById('testName').value;
-    const testDescription = document.getElementById('testDescription').value;
+    const testName = document.getElementById('name').value; // Získání názvu testu
+    const testDescription = document.getElementById('description').value; // Získání popisu testu
     const questions = gatherQuestions(); // Funkce pro získání všech otázek
 
     let htmlContent = `
@@ -438,9 +401,6 @@ function saveTestToHtml() {
                     }
                     .question label {
                         font-weight: bold;
-                    }
-                    .result {
-                        margin-top: 20px;
                     }
                 </style>
             </head>
@@ -460,7 +420,6 @@ function saveTestToHtml() {
             </div>
         `;
     });
-    
 
     htmlContent += `
             <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
@@ -473,6 +432,7 @@ function saveTestToHtml() {
     const blob = new Blob([htmlContent], { type: 'text/html' });
     saveAs(blob, `${testName}.html`);
 }
+
 
 
 function saveTest(type) {
@@ -505,6 +465,41 @@ function saveTest(type) {
     });
 }
 
+function saveTestToXml() {
+    const testName = document.getElementById('name').value; // Získání názvu testu
+    const testDescription = document.getElementById('description').value; // Získání popisu testu
+    const questions = gatherQuestions(); // Funkce pro získání všech otázek
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <name>${testName}</name>
+    <description>${testDescription}</description>`;
+
+    // Generování otázek
+    questions.forEach((question, index) => {
+        xmlContent += `
+    <question type="multichoice">
+        <name>
+            <text>Otázka ${index + 1}</text>
+        </name>
+        <questiontext format="html">
+            <text>${question.text}</text>
+        </questiontext>
+        <answer>
+            <text>${question.correctAnswer}</text>
+            <feedback>
+                <text>Správná odpověď!</text>
+            </feedback>
+        </answer>
+    </question>`;
+    });
+
+    xmlContent += `
+</quiz>`;
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName}.xml`);
+}
 
 
 </script>

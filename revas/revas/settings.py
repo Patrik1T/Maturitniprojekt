@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -55,7 +54,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'social_django',
+    'users',  # Přesunuto na konec
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -194,6 +195,9 @@ LOGOUT_REDIRECT_URL = 'login'
 ALLOWED_HOSTS = []
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'example.com']
+# settings.py
+
+LOGOUT_REDIRECT_URL = 'login'
 
 
 

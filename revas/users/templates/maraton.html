@@ -1,3 +1,9 @@
+  {% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+    {% load static %}
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -114,6 +120,7 @@
     <input type="checkbox" id="useTimer">
 
     <button class="add-btn" onclick="startTest()">Vyzkoušet test</button>
+  
 
     <div id="testContainer" class="test-container">
         <div id="testQuestion">
@@ -134,9 +141,9 @@
         <p id="gradeMessage"></p>
     </div>
 
-    <button class="add-btn" onclick="saveTestToXml()">Uložit jako XML</button>
+  <button class="add-btn" onclick="saveTestToHtml()">Uložit jako html</button>
     <button class="add-btn" onclick="saveTestToJson()">Uložit jako JSON</button>
-    <button class="add-btn" onclick="saveTestToHtml()">Uložit jako HTML</button>
+    <button class="add-btn" onclick="saveTestToXml()">Uložit jako XML</button>
 
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -151,8 +158,7 @@
     let interval;  // Time interval for timer
 
    
-    // Funkce pro přidání otázky do seznamu
-function addQuestion() {
+ function addQuestion() {
     const questionText = document.getElementById('question').value;
     const answer1 = document.getElementById('answer1').value;
     const answer2 = document.getElementById('answer2').value;
@@ -161,6 +167,7 @@ function addQuestion() {
     const correctAnswer = document.getElementById('correct-answer').value;
     const points = document.getElementById('points').value;
 
+    // Kontrola, jestli jsou všechna pole vyplněná
     if (!questionText || !answer1 || !answer2 || !answer3 || !answer4 || !correctAnswer || !points) {
         alert('Vyplňte všechny údaje!');
         return;
@@ -173,9 +180,20 @@ function addQuestion() {
         points: parseInt(points)
     };
 
+    // Přidání otázky do pole
     questions.push(question);
 
-    displayQuestions(); // Zobrazíme seznam otázek po přidání
+    // Zobrazení seznamu otázek
+    displayQuestions();
+
+    // Vymazání formuláře pro zadání nové otázky
+    document.getElementById('question').value = '';
+    document.getElementById('answer1').value = '';
+    document.getElementById('answer2').value = '';
+    document.getElementById('answer3').value = '';
+    document.getElementById('answer4').value = '';
+    document.getElementById('correct-answer').value = '';
+    document.getElementById('points').value = '1'; // Reset na výchozí hodnotu
 }
 
     
@@ -391,59 +409,111 @@ function showResult() {
         }, 1000);
     }
 
-    // Funkce pro uložení testu jako HTML
+ // Funkce pro uložení testu jako HTML
     function saveTestToHtml() {
-        let htmlContent = '<!DOCTYPE html><html><head><title>Test</title></head><body>';
-        questions.forEach((question) => {
-            htmlContent += `<div><h3>${question.question}</h3><ul>`;
-            question.answers.forEach((answer) => {
-                htmlContent += `<li>${answer}</li>`;
-            });
-            htmlContent += `</ul></div>`;
-        });
-        htmlContent += '</body></html>';
+        const testName = prompt("Zadejte název testu:", "Test");
+        if (!testName) return;
 
-        const blob = new Blob([htmlContent], {type: 'text/html'});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'test.html';
-        link.click();
+        let htmlContent = `
+        <html lang="cs">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${testName}</title>
+        </head>
+        <body>
+            <h1>${testName}</h1>
+            <h2>Otázky</h2>
+        `;
+
+        questions.forEach((question, index) => {
+            htmlContent += `
+                <p><strong>${question.question}</strong></p>
+                <ul>
+                    <li>1. ${question.answers[0]}</li>
+                    <li>2. ${question.answers[1]}</li>
+                    <li>3. ${question.answers[2]}</li>
+                    <li>4. ${question.answers[3]}</li>
+                </ul>
+                <p><em>Správná odpověď: ${question.correctAnswer + 1}</em></p>
+                <p><em>Bodování: ${question.points} bodů</em></p>
+                <hr>
+            `;
+        });
+
+        // Časomíra a známky
+        htmlContent += `
+            <h2>Časomíra</h2>
+            <p>Časový limit: ${timeLimit} minut</p>
+            <h2>Známky</h2>
+            <p>1. ${document.getElementById('grade1').value}%</p>
+            <p>2. ${document.getElementById('grade2').value}%</p>
+            <p>3. ${document.getElementById('grade3').value}%</p>
+            <p>4. ${document.getElementById('grade4').value}%</p>
+            <p>5. ${document.getElementById('grade5').value}%</p>
+        </body>
+        </html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: "text/html" });
+        saveAs(blob, `${testName}.html`);
     }
 
-    // Funkce pro uložení testu do JSON
+    // Funkce pro uložení testu jako JSON
     function saveTestToJson() {
-        const blob = new Blob([JSON.stringify(questions)], {type: 'application/json'});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'test.json';
-        link.click();
+        const testName = prompt("Zadejte název testu:", "Test");
+        if (!testName) return;
+
+        const testData = {
+            testName: testName,
+            questions: questions,
+            timeLimit: timeLimit,
+            grades: {
+                grade1: document.getElementById('grade1').value,
+                grade2: document.getElementById('grade2').value,
+                grade3: document.getElementById('grade3').value,
+                grade4: document.getElementById('grade4').value,
+                grade5: document.getElementById('grade5').value
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(testData, null, 2)], { type: "application/json" });
+        saveAs(blob, `${testName}.json`);
     }
 
-    // Funkce pro uložení testu do XML
+    // Funkce pro uložení testu jako XML
     function saveTestToXml() {
-        let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<test>';
-        questions.forEach((question) => {
-            xmlContent += `<question><text>${question.question}</text>`;
-            question.answers.forEach((answer, index) => {
-                xmlContent += `<answer index="${index}">${answer}</answer>`;
-            });
-            xmlContent += `<correctAnswer>${question.correctAnswer}</correctAnswer>`;
-            xmlContent += `<points>${question.points}</points></question>`;
-        });
-        xmlContent += '</test>';
+        const testName = prompt("Zadejte název testu:", "Test");
+        if (!testName) return;
 
-        const blob = new Blob([xmlContent], {type: 'application/xml'});
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'test.xml';
-        link.click();
+        let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<test>\n  <testName>${testName}</testName>\n`;
+
+        // Otázky a odpovědi
+        questions.forEach((question, index) => {
+            xmlContent += `  <question>\n    <questionText>${question.question}</questionText>\n    <answers>\n`;
+            question.answers.forEach((answer, i) => {
+                xmlContent += `      <answer index="${i + 1}">${answer}</answer>\n`;
+            });
+            xmlContent += `    </answers>\n    <correctAnswer>${question.correctAnswer + 1}</correctAnswer>\n    <points>${question.points}</points>\n  </question>\n`;
+        });
+
+        // Časomíra a známky
+        xmlContent += `  <timeLimit>${timeLimit}</timeLimit>\n  <grades>\n`;
+        xmlContent += `    <grade1>${document.getElementById('grade1').value}</grade1>\n`;
+        xmlContent += `    <grade2>${document.getElementById('grade2').value}</grade2>\n`;
+        xmlContent += `    <grade3>${document.getElementById('grade3').value}</grade3>\n`;
+        xmlContent += `    <grade4>${document.getElementById('grade4').value}</grade4>\n`;
+        xmlContent += `    <grade5>${document.getElementById('grade5').value}</grade5>\n  </grades>\n</test>`;
+
+        const blob = new Blob([xmlContent], { type: "application/xml" });
+        saveAs(blob, `${testName}.xml`);
     }
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </body>
 </html>
 
-
+{% endblock %}
 
 
 

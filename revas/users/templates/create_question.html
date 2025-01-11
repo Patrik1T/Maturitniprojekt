@@ -1,0 +1,7 @@
+<h1>Vytvořit novou otázku</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Odeslat otázku</button>
+</form>

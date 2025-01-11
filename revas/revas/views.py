@@ -71,3 +71,76 @@ def profil(request):
     return render(request, 'profil.html', {
         'user': request.user
     })
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from users.models import Question, Comment
+from users.forms import QuestionForm, CommentForm
+
+# Zobrazení seznamu otázek
+def question_list(request):
+    search_query = request.GET.get('q', '')
+    if search_query:
+        questions = Question.objects.filter(title__icontains=search_query)
+    else:
+        questions = Question.objects.all()
+
+    return render(request, 'testy/question_list.html', {
+        'questions': questions,
+        'search_query': search_query,
+    })
+
+# Zobrazení detailu otázky
+def question_detail(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    comments = Comment.objects.filter(question=question)
+    comment_form = CommentForm()
+
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.question = question
+            comment.save()
+            return redirect('question_detail', question_id=question.id)
+
+    return render(request, 'testy/question_detail.html', {
+        'question': question,
+        'comments': comments,
+        'comment_form': comment_form,
+    })
+
+# Vytvoření nové otázky
+def create_question(request):
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('question_list')
+    else:
+        form = QuestionForm()
+
+    return render(request, 'testy/create_question.html', {'form': form})
+
+from django.shortcuts import render, redirect
+from users.models import Note
+from users.forms import NoteForm
+
+@login_required
+def notes_list(request):
+    # Získání zápisků aktuálního uživatele
+    notes = Note.objects.filter(user=request.user)
+
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            # Uložení zápisku k aktuálnímu uživatelskému účtu
+            note = form.save(commit=False)
+            note.user = request.user
+            note.save()
+            return redirect('zapisnik')  # Přesměrování na stránku s poznámkami
+    else:
+        form = NoteForm()
+
+    return render(request, 'zapisnik.html', {'form': form, 'zapisnik': notes})

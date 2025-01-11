@@ -2,21 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
-from .models import QuestionPair, CustomUser
 from django import forms
-from .models import Test
 
 
-class TestForm(forms.ModelForm):
-    class Meta:
-        model = Test
-        fields = ['name', 'description', 'image']
-
-
-class QuestionPairForm(forms.ModelForm):
-    class Meta:
-        model = QuestionPair
-        fields = ['question_text', 'answer_text']
 
 
 class RegistrationForm(forms.Form):
@@ -65,3 +53,32 @@ class UserProfileForm(forms.ModelForm):
         return cleaned_data
 
 
+from django.apps import apps
+
+# Získání modelu dynamicky
+Test = apps.get_model('users', 'Test')  # Ujistěte se, že 'users' je správný název aplikace a 'Test' je správný název modelu
+
+# users/forms.py
+from django import forms
+from django.apps import apps
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = apps.get_model('users', 'TestModel')  # Používáme dynamické načítání modelu
+        fields = ['title', 'description', 'questions']
+
+
+
+from .models import Comment
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']  # Pole, která má formulář obsahovat
+
+from .models import Note
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = Note
+        fields = ['content']  # Uživatel bude zadávat pouze obsah zápisku

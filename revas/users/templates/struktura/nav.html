@@ -1,15 +1,18 @@
 {% load static %}
 
+
 <header>
     <a href="{% url 'hlavni_stranka' %}"> <!-- Zde vložte URL na domovskou stránku nebo na požadovaný odkaz -->
         <img class="logo" src="{% static 'obrazky/logoRevas.png' %}" alt="Logo" width="100">
     </a>
     <div class="nav-links">
         <a href="{% url 'testy' %}">Testy</a>
+        <a href="{% url 'herni_testy' %}">Herní testy</a>
+        <a href="{% url 'herni_testy_procvicovaci' %}">Herní testy k procvičování</a>
         <a href="{% url 'verejne_testy' %}">Veřejné testy</a>
         <a href="{% url 'ulozene_testy' %}">Uložené testy</a>
-        <a href="{% url 'spravy' %}">Spravy</a>
-        <a href="{% url 'profil' %}">Profil</a>
+        <a href="{% url 'zapisnik' %}">Zápisník</a>
+        <a href="{% url 'otazky' %}">Nejčastější otázky</a>
     </div>
     <div class="icons">
         <a class="icon-button" href="{% url 'spravy' %}">💬</a>

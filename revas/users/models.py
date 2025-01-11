@@ -1,14 +1,10 @@
-from django.db import models
 from django.contrib.auth.models import User
-# Create your models here.
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.shortcuts import render
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+
 
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
@@ -27,26 +23,6 @@ class TestType(models.Model):
     def __str__(self):
         return self.name
 
-from django.db import models
-
-from django.db import models
-from django.contrib.auth.models import User
-
-
-class Test(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    image = models.ImageField(upload_to='tests/')
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_public = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        # Po uložení testu aktualizujeme statistiku počtu testů pro tento typ
-        super().save(*args, **kwargs)
-        self.test_type.update_statistics()
 
 class UserStatistics(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -64,12 +40,6 @@ class UserStatistics(models.Model):
             self.test_statistics[test_type_name] = 1
         self.total_tests_created += 1
         self.save()
-
-
-
-
-
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -94,15 +64,6 @@ class Profile(models.Model):
 
 
 
-# Model pro otázky v testu
-class Question(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')  # Odkaz na test
-    question_text = models.CharField(max_length=255)  # Text otázky
-    correct_answer_index = models.IntegerField()  # Index správné odpovědi
-    answers = models.JSONField()  # Odpovědi (JSON pole)
-
-    def __str__(self):
-        return self.question_text
 
 
 class UserProfile(models.Model):
@@ -116,14 +77,6 @@ class UserProfile(models.Model):
 
 
 
-    class Profile(models.Model):
-        user = models.OneToOneField(User, on_delete=models.CASCADE)
-        profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
-
-        def __str__(self):
-            return self.user.username
-
-
 # Model pro hráče
 class Player(models.Model):
     username = models.CharField(max_length=100)
@@ -133,13 +86,6 @@ class Player(models.Model):
         return self.username
 
 
-# Model pro otázku a odpověď (pár)
-class QuestionPair(models.Model):
-    question_text = models.CharField(max_length=255)
-    answer_text = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.question_text} - {self.answer_text}"
 
 
 # Model pro hru
@@ -166,65 +112,6 @@ class GameSession(models.Model):
         return f"Game: {self.game.name}, Player: {self.player.username}, Score: {self.score}"
 
 
-class Test(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    # Přidejte pole image, pokud má být součástí modelu
-    image = models.ImageField(upload_to='test_images/', null=True, blank=True)
-
-
-def list_tests(request):
-    tests = Test.objects.all()  # Načte všechny testy z databáze
-    return render(request, 'verejne_testy.html', {'tests': tests})
-
-class Question(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, default=1)  # Příklad s výchozím testem
-
-
-@csrf_exempt
-def save_test(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        try:
-            test = Test.objects.create(
-                name=data['name'],
-                description=data['description'],
-                type=data.get('type', 'profil')  # Defaultní typ
-            )
-            for question_data in data['questions']:
-                question = Question.objects.create(
-                    test=test,
-                    text=question_data['question']
-                )
-                for answer_data in question_data['answers']:
-                    Answer.objects.create(
-                        question=question,
-                        text=answer_data['text'],
-                        is_correct=answer_data['correct']
-                    )
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
-
-from django.db import models
-
-class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
-    text = models.TextField()
-    is_correct = models.BooleanField(default=False)
-
-
-
-    def ulozene_testy(request):
-        tests = Test.objects.filter(type='profil')
-        return render(request, 'ulozene_testy.html', {'tests': tests})
-
-    def verejne_testy(request):
-        tests = Test.objects.filter(type='verejne_testy')
-        return render(request, 'verejne_testy.html', {'tests': tests})
-
-from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     groups = models.ManyToManyField(
@@ -247,3 +134,35 @@ class CustomUser(AbstractUser):
         verbose_name_plural = "Users"
 
 
+
+from django.db import models
+
+class Test(models.Model):  # Zkontroluj, že třída má tento název
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+
+from django.db import models
+
+class TestModel(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    questions = models.TextField()  # Pokud má být `questions` textové pole
+
+class Question(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+
+class Comment(models.Model):
+    question = models.ForeignKey(Question, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+
+
+class Note(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Vztah k uživatelskému účtu
+    content = models.TextField()  # Text zápisku
+    created_at = models.DateTimeField(auto_now_add=True)  # Datum a čas vytvoření
+    updated_at = models.DateTimeField(auto_now=True)  # Datum a čas poslední úpravy
+
+    def __str__(self):
+        return self.content[:50]  # Zobrazí první část zápisku pro přehled
