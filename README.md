@@ -1,72 +1,108 @@
 # Revas aplikace pro vyrábění testů
-`Revas je aplikace, která umožˇnuje vytváˇrení test˚u a kvíz˚u, ale i zábavných herních test˚u,
-které kombinují otázky a odpovˇedi s herními prvky. Tento nástroj je navržen tak, aby byl uži-
-vatelsky pˇrívˇetivý a snadno použitelný, a to jak pro uˇcitele, studenty, tak pro širokou veˇrejnost,
-která chce spojit zábavu a uˇcení.`
+`Revas je aplikace, která umožňuje vytváření testů a kvízů, ale i zábavných herních testů,
+které kombinují otázky a odpovědi s herními prvky. Tento nástroj je navržen tak, aby byl uži-
+vatelsky přívětivý a snadno použitelný, a to jak pro učitele, studenty, tak pro širokou veřejnost,
+která chce spojit zábavu a učení.`
 
 ## Logo:
 ![Moje obrázek](logoRevas.png)
 
 ## Funkce:
 • Možnost vytvořit si svůj vlastní test 
+
 •	Možnost vytvořit si svůj vlastní herní test 
+
 •	Možnost vytvořit si svůj vlastní herní procvičovací test 
+
 •	Sdílení a ukládání testu v aplikaci 
+
 •	Statistiky o vytvořených testech 
+
 •	Možnost ukládání do různých formátech 
+
 •	Zápisník pro plánování testu 
+
 •	Kalendář pro oznamování nových zveŕejněných testů 
 
 ## Co se tím naučím:
 •	Práci v pycharmu a django 
+
 •	V javascriptu 
+
 •	Práci s ukládání dat 
+
 •	Nový jazyk XML a formát pro moodle 
+
 •	Naučení JSON 
 
 ## Technologie:
 •	Pycharm 
+
 •	Django 
+
 •	Javascript 
+
 •	MYSQL 
+
 •	XML a XML formát pro Moodle 
+
 •	JSON 
+
 •	Filesaver.js 
+
 •	Kalendar.js 
-•  FullCalendar.js: Pro zobrazení plánovaných testů v kalendáři. 
-•  Latex: pro dokumentaci celého projektu. 
+
+•  FullCalendar.js
+
+•  Latex
 
 ## ČASOVÝ HARMONOGRAM
 ### Září:
 
 • Vytvoření projektu na githubu
+
 • Průzkum technologií
+
 • Vymyšlení konceptu aplikace a náčrty
+
 • Funkce pro získání dat a uložení do databáze
+
 • Vytvoření readme.md
 
 ### Říjen:
 
 • Vytvoření konstrukce stránky
+
 • Vytvoření prvních testů
+
 • Vytvoření prvních herních testů
+
 • Přidání přihlášení a registraci
 
 ### Listopad:
 
 • Předělání a úprava kódu přes statické cesty
+
 • Přidání profilu
+
 • Experimentace s košíkem
+
 • Vyrobení dalších testů a herních testů
+
 • Přidání přihlášení přes google a github
+
 • Vytvoření chatu
 
 ### Prosinec:
 
 • Finalizace testů a herních testů
+
 • Odstranění goodle a githubu
+
 • Přidání ukládání do aplikace a do počítace v různých formátech
+
 • Konečná stylizace aplikace a upravení kódu
+
 • Vytvoření dokumentace a videoprezentace
 
 ## Moje hlavní cíle, můj hlavní plán:
