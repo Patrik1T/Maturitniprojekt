@@ -1,10 +1,109 @@
-# Revas
-# Aplikace pro dělání testů
-## Cíl projektu:
-`Mým cílem bylo udělat funkční aplikaci, ve které by bylo být schopno udělat jednoduše testy na nějaké téma a potom by je šlo hodit na moodle nebo na jiné aplikace, kde by žák ten daný vyrobený test udělal a učitel by, pak uviděl hotový výsledek toho daného žáka. Aplikace pod jménem Revas by měla umožňovat co ---nejjednodušeji udělat různé druhy typů testů. Některé typy testů bude dělaná i v podobě menších her.`
+# Revas aplikace pro vyrábění testů
+`Revas je aplikace, která umožňuje vytváření testů a kvízů, ale i zábavných herních testů,
+které kombinují otázky a odpovědi s herními prvky. Tento nástroj je navržen tak, aby byl uži-
+vatelsky přívětivý a snadno použitelný, a to jak pro učitele, studenty, tak pro širokou veřejnost,
+která chce spojit zábavu a učení.`
 
 ## Logo:
 ![Moje obrázek](logoRevas.png)
+
+## Funkce:
+• Možnost vytvořit si svůj vlastní test 
+
+•	Možnost vytvořit si svůj vlastní herní test 
+
+•	Možnost vytvořit si svůj vlastní herní procvičovací test 
+
+•	Sdílení a ukládání testu v aplikaci 
+
+•	Statistiky o vytvořených testech 
+
+•	Možnost ukládání do různých formátech 
+
+•	Zápisník pro plánování testu 
+
+•	Kalendář pro oznamování nových zveŕejněných testů 
+
+## Co se tím naučím:
+•	Práci v pycharmu a django 
+
+•	V javascriptu 
+
+•	Práci s ukládání dat 
+
+•	Nový jazyk XML a formát pro moodle 
+
+•	Naučení JSON 
+
+## Technologie:
+•	Pycharm 
+
+•	Django 
+
+•	Javascript 
+
+•	MYSQL 
+
+•	XML a XML formát pro Moodle 
+
+•	JSON 
+
+•	Filesaver.js 
+
+•	Kalendar.js 
+
+•  FullCalendar.js
+
+•  Latex
+
+## ČASOVÝ HARMONOGRAM
+### Září:
+
+• Vytvoření projektu na githubu
+
+• Průzkum technologií
+
+• Vymyšlení konceptu aplikace a náčrty
+
+• Funkce pro získání dat a uložení do databáze
+
+• Vytvoření readme.md
+
+### Říjen:
+
+• Vytvoření konstrukce stránky
+
+• Vytvoření prvních testů
+
+• Vytvoření prvních herních testů
+
+• Přidání přihlášení a registraci
+
+### Listopad:
+
+• Předělání a úprava kódu přes statické cesty
+
+• Přidání profilu
+
+• Experimentace s košíkem
+
+• Vyrobení dalších testů a herních testů
+
+• Přidání přihlášení přes google a github
+
+• Vytvoření chatu
+
+### Prosinec:
+
+• Finalizace testů a herních testů
+
+• Odstranění goodle a githubu
+
+• Přidání ukládání do aplikace a do počítace v různých formátech
+
+• Konečná stylizace aplikace a upravení kódu
+
+• Vytvoření dokumentace a videoprezentace
 
 ## Moje hlavní cíle, můj hlavní plán:
 ### Plánování a Nastavení Projektu: (100%)
@@ -23,87 +122,52 @@
 
 •	`Přidání knihovny pro zpracování plateb (např. Stripe nebo PayPal SDK). `(100%)
 
-### Přihlašování a registrace:  (90%)
+### Přihlašování a registrace:  (100%)
 
-•	`Přihlášení: ` (90%)
+•	`Přihlášení: ` (100%)
 
 •	`Přihlášení přes github: ` (100%)
 
-•	`Registrace: ` (90%)
+•	`Registrace: ` (100%)
 
 
-### Testy: (90%)
+### Testy: (100%)
 
-•	`Udělání základních testů. ` (90%)
-
-
-### Herní testy: (90%)
-
-•	- `Udělání herních testů. ` (90%)
+•	`Udělání základních testů. ` (100%)
 
 
-### Ukládání, statistiky, historie a další věci: (0%)
+### Herní testy: (100%)
 
-•	`Historie. ` (0%)
-
-•	`Statistiky ` (0%)
-
-•	`Ukládání. ` (29%)
-
-### Komunikace (20%)
-
-•	`Zjistit jak se to dělá. ` (100%)
-
-•	`Posílání správ a souborů mezi uživateli ` (0%)
+•	- `Udělání herních testů a herní testy pro procvičování. ` (100%)
 
 
-### Košík (20%)
+### Ukládání, statistiky, historie a další věci: (100%)
 
-•	`Zjistit jak se to dělá. ` (100%)
+•	`Historie. ` (100%)
 
-•	`Sprovoznění platby. ` (0%)
+•	`Statistiky ` (100%)
 
-•	`Přidání výhod. ` (0%)
+•	`Ukládání. ` (100%)
+
+### Komunikace (100%)
+
+•	`Posílání správ a souborů mezi uživateli ` (100%)
 
 
-### Upravení stylů, menších chyb, nedostatků a Finální Testování (60%)
+### Upravení stylů, menších chyb, nedostatků a Finální Testování (100%)
 
-•	`Fungování kódu ` (40%)
+•	`Fungování kódu ` (100%)
 
 •	`Styli aplikace  ` (100%)
 
-•	`Vygenerování/nakreslení všech animací a obrázků.  ` (20%)
+•	`Vygenerování/nakreslení všech animací a obrázků.  ` (100%)
 
-### Dokumentace a příprava na prezentaci projektu (20%)
+### Dokumentace a příprava na prezentaci projektu (100%)
 
-•	`Udělání dokumentace v Latexu. ` (20%)
+•	`Udělání dokumentace v Latexu. ` (100%)
 
-•	`Udělání video prezentace o projektu. ` (0%)
+•	`Udělání video prezentace o projektu. ` (100%)
 
-
-## Používané technologie:
-
-`Pycharm: Pro napsání celého kódu pro mou aplikaci. `
-
-`Backend (Django): Pro autentifikaci uživatelů, správu testů, export do Moodle a zpracování plateb (např. Stripe nebo PayPal). `
-
-`Frontend (django/css): Pro tvorbu interaktivního uživatelského rozhraní s integrací P5.js pro herní prvky. `
-
-`Javascript: Pro fuunkcionalitu klasických otázek a odpovědí. `
-
-`P5.js: Pro vizualizace a gamifikaci testů. `
-
-`FullCalendar.js: Pro zobrazení plánovaných testů v kalendáři. `
-
-`Django REST Framework: Pro vytváření API pro nahrávání souborů na Moodle.`
-
-`Stripe/PayPal SDK: Pro implementaci platebních funkcí. `
-
-`MySQL: Databáze pro ukládání uživatelských statistik, testů. `
-
-`Photoshop: pro nakreslení a nanimování některých funkcí a her. `
-
-`Latex: pro dokumentaci celého projektu. `
 
 ## Konkurence
 `Existuje několik open-source projektů zaměřených na tvorbu kvízových aplikací, které mi sloužili jako základ pro můj projekt nebo jako inspirace: 
