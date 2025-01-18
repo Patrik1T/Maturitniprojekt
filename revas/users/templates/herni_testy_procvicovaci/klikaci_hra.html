@@ -1,0 +1,494 @@
+  {% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+ {% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Útěk za odpovědí</title>
+    <style>
+        /* Stylování zůstává stejné */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        #editor {
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #gameArea {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            background-color: #87ceeb;
+            overflow: hidden;
+        }
+
+        .answer {
+            width: 100px;
+            height: 50px;
+            background-color: #ffa07a;
+            border-radius: 5px;
+            position: absolute;
+            text-align: center;
+            line-height: 50px;
+            font-weight: bold;
+            color: white;
+            transition: all 0.5s ease;
+        }
+
+        #question {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .questionContainer {
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .questionContainer h3 {
+            margin: 0 0 10px;
+        }
+
+        .answerRow {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+<div id="editor">
+    <h1>Editor otázek</h1>
+     <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+       
+
+ 
+    <div>
+        <input type="text" id="newQuestion" placeholder="Zadejte otázku" style="width: 100%; margin-bottom: 10px;" />
+        <div id="answersContainer">
+            <div class="answerRow">
+                <input type="text" placeholder="Odpověď" class="answerInput" />
+                <label>
+                    <input type="checkbox" class="correctCheckbox" /> Správná odpověď
+                </label>
+                <input type="number" class="pointsInput" placeholder="Bodů za odpověď" min="1" />
+                <button onclick="removeAnswer(this)">Odstranit</button>
+            </div>
+        </div>
+        <button onclick="addAnswer()">Přidat odpověď</button>
+        <button onclick="saveQuestion()">Uložit otázku</button>
+    </div>
+
+    <h2>Seznam otázek</h2>
+    <div id="questionList"></div>
+
+    <h2>Nastavení hry</h2>
+    <label>
+        <input type="checkbox" id="enableTimerCheckbox" /> Aktivovat časovač
+    </label>
+    <br />
+    <label for="gameTime">Nastavte čas (v sekundách): </label>
+    <input type="number" id="gameTime" value="30" min="10" />
+    <br />
+    <button onclick="startGame()">Vyzkoušet hru</button>
+</div>
+<button onclick="exportToHTML()">Exportuj do JSON</button>
+<button onclick="exportToJSON()">Exportuj do JSON</button>
+<button onclick="exportToMoodleXML()">Exportuj do XML</button>
+<div id="gameArea">
+    <div id="question">Načítám otázku...</div>
+    <div id="score">Body: 0</div>
+    <div id="timer">Čas: 30</div>
+</div>
+
+<div id="questionsOverModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <h2>Hra skončila</h2>
+    <p>Vyčerpali jste všechny otázky!</p>
+    <p>Vaše skóre: <span id="finalScoreQuestionsOver">0</span></p>
+    <button onclick="closeQuestionsOverModal()">Zavřít</button>
+</div>
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: none; z-index: 999;" id="questionsOverlay"></div>
+
+</div>
+<script>
+    let customQuestions = [];
+    let usedQuestions = new Set();
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timeLeft = 30;
+    let answersElements = [];
+    let timerInterval;
+    const questionElement = document.getElementById("question");
+    const scoreElement = document.getElementById("score");
+    const timerElement = document.getElementById("timer");
+    const enableTimerCheckbox = document.getElementById("enableTimerCheckbox");
+    const gameTimeInput = document.getElementById("gameTime");
+
+    function addAnswer() {
+        const answersContainer = document.getElementById("answersContainer");
+        const div = document.createElement("div");
+        div.className = "answerRow";
+        div.innerHTML = `
+            <input type="text" placeholder="Odpověď" class="answerInput" />
+            <label>
+                <input type="checkbox" class="correctCheckbox" /> Správná odpověď
+            </label>
+            <input type="number" class="pointsInput" placeholder="Bodů za odpověď" min="1" />
+            <button onclick="removeAnswer(this)">Odstranit</button>
+        `;
+        answersContainer.appendChild(div);
+    }
+
+    function removeAnswer(button) {
+        button.parentElement.remove();
+    }
+
+    function saveQuestion() {
+        const questionText = document.getElementById("newQuestion").value.trim();
+        const answerInputs = document.querySelectorAll(".answerInput");
+        const correctCheckboxes = document.querySelectorAll(".correctCheckbox");
+        const pointsInputs = document.querySelectorAll(".pointsInput");
+
+        if (!questionText) {
+            alert("Zadejte otázku.");
+            return;
+        }
+
+        const answers = Array.from(answerInputs).map((input, index) => ({
+            text: input.value.trim(),
+            correct: correctCheckboxes[index].checked,
+            points: parseInt(pointsInputs[index].value) || 1,
+        }));
+
+        if (answers.length < 2 || !answers.some(a => a.correct)) {
+            alert("Otázka musí mít alespoň dvě odpovědi a jednu správnou.");
+            return;
+        }
+
+        customQuestions.push({ question: questionText, answers });
+        document.getElementById("newQuestion").value = "";
+        document.getElementById("answersContainer").innerHTML = `
+            <div class="answerRow">
+                <input type="text" placeholder="Odpověď" class="answerInput" />
+                <label>
+                    <input type="checkbox" class="correctCheckbox" /> Správná odpověď
+                </label>
+                <input type="number" class="pointsInput" placeholder="Bodů za odpověď" min="1" />
+                <button onclick="removeAnswer(this)">Odstranit</button>
+            </div>
+        `;
+        updateQuestionList();
+    }
+
+    function updateQuestionList() {
+        const questionList = document.getElementById("questionList");
+        questionList.innerHTML = "";
+
+        customQuestions.forEach((q, index) => {
+            const div = document.createElement("div");
+            div.className = "questionContainer";
+            div.innerHTML = `
+                <h3>${q.question}</h3>
+                <ul>
+                    ${q.answers.map(a => `
+                        <li>${a.text} ${a.correct ? "(správná)" : ""} - ${a.points} bodů</li>
+                    `).join("")}
+                </ul>
+                <button onclick="removeQuestion(${index})">Odstranit otázku</button>
+            `;
+            questionList.appendChild(div);
+        });
+    }
+
+    function removeQuestion(index) {
+        customQuestions.splice(index, 1);
+        updateQuestionList();
+    }
+
+function setupQuestion() {
+    if (customQuestions.length === usedQuestions.size) {
+        // Zobrazí dialog místo alertu
+        document.getElementById("finalScoreQuestionsOver").textContent = score;
+        document.getElementById("questionsOverModal").style.display = "block";
+        document.getElementById("questionsOverlay").style.display = "block";
+        return;
+    }
+
+    do {
+        currentQuestionIndex = Math.floor(Math.random() * customQuestions.length);
+    } while (usedQuestions.has(currentQuestionIndex));
+
+    usedQuestions.add(currentQuestionIndex);
+    const currentQuestion = customQuestions[currentQuestionIndex];
+    questionElement.textContent = currentQuestion.question;
+
+    currentQuestion.answers.forEach(answer => {
+        const answerElement = document.createElement("div");
+        answerElement.className = "answer";
+        answerElement.textContent = answer.text;
+        answerElement.style.top = `${Math.random() * (gameArea.clientHeight - 50)}px`;
+        answerElement.style.left = `${Math.random() * (gameArea.clientWidth - 100)}px`;
+
+        moveAnswer(answerElement);
+
+        answerElement.addEventListener("click", () => {
+            if (answer.correct) {
+                score += answer.points;
+            } else {
+                score -= 5;
+            }
+            scoreElement.textContent = `Body: ${score}`;
+            resetQuestion();
+        });
+
+        gameArea.appendChild(answerElement);
+        answersElements.push(answerElement);
+    });
+}
+
+function closeQuestionsOverModal() {
+    document.getElementById("questionsOverModal").style.display = "none";
+    document.getElementById("questionsOverlay").style.display = "none";
+}
+
+    function moveAnswer(answerElement) {
+        setInterval(() => {
+            const newTop = Math.random() * (gameArea.clientHeight - 50);
+            const newLeft = Math.random() * (gameArea.clientWidth - 100);
+            answerElement.style.top = `${newTop}px`;
+            answerElement.style.left = `${newLeft}px`;
+        }, 1000);
+    }
+
+    function resetQuestion() {
+        answersElements.forEach(el => el.remove());
+        answersElements = [];
+        setupQuestion();
+    }
+
+    function calculateGrade(score) {
+        const gradeSettings = document.getElementById("gradeSettings").value;
+        const gradeRanges = gradeSettings.split(",").map(range => {
+            const [rangeText, grade] = range.split(":");
+            const [min, max] = rangeText.split("-").map(Number);
+            return { min, max, grade };
+        });
+
+        for (let range of gradeRanges) {
+            if (score >= range.min && score <= range.max) {
+                return range.grade;
+            }
+        }
+        return "Neznámková";
+    }
+
+   function showGameOverModal(score) {
+    const grade = calculateGrade(score);
+    document.getElementById("finalScore").textContent = `Vaše skóre je: ${score}`;
+    document.getElementById("finalGrade").textContent = `Známka: ${grade}`;
+    document.getElementById("gameOverModal").style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+}
+
+function closeGameOverModal() {
+    document.getElementById("gameOverModal").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+}
+
+function startGame() {
+    if (customQuestions.length === 0) {
+        alert("Před spuštěním hry vytvořte alespoň jednu otázku.");
+        return;
+    }
+
+    score = 0;
+    timeLeft = enableTimerCheckbox.checked ? parseInt(gameTimeInput.value) : 0;
+    usedQuestions.clear();
+    scoreElement.textContent = `Body: ${score}`;
+    setupQuestion();
+
+    if (timeLeft > 0) {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `Čas: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showGameOverModal(score);
+            }
+        }, 1000);
+    }
+}
+
+function resetQuestion() {
+    answersElements.forEach(el => el.remove());
+    answersElements = [];
+    setupQuestion();
+}
+
+
+    // Funkce pro export do JSON
+    function exportToJSON() {
+        if (customQuestions.length === 0) {
+            alert("Nemáte žádné otázky pro export!");
+            return;
+        }
+
+        const jsonData = {
+            questions: customQuestions,  // Export otázek, odpovědí a bodů
+            score: score,  // Export aktuálních bodů
+            timeLeft: timeLeft,  // Export zbývajícího času
+            isTimerEnabled: enableTimerCheckbox.checked  // Stav časovače
+        };
+
+        const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'test_game.json';
+        link.click();
+    }
+
+    // Funkce pro export do Moodle XML
+    function exportToMoodleXML() {
+        if (customQuestions.length === 0) {
+            alert("Nemáte žádné otázky pro export!");
+            return;
+        }
+
+        let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
+
+        customQuestions.forEach((q, index) => {
+            xmlContent += `
+            <question type="multichoice">
+                <name>
+                    <text>Otázka ${index + 1}</text>
+                </name>
+                <questiontext format="html">
+                    <text><![CDATA[<p>${q.question}</p>]]></text>
+                </questiontext>
+                ${q.answers.map(a => `
+                <answer fraction="${a.correct ? 100 : 0}">
+                    <text><![CDATA[${a.text}]]></text>
+                </answer>
+                `).join("")}
+                <feedback>
+                    <text>Správná odpověď!</text>
+                </feedback>
+                <defaultgrade>${q.answers.reduce((total, a) => total + a.points, 0) || 1}</defaultgrade>
+            </question>`;
+        });
+
+        xmlContent += `\n</quiz>`;
+
+        const blob = new Blob([xmlContent], { type: 'application/xml' });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "test_game_moodle.xml";
+        a.click();
+    }
+
+    // Funkce pro export do HTML
+function exportToHTML() {
+    if (customQuestions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    // Začátek HTML souboru
+    let htmlContent = `<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Otázky</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .question-container { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 5px; }
+        .question-container h3 { font-size: 18px; }
+        .answer { margin-top: 5px; padding: 10px; background-color: #f1f1f1; border-radius: 3px; }
+        .correct { background-color: #90ee90; }
+    </style>
+</head>
+<body>
+    <h1>Test Otázky</h1>`;
+
+    // Generování otázek a odpovědí
+    customQuestions.forEach((q, index) => {
+        htmlContent += `<div class="question-container">
+            <h3>${index + 1}. ${q.question}</h3>
+            <ul>
+                ${q.answers.map(a => `
+                    <li class="answer ${a.correct ? 'correct' : ''}">${a.text} ${a.correct ? '(správná)' : ''} - ${a.points} bodů</li>
+                `).join("")}
+            </ul>
+        </div>`;
+    });
+
+    // Konec HTML souboru
+    htmlContent += `</body></html>`;
+
+    // Vytvoření a stažení HTML souboru
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'test_otazky.html';
+    link.click();
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</body>
+</html>
+{% endblock %}

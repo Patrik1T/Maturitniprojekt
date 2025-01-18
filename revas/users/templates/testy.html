@@ -7,8 +7,8 @@
     <title>Zápisník</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style/styles.css' %}">
-    <script src="{% static 'js/kalendar.js' %}"></script>
-    <script src="{% static 'js/zapisnik.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'style/cudliky.css' %}">
+   
 </head>
 <div class="container-fluid flex-grow-1">
     <div class="row">
@@ -24,84 +24,127 @@
                 <div class="row gy-4">
                     <!-- Jednotlivé testy -->
       
-                       <h1>Testy</h1>
-    <h1>Rozhodovačka</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+                       <h1>Vědomostní Testy</h1>
+                    <p>Zde se nacházejí klasické testy, které se běžně vyskytují ve škole, 
+                        na maturitní zkoušce nebo v kvízech. Uživatel si může nastavit název testu, 
+                        popis, časovač, známky a především otázky a odpovědi. Po vytvoření testu si ho 
+                        může vyzkoušet, ale dávejte pozor, protože každý test má své náležitosti, které pokud 
+                        nesplníte, tak ho nemůžete spustit, v náhledu, kde se zobrazí i výsledky, a nakonec si ho 
+                        může stáhnout do počítače ve formátech HTML, JSON a XML pro Moodle. Každý test má vlatní náležitosti, 
+                        proto aby byl spuštěn nebo stáhnut v daném formátu.</p>
+    <h1>Multiple Choice Tests</h1>
+                    
+                    <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-<img src="{% static 'obrazky/fVVu.png' %}" alt="Test Rozhodovačka" class="resizable-image">
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Po vytvoření svého nastaveného testu a vložení svých otázek, tak jste si test vyszkoušet, jestli funguje. 
+    V tomto typu testu se v ukázce ukáže otázka a odpovědi, které můžete zaškrtnout. D8vejte pozor, protože pokud nebudete 
+    mít zaškrtlou správnou odpověď ani u jedné odpovědi u otázky, tak vás to nepustí dál. Odpovědí může mít několik či mít zaškrtnutých 
+    více otázek. Na konci testu pokud ho ukončíte se ukážou výsledky v procentech a bodech, kde se vám ukáže kolik jste měli nakonec správných, 
+    skoro správných a špatných otázek, pokud jste měli skoro dobře, tak vám to nedá bod, ale část z toho bodu, ale bude hlavně záležet 
+    na tom kolik jich mělo být zaškrtlých správně.</p>
+
+<div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/fVVu.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+
 <a class="button" href="/vyber_testy">Vytvořit</a>
    
-    <h1>Ano nebo ne</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+    <h1>Ano, ne test</h1>
+ <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-                    <img src="{% static 'obrazky/E8Bj.png' %}" alt="Test Rozhodovačka" class="resizable-image">
-<img src="{% static 'obrazky/E8Bj.png' %}" alt="Test Rozhodovačka">
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Po vložení potřebných údajů, otázek a odpovědí si můžete vytvořit svůj vlastní test, který bude obsahovat otázky s odpověďmi na ano nebo ne. V ukázce testu budete mít možnost zaškrtnout, zda je dané tvrzení pravda nebo nepravda.
+Na konci testu se vám zobrazí výsledky, ve kterých se ukážou, které odpovědi byly správné a které byly špatné. Tímto způsobem budete mít přehled o tom, jaké tvrzení jste označili správně a kde jste udělali chybu.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/E8Bj.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+
 <a class="button" href="/ano_ne">Vytvořit</a>
     
-    <h1>Psaci</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+    <h1>Text Response Tests</h1>
+ <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-<img src="{% static 'obrazky/ekMM.png' %}" alt="Test Rozhodovačka">
-<a class="button" href="/psaci_testy">Vytvořit</a>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> 	Zde si můžete vytvořit vlastní test, který bude obsahovat otázky, kde odpovědí bude text. V ukázce testu budete muset napsat odpověď přesně tak, jak byla zadána při tvorbě testu. Důležité je, že pokud se odpověď liší od požadované (včetně rozdílu v malých a velkých písmenech), bude považována za špatnou.
+
+Na konci testu se vám zobrazí správné odpovědi. Pokud jste udělali chybu, bude vám ukázáno, jaké slovo bylo napsáno špatně, a vedle něj bude zobrazeno správné znění odpovědi. Tímto způsobem můžete snadno zjistit, kde jste udělali chybu, a opravit ji.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/ekMM.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+
+<a class="button" href="/textresponse">Vytvořit</a>
     
-    <h1>Programovaci test</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+    <h1>Long Text Response Tests</h1>
+ <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-<img src="{% static 'obrazky/RcCf.png' %}" alt="Test Rozhodovačka">
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> 	Zde můžete jako odpověď zadat delší text, případně přidat soubor jako odpověď, což je volba tvůrce testu. Ten může umožnit přidat více odpovědí ve formě souboru nebo delšího textu. V rámci vyhodnocení se zobrazí to, co uživatel odeslal jako odpověď, a na základě toho se provede hodnocení správnosti odpovědi.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/RcCf.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+
 <a class="button" href="/programovaci_test">Vytvořit</a>
 
-<h1>Spojovačka</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+<h1>Matching Tests</h1>
+ <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-<img src="{% static 'obrazky/GKha.png' %}" alt="Test Rozhodovačka">
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Zde vkládáte páry, které budete muset spojit v ukázce. Páry se náhodně umístí do různých tabulek. Pokud kliknete na jedno slovo a spojíte ho s druhým, pod tabulkami se vám zobrazí pár, který jste právě spojili. Tento pár můžete smazat nebo přidat další. Pokud spojíte jednu otázku nebo odpověď s více odpověďmi nebo otázkami, bude to považováno za chybu pro oba páry, a ztratíte dva body nebo počet bodů, který uživatel vložil za tyto dva páry.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/GKha.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
 <a class="button" href="/spojovacka">Vytvořit</a>
 
-<h1>Tabulka</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+<h1>Table Tests</h1>
+ <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-<img src="{% static 'obrazky/NfQX.png' %}" alt="Test Rozhodovačka">
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p>Zde můžete vytvářet více tabulek, každá s vlastním názvem, do kterých si přidáte odpovědi. V ukázce se všechny odpovědi z tabulek náhodně rozmístí nad tabulkami, a vy je můžete přetahovat do správných tabulek. Můžete přiřadit více odpovědí do více tabulek, takže je možné všechny odpovědi přiřadit do všech tabulek. Pokud ale odpovědi vložíte do stejné tabulky vícekrát, bude to považováno za chybu, protože duplicity v tabulkách se počítají jako špatně. Systém tedy nelze obelhat tím, že všechny odpovědi přiřadíte do všech tabulek, protože duplicity budou zohledněny jako nesprávné.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/NfQX.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+
 <a class="button" href="/tabulka">Vytvořit</a>
     
-    
-    <h1>Spravna_odpoved</h1>
-<h2>Účel</h2>
-<p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-<h2>Možnosti</h2>
+                    
+                    <h1>Choose and place text test</h1>
+ <h2>Části výroby</h2>
 <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
 <p>- Přidat otázku a odpovědi</p>
 <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-<p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-<img src="{% static 'obrazky/KZTM.png' %}" alt="Test Rozhodovačka">
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Tento systém umožňuje vkládat otázky, přičemž každá otázka může mít více odpovědí. Odpovědi mohou být buď textové, které musíte napsat, nebo zaškrtnuté, pokud je odpověď správná. Bodování závisí na počtu správně napsaných odpovědí a správně zaškrtnutých možností. Pokud má otázka kombinaci obou (text + zaškrtnutí), může být bodována až třemi body. Po dokončení testu se automaticky zobrazí správné odpovědi a bodové hodnocení na základě správnosti vašich odpovědí.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/KZTM.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+
 <a class="button" href="/spravna_odpoved">Vytvořit</a>
    
 

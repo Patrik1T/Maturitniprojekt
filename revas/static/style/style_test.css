@@ -1,0 +1,165 @@
+/* Globální nastavení */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Tlačítka */
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    color: white;
+    background-color: #1E90FF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+button:hover {
+    background-color: #104e8b;
+}
+
+button.finish-test-btn {
+    background-color: #FFD700;
+}
+
+button.finish-test-btn:hover {
+    background-color: #e6c200;
+}
+
+/* Vzhled časovače */
+.timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timer label {
+    font-weight: bold;
+}
+
+.timer input {
+    width: 60px;
+}
+
+/* Nastavení pro odpovědi a otázky */
+.question-preview {
+    border: 2px solid #4CAF50; /* Zelené ohraničení */
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: space-between;
+}
+
+.question-preview p {
+    font-size: 18px;
+    font-weight: bold;
+    flex: 1;
+}
+
+.question-preview .points {
+    flex: 0 0 50px;
+    text-align: right;
+    margin-left: 15px;
+}
+
+.answers-preview {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.answers-preview label {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.answers-preview input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.answers-preview .remove-btn {
+    margin-left: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.answers-preview .remove-btn:hover {
+    background-color: darkred;
+}
+
+/* Styl pro zaškrtávací políčko */
+.selected {
+    background-color: lightgray;
+}
+
+/* Vzhled pro zobrazení výsledků */
+.results, .timer-display {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #555;
+}
+
+.grade-settings label, .timer label {
+    font-weight: bold;
+}
+
+#successContainer {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: green;
+    color: white;
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+/* Zelené, žluté a červené odpovědi */
+.correct {
+    color: green;
+    font-weight: bold;
+}
+
+.partially-correct {
+    color: yellow;
+    font-weight: bold;
+}
+
+.wrong {
+    color: red;
+    font-weight: bold;
+}

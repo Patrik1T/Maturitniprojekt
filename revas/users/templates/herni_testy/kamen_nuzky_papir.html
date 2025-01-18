@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kámen, Nůžky, Papír s otázkami</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #questionInput, #answerInput {
+            margin: 10px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        #addQuestionBtn, #startGameBtn, #nextRoundBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        #addQuestionBtn:hover, #startGameBtn:hover, #nextRoundBtn:hover {
+            background-color: #45a049;
+        }
+        .game-button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #questionArea, #resultArea {
+            margin-top: 20px;
+        }
+        .questionItem {
+            margin: 10px;
+        }
+        #scoreDisplay {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+    <h1>Kámen, Nůžky, Papír s otázkami</h1>
+
+    <!-- Příprava otázek a odpovědí -->
+    <div id="inputArea">
+        <h3>Přidat otázky a odpovědi</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" /><br>
+        <input type="text" id="answerInput" placeholder="Zadejte odpověď" /><br>
+        <button id="addQuestionBtn" onclick="addQuestion()">Přidat otázku</button>
+    </div>
+
+    <div id="questionArea">
+        <h3>Otázky a odpovědi:</h3>
+        <div id="questionsList"></div>
+    </div>
+
+    <!-- Hra -->
+    <div id="gameArea">
+        <button class="game-button" onclick="playRound('rock')">Kámen</button>
+        <button class="game-button" onclick="playRound('paper')">Papír</button>
+        <button class="game-button" onclick="playRound('scissors')">Nůžky</button>
+        <div id="resultArea" class="result"></div>
+        <button id="nextRoundBtn" onclick="nextRound()" style="display: none;">Další kolo</button>
+    </div>
+
+    <div id="scoreDisplay">
+        <p>Výhry: <span id="wins">0</span> | Ztráty: <span id="losses">0</span></p>
+    </div>
+
+    <div id="finalQuestionArea"></div>
+
+    <script>
+        let questions = [];
+        let currentRound = 0;
+        let userWins = 0;
+        let userLosses = 0;
+        let currentQuestion = null;
+
+        // Funkce pro přidání otázky a odpovědi
+        function addQuestion() {
+            const question = document.getElementById("questionInput").value;
+            const answer = document.getElementById("answerInput").value;
+
+            if (question && answer) {
+                questions.push({ question, answer });
+                displayQuestions();
+                document.getElementById("questionInput").value = '';
+                document.getElementById("answerInput").value = '';
+            } else {
+                alert("Vyplňte obě pole.");
+            }
+        }
+
+        // Funkce pro zobrazení seznamu otázek
+        function displayQuestions() {
+            const questionsList = document.getElementById("questionsList");
+            questionsList.innerHTML = '';
+            questions.forEach((item, index) => {
+                const questionItem = document.createElement("div");
+                questionItem.classList.add("questionItem");
+                questionItem.innerHTML = `${item.question} - ${item.answer}`;
+                questionsList.appendChild(questionItem);
+            });
+        }
+
+        // Funkce pro hraní kola
+        function playRound(playerChoice) {
+            // Generování náhodného výběru pro počítač
+            const choices = ['rock', 'paper', 'scissors'];
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+
+            let result = '';
+            if (playerChoice === computerChoice) {
+                result = 'Remíza!';
+            } else if ((playerChoice === 'rock' && computerChoice === 'scissors') ||
+                       (playerChoice === 'scissors' && computerChoice === 'paper') ||
+                       (playerChoice === 'paper' && computerChoice === 'rock')) {
+                result = 'Vyhrál jsi!';
+                userWins++;
+            } else {
+                result = 'Prohrál jsi!';
+                userLosses++;
+            }
+
+            // Zobrazení výsledku kola
+            document.getElementById("resultArea").innerHTML = `Počítač: ${computerChoice.toUpperCase()}<br>Ty: ${playerChoice.toUpperCase()}<br>${result}`;
+
+            // Zobrazení výher a proher
+            document.getElementById("wins").innerText = userWins;
+            document.getElementById("losses").innerText = userLosses;
+
+            // Pokud vyhrál 3 kola, nemusí odpovídat na otázku
+            if (userWins === 3) {
+                nextQuestion();
+            } else {
+                document.getElementById("nextRoundBtn").style.display = 'inline-block';
+            }
+        }
+
+        // Funkce pro přechod na další kolo
+        function nextRound() {
+            currentRound++;
+            document.getElementById("nextRoundBtn").style.display = 'none';
+        }
+
+        // Funkce pro zobrazení otázky, pokud hráč nevyhrál 3 kola
+        function nextQuestion() {
+            if (questions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                currentQuestion = questions[randomIndex];
+                const questionArea = document.getElementById("finalQuestionArea");
+                questionArea.innerHTML = `<h3>${currentQuestion.question}</h3>
+                                          <p>Odpověď: ${currentQuestion.answer}</p>`;
+            }
+            userWins = 0;  // Resetování výher po zodpovězení otázky
+        }
+    </script>
+</body>
+</html>
+

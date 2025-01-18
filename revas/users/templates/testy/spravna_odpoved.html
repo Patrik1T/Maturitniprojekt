@@ -1,0 +1,382 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+</head>
+<body>
+<div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
+    <strong>Chyba:</strong> Něco je špatně, zkontrolujte formulář.
+</div>
+<div id="successContainer" style="display:none; color: white; background-color: green; padding: 10px; text-align: center;">
+    <strong>Úspěch:</strong> Test byl úspěšně uložen.
+</div>
+
+<div class="container">
+    <h1>Vytvořit test</h1>
+    <h2>Popisek k testu</h2>
+    <div class="test-name">
+        <label for="testName">Název testu:</label>
+        <input type="text" id="testName" placeholder="Zadejte název testu" required>
+    </div>
+    <label for="testImage">Obrázek testu (nahrát soubor):</label>
+    <input type="file" id="testImage" accept="image/*">
+    <label for="testDescription">Popis testu:</label>
+    <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+    
+    <h2>Tvoření testu</h2>
+    <div class="timer">
+        <label for="timer">Nastavit časovač (v minutách):</label>
+        <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+        <label for="enableTimer">Povolit časovač</label>
+        <input type="checkbox" id="enableTimer">
+    </div>
+    
+    <div class="grade-settings">
+        <h3>Počet bodů pro každou známku</h3>
+        <label for="grade1">Známka 1 (minimální body):</label>
+        <input type="number" id="grade1" min="1" value="90">
+        <label for="grade2">Známka 2 (minimální body):</label>
+        <input type="number" id="grade2" min="1" value="70">
+        <label for="grade3">Známka 3 (minimální body):</label>
+        <input type="number" id="grade3" min="1" value="50">
+        <label for="grade4">Známka 4 (minimální body):</label>
+        <input type="number" id="grade4" min="1" value="30">
+        <label for="grade5">Známka 5 (minimální body):</label>
+        <input type="number" id="grade5" min="1" value="0">
+    </div>
+    
+    <form id="testForm">
+        <div id="questionsContainer"></div>
+        <h2>Tvorba testu</h2>
+        <button type="button" onclick="addQuestion()">Přidat otázku</button>
+        <h2>Ukázka testu</h2>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+        <h2>Typ uložení</h2>
+        <button type="button" class="submit-btn" onclick="saveTest('profil')">Uložit v aplikaci</button>
+        <button type="button" class="submit-btn" onclick="saveTest('verejne_testy')">Uložit jako veřejný test</button>
+        <button type="button" onclick="saveTestToJson()">Uložit jako JSON</button>
+        <button type="button" onclick="saveTestToHtml()">Uložit jako HTML</button>
+        <button type="button" onclick="saveTestToXml()">Uložit jako Moodle XML</button>
+
+    </form>
+    
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+    </div>
+    
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <div id="resultsContainer"></div>
+    </div>
+</div>
+
+<script>
+    let questionCount = 0;
+
+    // Funkce pro přidání otázky
+function addQuestion() {
+    questionCount++;
+    const questionHTML = `
+        <div class="question-wrapper" id="question${questionCount}">
+            <label>Otázka ${questionCount}:</label>
+            <textarea name="question${questionCount}_text" placeholder="Zadejte otázku" required></textarea>
+            <div class="error-message" id="errorQuestion${questionCount}" style="display: none; color: red;">Tato otázka musí mít text.</div>
+            
+            <label>Odpovědi:</label>
+            <div id="answers${questionCount}" class="answers">
+                <div>
+                    <input type="text" name="question${questionCount}_answer_1" placeholder="Zadejte odpověď" required>
+                    <input type="checkbox" name="question${questionCount}_correct_1"> Správná odpověď
+                </div>
+            </div>
+            
+            <button type="button" onclick="addAnswer(${questionCount})">Přidat odpověď</button>
+            <button type="button" onclick="deleteQuestion(${questionCount})">Smazat otázku</button>
+        </div>
+    `;
+    document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
+}
+
+// Funkce pro přidání odpovědi
+function addAnswer(questionId) {
+    const answerContainer = document.getElementById(`answers${questionId}`);
+    const answerCount = answerContainer.children.length + 1;
+    const answerHTML = `
+        <div id="answer_${questionId}_${answerCount}">
+            <input type="text" name="question${questionId}_answer_${answerCount}" placeholder="Zadejte odpověď" required>
+            <input type="checkbox" name="question${questionId}_correct_${answerCount}"> Správná odpověď
+            <button type="button" onclick="deleteAnswer(${questionId}, ${answerCount})">Smazat odpověď</button>
+        </div>
+    `;
+    answerContainer.insertAdjacentHTML('beforeend', answerHTML);
+}
+
+// Funkce pro smazání odpovědi
+function deleteAnswer(questionId, answerId) {
+    const answerElement = document.getElementById(`answer_${questionId}_${answerId}`);
+    if (answerElement) {
+        answerElement.remove();
+    }
+}
+
+// Funkce pro smazání otázky
+function deleteQuestion(questionId) {
+    const questionElement = document.getElementById(`question${questionId}`);
+    if (questionElement) {
+        questionElement.remove();
+    }
+}
+
+// Funkce pro shromáždění všech otázek
+function gatherQuestions() {
+    const questions = [];
+    for (let i = 1; i <= questionCount; i++) {
+        const questionElement = document.querySelector(`#question${i}`);
+        if (questionElement) {
+            const text = questionElement.querySelector(`textarea[name="question${i}_text"]`).value.trim();
+            const answers = [];
+            const answerElements = questionElement.querySelectorAll(`#answers${i} div`);
+
+            answerElements.forEach((answerElement, index) => {
+                const answerText = answerElement.querySelector(`input[name="question${i}_answer_${index + 1}"]`).value.trim();
+                const isCorrect = answerElement.querySelector(`input[name="question${i}_correct_${index + 1}"]`).checked;
+                answers.push({ text: answerText, correct: isCorrect });
+            });
+
+            questions.push({ text, answers });
+        }
+    }
+    return questions;
+}
+
+// Funkce pro náhled testu a časomíru
+function previewTest() {
+    const enableTimer = document.getElementById("enableTimer").checked;
+    const timerValue = document.getElementById("timer").value;
+    
+    let previewHTML = '<h3>Náhled na test:</h3>';
+    const questions = gatherQuestions();
+    
+    questions.forEach((q, index) => {
+        previewHTML += `
+            <div class="question-preview">
+                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
+                <p>Odpovědi:</p>
+                <div class="answers-preview">`;
+        
+        q.answers.forEach((answer, ansIndex) => {
+            previewHTML += `
+                <label>
+                    <input type="checkbox" name="preview_question_${index}_${ansIndex}" />
+                    ${answer.text}
+                </label><br>
+                <label>
+                    Vaše odpověď:
+                    <input type="text" name="preview_answer_${index}_${ansIndex}" placeholder="Napište odpověď" />
+                </label><br>`;
+        });
+
+        previewHTML += `</div></div>`;
+    });
+    
+    // Nastavení časomíry
+    if (enableTimer && timerValue) {
+        previewHTML += `<p><strong>Časovač: </strong>${timerValue} minut</p>`;
+        startTimer(timerValue);  // Spustí časomíru
+    }
+    
+    previewHTML += '<button type="button" onclick="evaluateTest()">Vyhodnotit test</button>';
+    document.getElementById('testContent').innerHTML = previewHTML;
+}
+
+// Funkce pro spuštění časomíry s animací
+function startTimer(minutes) {
+    const countdownDisplay = document.createElement("p");
+    countdownDisplay.id = "timerDisplay";
+    document.getElementById("testContent").appendChild(countdownDisplay);
+
+    let timeRemaining = minutes * 60; // Přepočet minut na sekundy
+    const timerInterval = setInterval(function() {
+        const minutesLeft = Math.floor(timeRemaining / 60);
+        const secondsLeft = timeRemaining % 60;
+        
+        // Animace odpočítávání
+        countdownDisplay.textContent = `Čas zbývá: ${minutesLeft}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+        
+        timeRemaining--; // Snížení času
+
+        // Po uplynutí času
+        if (timeRemaining < 0) {
+            clearInterval(timerInterval); // Zastavení časomíry
+            alert("Čas vypršel!");
+            evaluateTest();  // Automatické vyhodnocení testu
+        }
+    }, 1000); // Odpočítávání každou sekundu
+}
+
+// Funkce pro vyhodnocení testu
+function evaluateTest() {
+    const questions = gatherQuestions();
+    let totalScore = 0;
+    let resultsHTML = '<h3>Výsledky testu:</h3>';
+
+    questions.forEach((q, index) => {
+        let questionScore = 0;
+        let userAnswers = [];
+
+        q.answers.forEach((answer, ansIndex) => {
+            const userAnswer = document.querySelector(`input[name="preview_answer_${index}_${ansIndex}"]`).value.trim();
+            const isAnswerCorrect = userAnswer.toLowerCase() === answer.text.toLowerCase();
+            const isChecked = document.querySelector(`input[name="preview_question_${index}_${ansIndex}"]`).checked;
+
+            if (isAnswerCorrect) {
+                questionScore += 1;
+            }
+
+            if (isChecked && answer.correct) {
+                questionScore += 1;
+            }
+
+            userAnswers.push({
+                userAnswer,
+                isAnswerCorrect,
+                isChecked,
+                answerText: answer.text,
+                isCorrectAnswer: answer.correct,
+            });
+        });
+
+        totalScore += questionScore;
+
+        resultsHTML += `
+            <div>
+                <p><strong>Otázka ${index + 1}:</strong> ${q.text}</p>
+                ${userAnswers.map((a, i) => 
+                    `<p>Odpověď ${i + 1}: 
+                        <br>Uživatel: ${a.userAnswer} (${a.isAnswerCorrect ? 'Správně napsáno' : 'Špatně napsáno'}) 
+                        <br>Zaškrtnuto: ${a.isChecked ? 'Ano' : 'Ne'} 
+                        <br>Správná odpověď: ${a.answerText} (${a.isCorrectAnswer ? 'Správná' : 'Špatná'})
+                    </p>`).join('')}
+                <p><strong>Body za tuto otázku:</strong> ${questionScore}</p>
+            </div>`;
+    });
+
+    let grade = '';
+    const maxScore = questions.length * 2;
+    const grade1 = parseInt(document.getElementById('grade1').value);
+    const grade2 = parseInt(document.getElementById('grade2').value);
+    const grade3 = parseInt(document.getElementById('grade3').value);
+    const grade4 = parseInt(document.getElementById('grade4').value);
+    const grade5 = parseInt(document.getElementById('grade5').value);
+
+    if (totalScore >= grade1) grade = '1 (Výborný)';
+    else if (totalScore >= grade2) grade = '2 (Chvalitebný)';
+    else if (totalScore >= grade3) grade = '3 (Dobrý)';
+    else if (totalScore >= grade4) grade = '4 (Dostatečný)';
+    else grade = '5 (Nedostatečný)';
+
+    resultsHTML += `<p><strong>Celkové skóre:</strong> ${totalScore} / ${maxScore}</p>`;
+    resultsHTML += `<p><strong>Známka:</strong> ${grade}</p>`;
+    
+    document.getElementById('resultsContainer').innerHTML = resultsHTML;
+    document.getElementById('resultsSection').style.display = 'block';
+}
+
+function saveTestToJson() {
+    const testName = document.getElementById('testName').value.trim();
+    const testDescription = document.getElementById('testDescription').value.trim();
+    const questions = gatherQuestions();
+    
+    const testData = {
+        name: testName,
+        description: testDescription,
+        questions: questions.map(q => ({
+            text: q.text,
+            answers: q.answers.map(a => ({
+                text: a.text,
+                correct: a.correct
+            }))
+        }))
+    };
+
+    const jsonString = JSON.stringify(testData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    saveAs(blob, `${testName || 'test'}.json`);
+}
+
+function saveTestToHtml() {
+    const testName = document.getElementById('testName').value.trim();
+    const testDescription = document.getElementById('testDescription').value.trim();
+    const questions = gatherQuestions();
+
+    let htmlContent = `
+    <!DOCTYPE html>
+    <html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <title>${testName || 'Test'}</title>
+    </head>
+    <body>
+        <h1>${testName || 'Test'}</h1>
+        <p>${testDescription}</p>
+        ${questions.map((q, index) => `
+            <div>
+                <h2>Otázka ${index + 1}: ${q.text}</h2>
+                <ul>
+                    ${q.answers.map(a => `
+                        <li>${a.text}${a.correct ? ' (Správná odpověď)' : ''}</li>
+                    `).join('')}
+                </ul>
+            </div>
+        `).join('')}
+    </body>
+    </html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName || 'test'}.html`);
+}
+
+function saveTestToXml() {
+    const testName = document.getElementById('testName').value.trim();
+    const questions = gatherQuestions();
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
+
+    questions.forEach((q, index) => {
+        xmlContent += `
+        <question type="matching">
+            <name><text>${q.text}</text></name>
+            <questiontext format="html">
+                <text><![CDATA[${q.text}]]></text>
+            </questiontext>
+            <shuffleanswers>true</shuffleanswers>
+            <subquestions>
+                ${q.answers.map(a => `
+                    <subquestion>
+                        <text><![CDATA[${a.text}]]></text>
+                        <answer><text><![CDATA[${a.correct ? a.text : ''}]]></answer>
+                    </subquestion>`).join('')}
+            </subquestions>
+        </question>\n`;
+    });
+
+    xmlContent += `</quiz>`;
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName || 'test'}.xml`);
+}
+
+
+</script>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+</html>
+
+

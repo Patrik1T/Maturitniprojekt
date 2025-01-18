@@ -1,0 +1,15 @@
+  #errorContainer, #successContainer {
+            display: none;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #errorContainer {
+            color: white;
+            background-color: red;
+        }
+
+        #successContainer {
+            color: white;
+            background-color: green;
+        }

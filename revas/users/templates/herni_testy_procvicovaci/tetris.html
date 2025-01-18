@@ -1,0 +1,438 @@
+  {% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris s otázkami</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; display: flex; justify-content: center; align-items: flex-start; }
+        #gameArea { display: flex; }
+        #gameCanvas { border: 2px solid black; background-size: 30px 30px; background-image: linear-gradient(0deg, transparent 29px, #ccc 30px), linear-gradient(90deg, transparent 29px, #ccc 30px); }
+        #nextTetriminoContainer { margin-left: 20px; }
+        #nextTetrimino { display: flex; flex-direction: column; align-items: center; }
+        #futureTetriminos { display: flex; flex-direction: column; margin-top: 20px; }
+        #questionPopup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid black; }
+        button { margin-top: 10px; }
+        #score { font-size: 20px; text-align: center; margin-bottom: 20px; }
+        #questionForm { margin: 20px 0; }
+        #questionList { margin-top: 20px; text-align: left; }
+    </style>
+</head>
+<body>
+     <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+    
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+         <!-- Nastavení pro známky -->
+    <div class="button-container">
+        <label for="grade1">Bodů pro 1: </label>
+        <input type="number" id="grade1" placeholder="90" min="1" />
+        <label for="grade2">Bodů pro 2: </label>
+        <input type="number" id="grade2" placeholder="75" min="1" />
+        <label for="grade3">Bodů pro 3: </label>
+        <input type="number" id="grade3" placeholder="50" min="1" />
+        <label for="grade4">Bodů pro 4: </label>
+        <input type="number" id="grade4" placeholder="25" min="1" />
+        <label for="grade5">Bodů pro 5: </label>
+        <input type="number" id="grade5" placeholder="0" min="1" />
+    </div>
+
+    <!-- Nastavení časovače -->
+    <div class="button-container">
+        <input type="checkbox" id="enableTimer" />
+        <label for="enableTimer">Použít časovač</label>
+        <input type="number" id="timeLimit" placeholder="Čas (v sekundách)" min="10" disabled />
+    </div>
+
+    <div id="questionForm">
+        <h3>Vytvořte vlastní otázku a odpovědi</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" />
+        <div>
+            <input type="text" id="answer1" placeholder="Odpověď 1" />
+            <input type="checkbox" id="correct1" /> Správná
+        </div>
+        <div>
+            <input type="text" id="answer2" placeholder="Odpověď 2" />
+            <input type="checkbox" id="correct2" /> Správná
+        </div>
+        <div>
+            <input type="text" id="answer3" placeholder="Odpověď 3" />
+            <input type="checkbox" id="correct3" /> Správná
+        </div>
+        <div>
+            <input type="text" id="answer4" placeholder="Odpověď 4" />
+            <input type="checkbox" id="correct4" /> Správná
+        </div>
+        <button id="saveQuestionBtn">Uložit otázku</button>
+    </div>
+
+    <div id="questionList">
+        <h3>Seznam otázek:</h3>
+        <ul id="questionsContainer"></ul>
+    </div>
+
+    <button id="startGameBtn">Spustit hru</button>
+    <button onclick="exportToJSON()">Exportuj do JSON</button>
+<button onclick="exportToMoodleXML()">Exportuj do XML</button>
+     
+      <div id="gameArea">
+        <div id="leftContainer">
+            <canvas id="nextCanvas" width="90" height="90"></canvas>
+        </div>
+        <div id="centerContainer">
+            <canvas id="gameCanvas" width="300" height="720"></canvas>
+            <div id="score">Score: 0</div>
+        </div>
+        <div id="nextTetriminoContainer">
+            <div id="nextTetrimino">
+                <h3>Next:</h3>
+                <canvas id="nextCanvas1" width="90" height="90"></canvas>
+                <canvas id="nextCanvas2" width="90" height="90"></canvas>
+            </div>
+        </div>
+    </div>
+    <div id="questionPopup">
+        <div id="questionText"></div>
+        <div id="answerOptions"></div>
+    </div>
+
+    <script>
+        const questions = [];
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const nextCanvas = document.getElementById("nextCanvas");
+        const nextCtx = nextCanvas.getContext("2d");
+        const nextCanvas1 = document.getElementById("nextCanvas1");
+        const nextCtx1 = nextCanvas1.getContext("2d");
+        const nextCanvas2 = document.getElementById("nextCanvas2");
+        const nextCtx2 = nextCanvas2.getContext("2d");
+
+        const rows = 24;
+        const cols = 10;
+        const blockSize = 30;
+        const gameBoard = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+        const tetriminos = [
+            { color: "red", shape: [[1, 1, 1, 1]] },
+            { color: "blue", shape: [[1, 1], [1, 1]] },
+            { color: "green", shape: [[1, 1, 0], [0, 1, 1]] },
+            { color: "orange", shape: [[0, 1, 1], [1, 1, 0]] },
+            { color: "purple", shape: [[1, 0, 0], [1, 1, 1]] },
+            { color: "yellow", shape: [[0, 0, 1], [1, 1, 1]] },
+            { color: "cyan", shape: [[0, 1, 0], [1, 1, 1]] },
+        ];
+
+        let score = 0;
+        let currentTetrimino;
+        let currentPos = { x: 3, y: 0 };
+        let gameOver = false;
+        let nextTetrimino;
+        let futureTetriminos = [];
+        let gamePaused = false;
+        const dropInterval = 1000;
+        let lastDropTime = 0;
+        let gameIntervalId;
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (gameBoard[r][c] !== 0) {
+                        ctx.fillStyle = gameBoard[r][c];
+                        ctx.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+        }
+
+        function drawTetrimino() {
+            const shape = currentTetrimino.shape;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        ctx.fillStyle = currentTetrimino.color;
+                        ctx.fillRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize);
+                        ctx.strokeStyle = "#000";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect((currentPos.x + c) * blockSize, (currentPos.y + r) * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+        }
+
+        function drawNextTetrimino(context, tetrimino) {
+            const shape = tetrimino.shape;
+            context.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        context.fillStyle = tetrimino.color;
+                        context.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                        context.strokeStyle = "#000";
+                        context.lineWidth = 2;
+                        context.strokeRect(c * blockSize, r * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+        }
+
+        function rotateTetrimino() {
+            const shape = currentTetrimino.shape;
+            const rotatedShape = shape[0].map((_, index) => shape.map(row => row[index])).reverse();
+
+            if (canMove(0, 0, rotatedShape)) {
+                currentTetrimino.shape = rotatedShape;
+            }
+        }
+
+        function canMove(dx, dy, shape) {
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        const newX = currentPos.x + c + dx;
+                        const newY = currentPos.y + r + dy;
+
+                        if (newX < 0 || newX >= cols || newY >= rows || gameBoard[newY][newX] !== 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeTetrimino() {
+            const shape = currentTetrimino.shape;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c] !== 0) {
+                        gameBoard[currentPos.y + r][currentPos.x + c] = currentTetrimino.color;
+                    }
+                }
+            }
+        }
+
+        function removeFullRows() {
+            let rowsRemoved = 0;
+            for (let r = rows - 1; r >= 0; r--) {
+                if (gameBoard[r].every(cell => cell !== 0)) {
+                    gameBoard.splice(r, 1);
+                    gameBoard.unshift(Array(cols).fill(0));
+                    rowsRemoved++;
+                    if (rowsRemoved > 0) {
+                        showQuestion();
+                    }
+                }
+            }
+        }
+
+        function updateScore() {
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        function showQuestion() {
+            gamePaused = true;
+
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            const questionTextElement = document.getElementById("questionText");
+            const answerOptionsElement = document.getElementById("answerOptions");
+            questionTextElement.textContent = randomQuestion.question;
+            answerOptionsElement.innerHTML = "";
+
+            randomQuestion.answers.forEach(answer => {
+    const button = document.createElement('button');
+    button.textContent = answer.text; // Zobrazuje text odpovědi
+    button.onclick = () => handleAnswer(answer.text, randomQuestion.correct); // Porovnává text odpovědi
+    answerOptionsElement.appendChild(button);
+});
+
+
+            document.getElementById("questionPopup").style.display = "block";
+            clearInterval(gameIntervalId);
+        }
+
+        function handleAnswer(answer, correctAnswer) {
+            if (answer === correctAnswer) {
+                score += 10;
+            }
+            updateScore();
+            document.getElementById("questionPopup").style.display = "none";
+            gamePaused = false;
+            startGame();
+        }
+
+        function startGame() {
+            currentTetrimino = nextTetrimino || tetriminos[Math.floor(Math.random() * tetriminos.length)];
+            nextTetrimino = futureTetriminos[0] || tetriminos[Math.floor(Math.random() * tetriminos.length)];
+            futureTetriminos = [futureTetriminos[1], tetriminos[Math.floor(Math.random() * tetriminos.length)]];
+
+            currentPos = { x: 3, y: 0 };
+            drawNextTetrimino(nextCtx1, nextTetrimino);
+            drawNextTetrimino(nextCtx2, futureTetriminos[1]);
+
+            if (!gamePaused) {
+                gameIntervalId = setInterval(gameLoop, dropInterval);
+            }
+        }
+
+        function gameLoop() {
+            if (gameOver || gamePaused) {
+                return;
+            }
+
+            const now = Date.now();
+            if (now - lastDropTime > dropInterval) {
+                if (canMove(0, 1, currentTetrimino.shape)) {
+                    currentPos.y++;
+                } else {
+                    placeTetrimino();
+                    removeFullRows();
+                    if (currentPos.y <= 0) {
+                        gameOver = true;
+                        alert("Game Over!");
+                    } else {
+                        startGame();
+                    }
+                }
+                lastDropTime = now;
+            }
+
+            drawBoard();
+            drawTetrimino();
+        }
+
+        // Uložení otázky
+        document.getElementById("saveQuestionBtn").addEventListener("click", function() {
+            const questionText = document.getElementById("questionInput").value;
+const answers = [
+    { text: document.getElementById("answer1").value, correct: document.getElementById("correct1").checked },
+    { text: document.getElementById("answer2").value, correct: document.getElementById("correct2").checked },
+    { text: document.getElementById("answer3").value, correct: document.getElementById("correct3").checked },
+    { text: document.getElementById("answer4").value, correct: document.getElementById("correct4").checked }
+];
+
+// Přidání otázky
+questions.push({ 
+    question: questionText, 
+    answers: answers.filter(a => a.text !== ""), 
+    correct: answers.find(a => a.correct)?.text 
+});
+
+            // Aktualizace seznamu otázek
+            updateQuestionList();
+        });
+
+        // Aktualizace seznamu otázek
+        function updateQuestionList() {
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+    questions.forEach((q, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `${q.question} - <button onclick="deleteQuestion(${index})">Smazat</button>`;
+        container.appendChild(li);
+    });
+}
+
+
+        // Smazání otázky
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            updateQuestionList();
+        }
+
+        // Spuštění hry
+        document.getElementById("startGameBtn").addEventListener("click", function() {
+            startGame();
+        });
+
+        // Pohyb v hře
+        document.addEventListener("keydown", event => {
+            if (event.key === "ArrowLeft" && canMove(-1, 0, currentTetrimino.shape)) {
+                currentPos.x--;
+            } else if (event.key === "ArrowRight" && canMove(1, 0, currentTetrimino.shape)) {
+                currentPos.x++;
+            } else if (event.key === "ArrowDown" && canMove(0, 1, currentTetrimino.shape)) {
+                currentPos.y++;
+            } else if (event.key === "ArrowUp") {
+                rotateTetrimino();
+            }
+        });
+        
+ function exportToJSON() {
+    if (questions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    const jsonData = {
+        questions: questions,  // Export otázek, odpovědí a bodů
+        score: score,  // Export aktuálních bodů
+        timeLeft: timeLeft,  // Export zbývajícího času
+        playerPosition: playerPosition,  // Export pozice hráče
+        isTimerEnabled: isTimerEnabled  // Stav časovače
+    };
+
+    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'test_data.json';
+    link.click();
+}
+
+function exportToMoodleXML() {
+    if (questions.length === 0) {
+        alert("Nemáte žádné otázky pro export!");
+        return;
+    }
+
+    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
+
+    questions.forEach((item, index) => {
+        xmlContent += `
+        <question type="multichoice">
+            <name>
+                <text>Otázka ${index + 1}</text>
+            </name>
+            <questiontext format="html">
+                <text><![CDATA[<p>${item.question}</p>]]></text>
+            </questiontext>
+            <answer fraction="100">
+                <text><![CDATA[${item.answers.find(a => a.correct)?.text}]]></text>
+            </answer>
+            <feedback>
+                <text>Správná odpověď!</text>
+            </feedback>
+            <defaultgrade>${item.points || 1}</defaultgrade>
+        </question>\n`;
+    });
+
+    xmlContent += '</quiz>';
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "test_data_moodle.xml";
+    a.click();
+}
+
+
+    </script>
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
+{% endblock %}
+
+
+
+

@@ -1,0 +1,170 @@
+{% extends "struktura/basetests.html" %}
+
+{% block title %}Labyrint: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+  {% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labyrint: Otázky a Odpovědi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #settings {
+            width: 600px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #gameArea {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            background-color: #f0f0f0;
+            margin: 20px auto;
+            border: 2px solid #000;
+            display: none;
+        }
+
+        .player {
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        .questionTile {
+            width: 40px;
+            height: 40px;
+            background-color: gray;
+            position: absolute;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .exitTile {
+            width: 40px;
+            height: 40px;
+            background-color: green;
+            position: absolute;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .obstacle {
+            width: 40px;
+            height: 40px;
+            background-color: black;
+            position: absolute;
+            border-radius: 5px;
+        }
+
+        #questionCard {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+
+        #questionCard button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 620px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .tile {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            box-sizing: border-box;
+            position: absolute;
+        }
+    </style>
+    <script src="{% static 'js/labyrint.js' %}"></script>
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+    <div id="settings">
+        <h2>Správa otázek</h2>
+        <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+     
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+        <textarea id="newQuestion" placeholder="Zadejte otázku"></textarea>
+        <div id="answersContainer"></div>
+        <button onclick="addAnswer()">Přidat odpověď</button>
+        <button onclick="saveQuestion()">Uložit otázku</button>
+        <button onclick="saveTestAsHTML()">Uložit jako HTML</button>
+        <button onclick="saveTestAsXML()">Uložit jako XML (Moodle)</button>
+        <button onclick="saveTestAsJSON()">Uložit jako JSON</button>
+        <ul id="questionList"></ul>
+        <button onclick="startGame()">Spustit hru</button>
+    </div>
+
+    <div id="gameArea">
+        <div class="player"></div>
+    </div>
+
+    <div id="questionCard">
+        <h2 id="questionText"></h2>
+        <div id="answerOptions"></div>
+    </div>
+
+    <div id="score">Body: 0</div>
+
+    <script>
+
+
+    </script>
+</body>
+</html>
+
+{% endblock %}
+
+
+
+
+
+

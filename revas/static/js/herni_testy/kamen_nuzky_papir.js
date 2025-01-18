@@ -1,0 +1,378 @@
+        let questions = [];
+        let currentAnswers = [];
+        let currentRound = 0;
+        let userWins = 0;
+        let userLosses = 0;
+        let remainingAttempts = 0;
+        let currentQuestionIndex = 0;
+        let answerCorrect = false;
+        let totalCorrectAnswers = 0;
+        let totalIncorrectAnswers = 0;
+        let totalScore = 0;
+        let grade = "";
+
+
+        function addAnswer() {
+            const answerInput = document.getElementById("answerInput").value.trim();
+            if (answerInput) {
+                currentAnswers.push({ text: answerInput, isCorrect: false });
+                displayAnswers();
+                document.getElementById("answerInput").value = '';
+            } else {
+                alert("Vyplňte odpověď.");
+            }
+        }
+
+        function displayAnswers() {
+            const answersList = document.getElementById("answersList");
+            answersList.innerHTML = '';
+            currentAnswers.forEach((answer, index) => {
+                const answerItem = document.createElement("div");
+                answerItem.classList.add("answerItem");
+                answerItem.innerHTML = `
+                    <input type="radio" name="correctAnswer" onclick="setCorrectAnswer(${index})" ${answer.isCorrect ? 'checked' : ''} />
+                    ${answer.text}
+                    <button onclick="removeAnswer(${index})">Odstranit</button>
+                `;
+                answersList.appendChild(answerItem);
+            });
+        }
+
+        function setCorrectAnswer(index) {
+            currentAnswers.forEach((answer, i) => answer.isCorrect = i === index);
+        }
+
+        function removeAnswer(index) {
+            currentAnswers.splice(index, 1);
+            displayAnswers();
+        }
+
+        function addQuestion() {
+            const question = document.getElementById("questionInput").value.trim();
+            const correctAnswer = currentAnswers.find(answer => answer.isCorrect);
+            if (question && correctAnswer) {
+                questions.push({ question, answers: [...currentAnswers] });
+                displayQuestions();
+                document.getElementById("questionInput").value = '';
+                currentAnswers = [];
+                displayAnswers();
+            } else {
+                alert("Vyplňte otázku a označte správnou odpověď.");
+            }
+        }
+
+        function displayQuestions() {
+            const questionsList = document.getElementById("questionsList");
+            questionsList.innerHTML = '';
+            questions.forEach((item, index) => {
+                const questionItem = document.createElement("div");
+                questionItem.classList.add("questionItem");
+                questionItem.innerHTML = `
+                    <strong>${item.question}</strong><br>
+                    ${item.answers.map((ans, i) => `${i + 1}. ${ans.text} ${ans.isCorrect ? '(správná)' : ''}`).join('<br>')}
+                    <br>
+                    <button onclick="editQuestion(${index})">Upravit</button>
+                    <button onclick="deleteQuestion(${index})">Smazat</button>
+                `;
+                questionsList.appendChild(questionItem);
+            });
+        }
+
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            displayQuestions();
+        }
+
+        function editQuestion(index) {
+            const question = questions[index];
+            document.getElementById("questionInput").value = question.question;
+            currentAnswers = [...question.answers];
+            displayAnswers();
+            deleteQuestion(index);
+        }
+
+function startGame() {
+    remainingAttempts = parseInt(document.getElementById("attemptsInput").value, 10);
+    if (isNaN(remainingAttempts) || remainingAttempts < 1) {
+        alert("Zadejte platný počet pokusů.");
+        return;
+    }
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("scoreDisplay").style.display = "block";
+    document.getElementById("attempts").innerText = remainingAttempts;
+
+    startQuestionSequence();
+}
+
+
+        function startQuestionSequence() {
+            if (questions.length === 0) {
+                document.getElementById("finalQuestionArea").innerHTML = "Žádné otázky nejsou dostupné.";
+                return;
+            }
+            askNextQuestion();
+        }
+
+        function askNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endTest();
+                return;
+            }
+
+            const selectedQuestion = questions[currentQuestionIndex];
+            const answersSection = document.getElementById("answersSection");
+            answersSection.innerHTML = `
+                <p>Zbývající pokusy: ${remainingAttempts}</p>
+                <h3>${selectedQuestion.question}</h3>
+                ${selectedQuestion.answers.map((answer, index) => `
+                    <button onclick="checkAnswer(${currentQuestionIndex}, ${index})">${answer.text}</button>
+                `).join('')}
+            `;
+            document.getElementById("playGameBtn").style.display = "inline";
+            document.getElementById("skipQuestionBtn").style.display = "inline";
+        }
+
+        function checkAnswer(questionIndex, answerIndex) {
+    const question = questions[questionIndex];
+    const selectedAnswer = question.answers[answerIndex];
+
+    // Počet správných odpovědí
+    if (selectedAnswer.isCorrect) {
+        totalCorrectAnswers++;  // Přičteme bod za správnou odpověď
+        answerCorrect = true;
+    } else {
+        totalIncorrectAnswers++;  // Přičteme bod za špatnou odpověď
+        answerCorrect = false;
+    }
+
+    // Pokračování k další otázce
+    if (selectedAnswer.isCorrect) {
+        document.getElementById("finalQuestionArea").innerHTML = "Správná odpověď!";
+    } else {
+        document.getElementById("finalQuestionArea").innerHTML = "Špatná odpověď.";
+    }
+
+    // Zobrazení aktuálních bodů
+    document.getElementById("scoreDisplay").innerHTML = `
+        <p>Správné odpovědi: ${totalCorrectAnswers}</p>
+        <p>Špatné odpovědi: ${totalIncorrectAnswers}</p>
+    `;
+
+    currentQuestionIndex++;
+    askNextQuestion();
+}
+
+
+        function skipQuestion() {
+            answerCorrect = false;
+            currentQuestionIndex++;
+            askNextQuestion();
+        }
+
+        function askToPlayGame() {
+    if (remainingAttempts <= 0) {
+        document.getElementById("finalQuestionArea").innerHTML += "<br>Nemáš už žádné pokusy na hru. Otázka je označena jako špatná!";
+        // Nejde na další otázku, když dojdou pokusy
+        return;
+    }
+
+    remainingAttempts--;
+    document.getElementById("attempts").innerText = remainingAttempts;
+
+    document.getElementById("gameArea").style.display = "block";
+    document.getElementById("resultArea").innerHTML = "Začínáme hru Kámen, Nůžky, Papír! Vyber možnost:";
+}
+
+
+ function playRound(playerChoice) {
+    const choices = ['rock', 'paper', 'scissors'];
+    const computerChoice = choices[Math.floor(Math.random() * 3)];
+    let result = '';
+
+    if (playerChoice === computerChoice) {
+        result = 'Remíza!';
+    } else if (
+        (playerChoice === 'rock' && computerChoice === 'scissors') ||
+        (playerChoice === 'scissors' && computerChoice === 'paper') ||
+        (playerChoice === 'paper' && computerChoice === 'rock')
+    ) {
+        result = 'Vyhrál jsi kolo!';
+        userWins++;  // Zvýšení počtu výher uživatele
+        totalScore++;  // Přičteme bod za výhru (bonusové body)
+    } else {
+        result = 'Prohrál jsi kolo!';
+        userLosses++;  // Zvýšení počtu proher uživatele
+        totalScore--;  // Odečteme bod za prohru
+    }
+
+    // Zobrazení výsledku kola
+    document.getElementById("resultArea").innerHTML = ` 
+        Počítač: ${computerChoice.toUpperCase()}<br>
+        Ty: ${playerChoice.toUpperCase()}<br>${result}<br>
+        Body: Ty (${userWins}) - Počítač (${userLosses})
+        <p>Zbývající pokusy: ${remainingAttempts}</p>
+    `;
+
+    // Pokud hráč získá 3 výhry, nebo prohraje 3 kola, přejdeme k další otázce
+    if (userWins === 3 || userLosses === 3) {
+        const isWin = userWins === 3;
+        document.getElementById("resultArea").innerHTML += ` 
+            <br>${isWin ? 'Vyhrál jsi hru!' : 'Prohrál jsi hru.'} Otázka je označena jako ${isWin ? 'správná' : 'špatná'}.
+        `;
+        currentQuestionIndex++; // Přejdeme k další otázce
+        document.getElementById("gameArea").style.display = "none"; // Skryjeme herní tlačítka
+        askNextQuestion();
+    }
+}
+
+
+
+
+function calculateGrade() {
+    // Maximální skóre je pouze počet správných odpovědí na otázky
+    const maxScore = questions.length; // Pouze počet otázek
+
+    // Celkové skóre je součet správně zodpovězených otázek + výher v Kámen, Nůžky, Papír (bonus) - proher (odečítání)
+    totalScore = totalCorrectAnswers + userWins - userLosses;
+
+    // Dynamické přiřazení známky podle počtu správných odpovědí
+    let grade = '';
+    if (totalCorrectAnswers === maxScore) {
+        grade = "1"; // Známka 1 pro maximální počet správně zodpovězených otázek
+    } else if (totalCorrectAnswers >= maxScore - 2) {
+        grade = "2"; // Známka 2 pro 2 chyby
+    } else if (totalCorrectAnswers >= maxScore - 4) {
+        grade = "3"; // Známka 3 pro 4 chyby
+    } else if (totalCorrectAnswers >= maxScore - 6) {
+        grade = "4"; // Známka 4 pro 6 chyb
+    } else {
+        grade = "5"; // Známka 5 pro více než 6 chyb
+    }
+
+    return grade;
+}
+
+
+
+
+function endTest() {
+    const grade = calculateGrade();
+    document.getElementById("finalQuestionArea").innerHTML = `
+        <h2>Výsledky testu:</h2>
+        <p>Správné odpovědi: ${totalCorrectAnswers} z ${questions.length}</p>
+        <p>Výhry v Kámen, Nůžky, Papír: ${userWins} (bonusové body)</p>
+        <p>Prohry v Kámen, Nůžky, Papír: ${userLosses} (odečítání bodů)</p>
+        <p>Celkové skóre (včetně bonusových bodů a odečtů): ${totalScore} z ${questions.length + 3}</p> <!-- Zobrazení celkového skóre s bonusovými body a odečty -->
+        <p>Známka: ${grade}</p>
+    `;
+}
+
+function exportToHTML() {
+    const testName = "Můj Test"; // Zde nastavte název testu (může být dynamický podle potřeby)
+    const totalTime = 60; // Příklad časovače v sekundách (dynamický dle potřeby)
+    const totalAttempts = 5; // Počet pokusů ve hře
+    const totalCorrectAnswers = 8; // Počet správných odpovědí na otázky
+    const questions = [
+        { question: "Co je JavaScript?", answer: "Programovací jazyk" },
+        { question: "Co je HTML?", answer: "Mark-up jazyk" }
+    ];
+
+    // Generujeme HTML obsah
+    let htmlContent = `
+        <html>
+        <head>
+            <title>${testName} Výsledky</title>
+        </head>
+        <body>
+            <h1>Výsledky testu: ${testName}</h1>
+            <p><strong>Časová limitace:</strong> ${totalTime} sekund</p>
+            <p><strong>Počet pokusů v hře:</strong> ${totalAttempts}</p>
+            <p><strong>Správné odpovědi:</strong> ${totalCorrectAnswers} z ${questions.length}</p>
+            <h2>Otázky a odpovědi</h2>
+            <ul>
+    `;
+
+    // Přidáme otázky a odpovědi
+    questions.forEach((question, index) => {
+        htmlContent += `<li><strong>Otázka ${index + 1}:</strong> ${question.question}<br><strong>Odpověď:</strong> ${question.answer}</li>`;
+    });
+
+    // Závěr
+    htmlContent += `
+            </ul>
+            <h2>Výsledky a známka</h2>
+            <p><strong>Známka:</strong> 1 (příklad známky)</p>
+        </body>
+        </html>
+    `;
+
+    // Uložíme do HTML souboru
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName}_vysledky.html`);
+}
+
+function exportToJSON() {
+    const testName = "Můj Test"; // Název testu
+    const totalTime = 60; // Časovač
+    const totalAttempts = 5; // Počet pokusů ve hře
+    const totalCorrectAnswers = 8; // Počet správných odpovědí
+    const questions = [
+        { question: "Co je JavaScript?", answer: "Programovací jazyk" },
+        { question: "Co je HTML?", answer: "Mark-up jazyk" }
+    ];
+
+    // Vytvoříme objekt pro export
+    const testData = {
+        testName: testName,
+        totalTime: totalTime,
+        totalAttempts: totalAttempts,
+        totalCorrectAnswers: totalCorrectAnswers,
+        questions: questions
+    };
+
+    // Uložíme do JSON souboru
+    const json = JSON.stringify(testData, null, 2); // Pretty print
+    const blob = new Blob([json], { type: 'application/json' });
+    saveAs(blob, `${testName}_vysledky.json`);
+}
+
+function exportToXML() {
+    const testName = "Můj Test"; // Název testu
+    const totalTime = 60; // Časovač
+    const totalAttempts = 5; // Počet pokusů ve hře
+    const totalCorrectAnswers = 8; // Počet správných odpovědí
+    const questions = [
+        { question: "Co je JavaScript?", answer: "Programovací jazyk" },
+        { question: "Co je HTML?", answer: "Mark-up jazyk" }
+    ];
+
+    // Vytvoření XML struktury
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+    <test>
+        <testName>${testName}</testName>
+        <totalTime>${totalTime}</totalTime>
+        <totalAttempts>${totalAttempts}</totalAttempts>
+        <totalCorrectAnswers>${totalCorrectAnswers}</totalCorrectAnswers>
+        <questions>
+    `;
+
+    // Přidáme otázky a odpovědi
+    questions.forEach(question => {
+        xmlContent += `
+            <question>
+                <text>${question.question}</text>
+                <answer>${question.answer}</answer>
+            </question>
+        `;
+    });
+
+    // Závěr XML struktury
+    xmlContent += `
+        </questions>
+    </test>
+    `;
+
+    // Uložíme do XML souboru
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName}_vysledky.xml`);
+}

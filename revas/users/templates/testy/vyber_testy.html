@@ -1,0 +1,107 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+
+    <script src="{% static 'style/error.css' %}"></script>
+    <script src="{% static 'js/testy/rozhodovacka.js' %}"></script>
+     
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+</div>
+<div id="errorContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
+    <strong>Chyba:</strong> Něco je špatně, zkontrolujte formulář.
+</div>
+<div id="successContainer" style="display:none; color: white; background-color: green; padding: 10px; text-align: center;">
+    <strong>Úspěch:</strong> Test byl úspěšně uložen.
+</div>
+
+<div class="container">
+    <h1>Vytvořit test</h1>
+    <form id="testForm" method="post" enctype="multipart/form-data" action="{% url 'verejne_testy' %}">
+        {% csrf_token %}
+        
+        <!-- Popisek testu -->
+        <h2>Popisek k testu</h2>
+        <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" name="testName" placeholder="Zadejte název testu" required>
+        </div>
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" name="testDescription" placeholder="Zadejte popis testu"></textarea>
+
+        <!-- Nastavení časovače -->
+        <h2>Nastavení časovače</h2>
+        <label for="timer">Časovač (v minutách):</label>
+        <input type="number" id="timer" name="timer" min="1" placeholder="Nastavit časovač">
+        <label for="enableTimer">Povolit časovač:</label>
+        <input type="checkbox" id="enableTimer" name="enableTimer">
+
+        <!-- Nastavení bodování -->
+        <h2>Bodování</h2>
+        <label for="grade1">Známka 1 (minimální body):</label>
+        <input type="number" id="grade1" name="grades[1]" min="1" value="90">
+        <label for="grade2">Známka 2 (minimální body):</label>
+        <input type="number" id="grade2" name="grades[2]" min="1" value="70">
+        <label for="grade3">Známka 3 (minimální body):</label>
+        <input type="number" id="grade3" name="grades[3]" min="1" value="50">
+        <label for="grade4">Známka 4 (minimální body):</label>
+        <input type="number" id="grade4" name="grades[4]" min="1" value="30">
+        <label for="grade5">Známka 5 (minimální body):</label>
+        <input type="number" id="grade5" name="grades[5]" min="1" value="0">
+
+        <!-- Otázky a odpovědi -->
+        <h2>Otázky</h2>
+        <div id="questionsContainer"></div>
+        <button type="button" class="add-question-btn" onclick="addQuestion()">Přidat otázku</button>
+
+        <!-- Ukázka testu -->
+        <h2>Ukázka testu</h2>
+        <button type="button" class="preview-btn" onclick="previewTest()">Ukázat test</button>
+
+        <!-- Typ uložení -->
+        <h2>Typ uložení</h2>
+        <button type="button" onclick="saveTestToHtml()">Uložit jako HTML</button>
+        <button type="button" onclick="saveTestToXml()">Uložit jako Moodle XML</button>
+        <button type="button" onclick="saveTestToJson()">Uložit jako JSON</button>
+    </form>
+
+    <!-- Náhled testu -->
+    <div id="previewTest" class="test-section">
+        <h2>Náhled testu</h2>
+        <div id="testContent"></div>
+        <div class="timer-display" id="timerDisplay" style="display:none;">
+            <p>Čas zbývající: <span id="timerCount"></span></p>
+        </div>
+    </div>
+
+    <div id="timeUpContainer" style="display:none; color: white; background-color: red; padding: 10px; text-align: center;">
+    <strong>Upozornění:</strong> Čas vypršel!
+</div>
+    <!-- Výsledky testu -->
+    <div class="results" id="resultsSection" style="display:none;">
+        <h2>Výsledky testu</h2>
+        <p id="scoreDisplay"></p>
+        <p id="gradeDisplay"></p>
+        <p id="percentageDisplay"></p>
+        <p id="correctAnswersDisplay"></p>
+        <p id="partiallyCorrectDisplay"></p>
+        <p id="wrongAnswersDisplay"></p>
+    </div>
+</div>
+
+<script src="{% static 'scripts/test_functions.js' %}"></script>
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+

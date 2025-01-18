@@ -1,0 +1,458 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+     <script src="{% static 'js/testy/spravna_odpoved.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'style/spojovacka.css' %}?v=1.0">
+
+    <title>Test - Spojení otázek a odpovědí</title>
+   
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+
+<div class="container">
+    <h1>Vytvoření Testu - Spojení otázek a odpovědí</h1>
+
+    <input type="text" id="testName" placeholder="Název testu" />
+    <textarea id="testDescription" placeholder="Popis testu" rows="4"></textarea>
+
+    <!-- Nastavení bodování -->
+    <h2>Bodování</h2>
+    <div class="grade-settings">
+        <label for="grade1">Známka 1 (minimální body):</label>
+        <input type="number" id="grade1" name="grades[1]" min="1" value="90">
+        <label for="grade2">Známka 2 (minimální body):</label>
+        <input type="number" id="grade2" name="grades[2]" min="1" value="70">
+        <label for="grade3">Známka 3 (minimální body):</label>
+        <input type="number" id="grade3" name="grades[3]" min="1" value="50">
+        <label for="grade4">Známka 4 (minimální body):</label>
+        <input type="number" id="grade4" name="grades[4]" min="1" value="30">
+        <label for="grade5">Známka 5 (minimální body):</label>
+        <input type="number" id="grade5" name="grades[5]" min="1" value="0">
+    </div>
+
+    <input type="text" id="questionInput" placeholder="Zadejte otázku" />
+    <input type="text" id="answerInput" placeholder="Zadejte odpověď" />
+    <input type="number" id="pointsInput" placeholder="Bodová hodnota" />
+    <button class="add-btn" onclick="addPair()">Přidat pár</button>
+
+    <div id="pairsList">
+        <!-- Seznam párů otázek a odpovědí -->
+    </div>
+
+    <button class="add-btn" onclick="startTest()">Vyzkoušet test</button>
+    <button onclick="saveToHTML()">Uložit do HTML</button>
+    <button onclick="saveToJSON()">Uložit do JSON</button>
+    <button onclick="saveToXML()">Uložit do XML</button>
+
+
+    <div id="testSection" style="display: none;">
+        <h2>Test: Spojte správné páry</h2>
+        <div id="testContent"></div>
+
+        <button class="add-btn" onclick="checkTest()">Odeslat odpovědi</button>
+        <button class="add-btn" onclick="restartTest()">Restartovat test</button>
+    </div>
+    
+
+    <div id="resultSection" class="result-container" style="display: none;">
+        <h3>Výsledky testu:</h3>
+        <div id="resultTables"></div>
+        <p id="testResult"></p>
+        <p id="testGrade"></p>
+    </div>
+
+</div>
+</div>
+<script>
+    let pairs = [];
+    let connections = [];
+    let currentQuestion = null;
+
+   let pairs = [];  // Tento seznam bude obsahovat všechny páry (otázka, odpověď, body)
+
+function addPair() {
+    // Načteme hodnoty z inputů
+    const questionInput = document.getElementById('questionInput');
+    const answerInput = document.getElementById('answerInput');
+    const pointsInput = document.getElementById('pointsInput');
+    const questionText = questionInput.value;
+    const answerText = answerInput.value;
+    const points = parseInt(pointsInput.value);
+
+    // Kontrola, zda jsou všechny hodnoty vyplněné správně
+    if (questionText && answerText && !isNaN(points)) {
+        // Přidání nového páru do seznamu
+        pairs.push({ question: questionText, answer: answerText, points: points });
+
+        // Aktualizace zobrazení seznamu párů
+        displayPairs();
+
+        // Resetování formuláře pro nový pár
+        resetForm();
+    } else {
+        alert('Vyplňte prosím všechny hodnoty (otázka, odpověď a bodová hodnota)!');
+    }
+}
+
+function displayPairs() {
+    const pairsList = document.getElementById('pairsList');
+    pairsList.innerHTML = '';  // Vyčistit aktuální seznam párů
+
+    pairs.forEach((pair, index) => {
+        const pairDiv = document.createElement('div');
+        pairDiv.classList.add('pair');
+        pairDiv.innerHTML = `
+            <strong>Otázka:</strong> ${pair.question} 
+            <strong>Odpověď:</strong> ${pair.answer} 
+            <strong>Bodová hodnota:</strong> ${pair.points}
+            <button onclick="editPair(${index})">Upravit</button>
+            <button onclick="removePair(${index})">Smazat</button>
+        `;
+        pairsList.appendChild(pairDiv);
+    });
+}
+
+function editPair(index) {
+    // Načteme vybraný pár a naplníme formulář
+    const pair = pairs[index];
+    document.getElementById('questionInput').value = pair.question;
+    document.getElementById('answerInput').value = pair.answer;
+    document.getElementById('pointsInput').value = pair.points;
+
+    // Změníme funkci pro tlačítko Přidat pár na funkci pro Aktualizaci
+    const addBtn = document.querySelector('.add-btn');
+    addBtn.textContent = 'Aktualizovat pár';
+    addBtn.onclick = function() {
+        updatePair(index); // Po kliknutí na tlačítko, aktualizujeme tento konkrétní pár
+    };
+}
+
+function updatePair(index) {
+    // Načteme nové hodnoty z formuláře
+    const questionInput = document.getElementById('questionInput');
+    const answerInput = document.getElementById('answerInput');
+    const pointsInput = document.getElementById('pointsInput');
+    const questionText = questionInput.value;
+    const answerText = answerInput.value;
+    const points = parseInt(pointsInput.value);
+
+    // Kontrola, zda jsou všechny hodnoty vyplněné správně
+    if (questionText && answerText && !isNaN(points)) {
+        // Aktualizujeme příslušný pár v seznamu
+        pairs[index] = { question: questionText, answer: answerText, points: points };
+
+        // Opět aktualizujeme zobrazený seznam párů
+        displayPairs();
+
+        // Resetování formuláře pro další přidání
+        resetForm();
+    } else {
+        alert('Vyplňte prosím všechny hodnoty (otázka, odpověď a bodová hodnota)!');
+    }
+}
+
+function removePair(index) {
+    // Potvrzení smazání
+    if (confirm('Oprvdu chcete tento pár odstranit?')) {
+        // Odstraní pár z pole
+        pairs.splice(index, 1);
+
+        // Aktualizace zobrazeného seznamu párů
+        displayPairs();
+    }
+}
+
+function resetForm() {
+    // Resetování formuláře pro nový pár
+    document.getElementById('questionInput').value = '';
+    document.getElementById('answerInput').value = '';
+    document.getElementById('pointsInput').value = '';
+
+    // Resetování tlačítka na „Přidat pár“
+    const addBtn = document.querySelector('.add-btn');
+    addBtn.textContent = 'Přidat pár';
+    addBtn.onclick = addPair;
+}
+
+// Inicializace zobrazení
+displayPairs();
+
+
+    function startTest() {
+        if (pairs.length < 1) {
+            alert('Musíte přidat alespoň jeden pár!');
+            return;
+        }
+
+        // Zamíchejte otázky a odpovědi samostatně
+        const shuffledQuestions = [...pairs].map(pair => pair.question).sort(() => Math.random() - 0.5);
+        const shuffledAnswers = [...pairs].map(pair => pair.answer).sort(() => Math.random() - 0.5);
+
+        const testContentDiv = document.getElementById('testContent');
+        testContentDiv.innerHTML = '';
+
+        const testContainer = document.createElement('div');
+        testContainer.classList.add('test-container');
+
+        const questionsContainer = document.createElement('div');
+        const answersContainer = document.createElement('div');
+        questionsContainer.classList.add('test-item');
+        answersContainer.classList.add('test-item');
+
+        shuffledQuestions.forEach(question => {
+            const questionElement = document.createElement('div');
+            questionElement.classList.add('draggable');
+            questionElement.textContent = question;
+            questionElement.setAttribute('data-type', 'question');
+            questionElement.onclick = handleClick;
+            questionsContainer.appendChild(questionElement);
+        });
+
+        shuffledAnswers.forEach(answer => {
+            const answerElement = document.createElement('div');
+            answerElement.classList.add('draggable');
+            answerElement.textContent = answer;
+            answerElement.setAttribute('data-type', 'answer');
+            answerElement.onclick = handleClick;
+            answersContainer.appendChild(answerElement);
+        });
+
+        testContainer.appendChild(questionsContainer);
+        testContainer.appendChild(answersContainer);
+        testContentDiv.appendChild(testContainer);
+
+        document.getElementById('testSection').style.display = 'block';
+        document.getElementById('pairsList').style.display = 'none';
+    }
+
+    function handleClick(event) {
+        const element = event.target;
+        const type = element.getAttribute('data-type');
+
+        if (type === 'question') {
+            if (currentQuestion) {
+                currentQuestion.style.backgroundColor = '';
+            }
+            currentQuestion = element;
+            element.style.backgroundColor = '#ffcccb';
+        } else if (type === 'answer' && currentQuestion) {
+            // Vytvoření propojení
+            const connection = { question: currentQuestion.textContent, answer: element.textContent };
+            connections.push(connection);
+
+            // Vizuální zobrazení propojení
+            const connectionLine = document.createElement('div');
+            connectionLine.classList.add('connection-line');
+            connectionLine.innerHTML = `
+                ${connection.question} ↔ ${connection.answer}
+                <button class="remove-btn" onclick="removeConnection('${connection.question}', '${connection.answer}', this)">Odstranit</button>
+            `;
+
+            document.getElementById('testContent').appendChild(connectionLine);
+
+            // Resetování aktuální otázky
+            currentQuestion.style.backgroundColor = '';
+            currentQuestion = null;
+        }
+    }
+
+    function removeConnection(question, answer, buttonElement) {
+        // Odstranění propojení z pole connections
+        connections = connections.filter(connection =>
+            !(connection.question === question && connection.answer === answer)
+        );
+
+        // Odstranění vizuálního zobrazení propojení
+        buttonElement.parentElement.remove();
+    }
+
+    function checkTest() {
+        let totalPoints = 0;
+        let correctPoints = 0;
+
+        connections.forEach(connection => {
+            const pair = pairs.find(pair => pair.question === connection.question && pair.answer === connection.answer);
+            if (pair) {
+                correctPoints += pair.points;
+            }
+        });
+
+        totalPoints = pairs.reduce((sum, pair) => sum + pair.points, 0);
+
+        const grade = calculateGrade(correctPoints, totalPoints);
+        displayResults(correctPoints, totalPoints, grade);
+    }
+
+    function calculateGrade(correctPoints, totalPoints) {
+        const percentage = (correctPoints / totalPoints) * 100;
+
+        // Načteme hodnoty z formuláře pro bodování
+        const grade1 = parseInt(document.getElementById('grade1').value);
+        const grade2 = parseInt(document.getElementById('grade2').value);
+        const grade3 = parseInt(document.getElementById('grade3').value);
+        const grade4 = parseInt(document.getElementById('grade4').value);
+        const grade5 = parseInt(document.getElementById('grade5').value);
+
+        // Určování známky na základě procenta a bodových prahů
+        if (percentage >= grade1) return '1';
+        if (percentage >= grade2) return '2';
+        if (percentage >= grade3) return '3';
+        if (percentage >= grade4) return '4';
+        return '5';
+    }
+
+    function displayResults(correctPoints, totalPoints, grade) {
+        const resultTablesDiv = document.getElementById('resultTables');
+        resultTablesDiv.innerHTML = '';
+
+        const resultTable = document.createElement('table');
+        resultTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Otázka</th>
+                    <th>Odpověď</th>
+                    <th>Výsledek</th>
+                    <th>Bodová hodnota</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${connections.map(connection => {
+                    const pair = pairs.find(pair => pair.question === connection.question && pair.answer === connection.answer);
+                    const isCorrect = pair ? 'Správně' : 'Špatně';
+                    return `
+                        <tr style="background-color: ${isCorrect === 'Správně' ? 'lightgreen' : 'lightcoral'}">
+                            <td>${connection.question}</td>
+                            <td>${connection.answer}</td>
+                            <td>${isCorrect}</td>
+                            <td>${pair ? pair.points : 0}</td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        `;
+
+        resultTablesDiv.appendChild(resultTable);
+        document.getElementById('testResult').textContent = `Počet správně spojených bodů: ${correctPoints} z ${totalPoints}`;
+        document.getElementById('testGrade').textContent = `Známka: ${grade}`;
+        document.getElementById('resultSection').style.display = 'block';
+    }
+
+    function restartTest() {
+        connections = [];
+        startTest();
+    }
+
+
+    function saveToHTML() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+
+    let htmlContent = `
+        <html>
+            <head><title>${testName}</title></head>
+            <body>
+                <h1>${testName}</h1>
+                <p>${testDescription}</p>
+                <h2>Otázky a Odpovědi:</h2>
+                <ul>
+    `;
+
+    pairs.forEach(pair => {
+        htmlContent += `
+            <li>
+                <strong>Otázka:</strong> ${pair.question}<br>
+                <strong>Odpověď:</strong> ${pair.answer}<br>
+                <strong>Bodová hodnota:</strong> ${pair.points}
+            </li>
+        `;
+    });
+
+    htmlContent += `
+        </ul>
+    </body>
+    </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.html`;
+    link.click();
+}
+
+
+function saveToJSON() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+
+    const data = {
+        name: testName,
+        description: testDescription,
+        questionsAndAnswers: pairs
+    };
+
+    const jsonContent = JSON.stringify(data, null, 2);
+
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.json`;
+    link.click();
+}
+
+
+function saveToXML() {
+    const testName = document.getElementById('testName').value;
+    const testDescription = document.getElementById('testDescription').value;
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+    <name>${testName}</name>
+    <description>${testDescription}</description>
+`;
+
+    pairs.forEach(pair => {
+        xmlContent += `
+    <question type="multichoice">
+        <name>
+            <text>${pair.question}</text>
+        </name>
+        <questiontext format="html">
+            <text><![CDATA[${pair.question}]]></text>
+        </questiontext>
+        <answer fraction="100">
+            <text>${pair.answer}</text>
+        </answer>
+        <feedback>
+            <text>Správná odpověď!</text>
+        </feedback>
+        <defaultgrade>${pair.points}</defaultgrade>
+    </question>
+`;
+    });
+
+    xmlContent += `</quiz>`;
+
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}.xml`;
+    link.click();
+}
+
+    </script>
+</body>
+</html>
+

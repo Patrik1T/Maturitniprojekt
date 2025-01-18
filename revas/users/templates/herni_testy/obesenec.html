@@ -1,0 +1,191 @@
+
+
+{% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oběšenec - Hra</title>
+    <script src="{% static 'js/obesenec.js' %}"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #wordDisplay {
+            font-size: 24px;
+            margin: 20px;
+        }
+        .letter {
+            font-size: 24px;
+            margin: 0 5px;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        #hangmanImage img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+        #inputArea {
+            margin: 20px;
+        }
+        #startGameBtn, #restartGameBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        #startGameBtn:hover, #restartGameBtn:hover {
+            background-color: #45a049;
+        }
+        .button {
+            font-size: 20px;
+            margin: 5px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #ddd;
+        }
+        #letters {
+            margin-top: 20px;
+        }
+        .letter-button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #questionArea {
+            margin-top: 20px;
+        }
+        .questionItem {
+            margin: 10px;
+        }
+        .removeBtn {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .removeBtn:hover {
+            background-color: darkred;
+        }
+        #attemptsDisplay {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #timerDisplay {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        .score-display {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+    <h1>Oběšenec</h1>
+    <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+
+       
+
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+    
+         <!-- Nastavení pro známky -->
+    <div class="button-container">
+        <label for="grade1">Bodů pro 1: </label>
+        <input type="number" id="grade1" placeholder="90" min="1" />
+        <label for="grade2">Bodů pro 2: </label>
+        <input type="number" id="grade2" placeholder="75" min="1" />
+        <label for="grade3">Bodů pro 3: </label>
+        <input type="number" id="grade3" placeholder="50" min="1" />
+        <label for="grade4">Bodů pro 4: </label>
+        <input type="number" id="grade4" placeholder="25" min="1" />
+        <label for="grade5">Bodů pro 5: </label>
+        <input type="number" id="grade5" placeholder="0" min="1" />
+    </div>
+
+
+    <div id="inputArea">
+        <h3>Přidat otázky, slova a nastavení bodů</h3>
+        <input type="text" id="questionInput" placeholder="Zadejte otázku" /><br><br>
+        <input type="text" id="wordInput" placeholder="Zadejte slovo" /><br><br>
+        <input type="number" id="pointsInput" placeholder="Zadejte body" /><br><br>
+        <button onclick="addWord()">Přidat slovo</button>
+        
+    
+
+    <!-- Nastavení časovače -->
+   <div class="button-container">
+    <input type="checkbox" id="enableTimer" />
+    <label for="enableTimer">Použít časovač</label>
+    <input type="number" id="timeLimit" placeholder="Čas (v sekundách)" min="10" disabled />
+</div>
+
+
+        
+        <button onclick="startGame()" id="startGameBtn">Spustit hru</button>
+        <button onclick="saveAsHtml()">Exportovat do html</button>
+        <button onclick="saveAsJson()">Exportovat do JSON</button>
+<button onclick="saveAsMoodleXML()">Exportovat do Moodle XML</button>
+
+
+        <button onclick="restartGame()" id="restartGameBtn" style="display: none;">Restartovat hru</button>
+    </div>
+
+    <div id="questionArea">
+        <h3>Otázky a slova:</h3>
+        <div id="questionsList"></div>
+    </div>
+
+    <div id="wordDisplay"></div>
+    <div id="hangmanImage"></div>
+    <div id="letters"></div>
+    <div id="attemptsDisplay"></div>
+    <div id="timerDisplay"></div> <!-- Zobrazení časovače -->
+
+    <div id="scoreDisplay" class="score-display" style="display: none;">
+        <h3>Výsledek:</h3>
+        <p id="scoreText"></p>
+        <p id="gradeText"></p>
+    </div>
+
+
+    <script>
+       
+
+    </script>
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+{% endblock %}

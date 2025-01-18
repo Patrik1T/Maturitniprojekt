@@ -10,128 +10,312 @@ Moje konkrétní stránka
         <!-- Levý panel -->
         <aside class="col-lg-2 col-md-4 col-sm-12 bg-light p-3">
             {% include 'struktura/tabulky.html' %}
+            <link rel="stylesheet" href="{% static 'style/karticky.css' %}">
+             <script src="{% static 'js/karticky.js' %}"></script>
         </aside>
 
         <!-- Hlavní obsah s kartami -->
         <div class="main-content col-lg-10 col-md-8 col-sm-12">
-            <div class="main-content">
+            
+            <!-- Karty pro Testy (7 karet) -->
+            <div class="container">
                 <h1>Testy</h1>
-                <div class="container">
-                    <!-- Karty pro Testy -->
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Rozhodovací test</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 1.</p>
-                        </div>
-                    </div>
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Ano nebo ne test</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 2.</p>
-                        </div>
-                    </div>
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Psací test</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 3.</p>
-                        </div>
+<p>Zde se nacházejí klasické testy, které se běžně vyskytují ve škole, na maturitní zkoušce nebo v kvízech. Uživatel si může nastavit název testu, popis, časovač, známky a především otázky a odpovědi. Po vytvoření testu si ho může vyzkoušet, ale dávejte pozor, protože každý test má své náležitosti, které pokud nesplníte, tak ho nemůžete spustit, v náhledu, kde se zobrazí i výsledky, a nakonec si ho může stáhnout do počítače ve formátech HTML, JSON a XML pro Moodle. Každý test má vlatní náležitosti, proto aby byl spuštěn nebo stáhnut v daném formátu.</p>
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Multiple Choice Tests</div>
+                    <div class="card-content">
+                        <p>Po vytvoření svého nastaveného testu a vložení svých otázek, tak jste si test vyszkoušet, jestli funguje. V tomto typu testu se v ukázce ukáže otázka a odpovědi, které můžete zaškrtnout. Dávejte pozor, protože pokud nebudete mít zaškrtlou správnou odpověď ani u jedné odpovědi u otázky, tak vás to nepustí dál. Odpovědí může mít několik či mít zaškrtnutých více otázek. Na konci testu pokud ho ukončíte se ukážou výsledky v procentech a bodech, kde se vám ukáže kolik jste měli nakonec správných, skoro správných a špatných otázek, pokud jste měli skoro dobře, tak vám to nedá bod, ale část z toho bodu, ale bude hlavně záležet na tom kolik jich mělo být zaškrtlých správně.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
                     </div>
                 </div>
 
-                <!-- Nadpis a karty pro Herní testy -->
-                <h1>Herní testy</h1>
-                <div class="container">
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Pexeso</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 1.</p>
-                        </div>
-                    </div>
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Oběšenec</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 2.</p>
-                        </div>
-                    </div>
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Dveře hra</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 3.</p>
-                        </div>
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Ano, ne test</div>
+                    <div class="card-content">
+                        <p>Po vložení potřebných údajů, otázek a odpovědí si můžete vytvořit svůj vlastní test, který bude obsahovat otázky s odpověďmi na ano nebo ne. V ukázce testu budete mít možnost zaškrtnout, zda je dané tvrzení pravda nebo nepravda.
+Na konci testu se vám zobrazí výsledky, ve kterých se ukážou, které odpovědi byly správné a které byly špatné. Tímto způsobem budete mít přehled o tom, jaké tvrzení jste označili správně a kde jste udělali chybu.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
                     </div>
                 </div>
 
-                <!-- Nadpis a karty pro Herní testy procvičovací -->
-                <h1>Herní testy procvičovací</h1>
-                <div class="container">
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Lov pokladů</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 1.</p>
-                        </div>
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Text Response Tests</div>
+                    <div class="card-content">
+                        <p>Zde si můžete vytvořit vlastní test, který bude obsahovat otázky, kde odpovědí bude text. V ukázce testu budete muset napsat odpověď přesně tak, jak byla zadána při tvorbě testu. Důležité je, že pokud se odpověď liší od požadované (včetně rozdílu v malých a velkých písmenech), bude považována za špatnou.
+
+Na konci testu se vám zobrazí správné odpovědi. Pokud jste udělali chybu, bude vám ukázáno, jaké slovo bylo napsáno špatně, a vedle něj bude zobrazeno správné znění odpovědi. Tímto způsobem můžete snadno zjistit, kde jste udělali chybu, a opravit ji.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
                     </div>
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Labyrint</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 2.</p>
-                        </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Long Text Response Tests</div>
+                    <div class="card-content">
+                        <p>Zde můžete jako odpověď zadat delší text, případně přidat soubor jako odpověď, což je volba tvůrce testu. Ten může umožnit přidat více odpovědí ve formě souboru nebo delšího textu. V rámci vyhodnocení se zobrazí to, co uživatel odeslal jako odpověď, a na základě toho se provede hodnocení správnosti odpovědi.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
                     </div>
-                    <div class="card" onclick="toggleContent(this)">
-                        <div class="card-title">Flappy bird</div>
-                        <div class="card-content">
-                            <p>Toto je detailní text pro kartu 3.</p>
-                        </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Matching Tests</div>
+                    <div class="card-content">
+                        <p>Zde vkládáte páry, které budete muset spojit v ukázce. Páry se náhodně umístí do různých tabulek. Pokud kliknete na jedno slovo a spojíte ho s druhým, pod tabulkami se vám zobrazí pár, který jste právě spojili. Tento pár můžete smazat nebo přidat další. Pokud spojíte jednu otázku nebo odpověď s více odpověďmi nebo otázkami, bude to považováno za chybu pro oba páry, a ztratíte dva body nebo počet bodů, který uživatel vložil za tyto dva páry.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Table Tests</div>
+                    <div class="card-content">
+                        <p>Zde můžete vytvářet více tabulek, každá s vlastním názvem, do kterých si přidáte odpovědi. V ukázce se všechny odpovědi z tabulek náhodně rozmístí nad tabulkami, a vy je můžete přetahovat do správných tabulek. Můžete přiřadit více odpovědí do více tabulek, takže je možné všechny odpovědi přiřadit do všech tabulek. Pokud ale odpovědi vložíte do stejné tabulky vícekrát, bude to považováno za chybu, protože duplicity v tabulkách se počítají jako špatně. Systém tedy nelze obelhat tím, že všechny odpovědi přiřadíte do všech tabulek, protože duplicity budou zohledněny jako nesprávné.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Choose and place text test</div>
+                    <div class="card-content">
+                        <p>Tento systém umožňuje vkládat otázky, přičemž každá otázka může mít více odpovědí. Odpovědi mohou být buď textové, které musíte napsat, nebo zaškrtnuté, pokud je odpověď správná. Bodování závisí na počtu správně napsaných odpovědí a správně zaškrtnutých možností. Pokud má otázka kombinaci obou (text + zaškrtnutí), může být bodována až třemi body. Po dokončení testu se automaticky zobrazí správné odpovědi a bodové hodnocení na základě správnosti vašich odpovědí.</p>
+                  <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+        
+
+            <h1>Herní testy</h1>
+            <p>Zde se nacházejí herní testy v podobě klasických a známých her. Uživatel si může nastavit jméno testu, popisek, časovač, známky a hlavně otázky a odpovědi. Poté je může vyzkoušet v náhledu, kde se ukážou aji výsledky testu a jde se nakonec stáhnout do počítače ve formátu HTML, JSON a XML pro Moodle. Každý herní test je jedinečný a zábavný. U některých testů se známky vypočítávají automaticky a nemusí se používat bodování. Zde se otázky a odpovědi vkládají do seznamu, kde se můžou zeditovat či mazat.
+                jaká měla být zaškrtnutá odpověď a jak měli být napsané odpovědi pokud jsou špatně.</p>
+            <div class="container">
+</div>
+                <!-- Karty pro Herní testy (7 karet) -->
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Pexeso</div>
+                    <div class="card-content">
+                        <p>Zde musíte mít alespoň dva vložené páry, jinak se ukázka neaktivuje. Vaším úkolem je najít dva páry, konkrétně otázku a odpověď, které jste vložili. Pokud je naleznete, pár zezelená a vy můžete pokračovat. Pokud pár nenajdete, zůstane skrytý a musíte hledat dál.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Oběšenec</div>
+                    <div class="card-content">
+                        <p>	Zde vkládáte otázky a odpovědi, kde se nahoře zobrazuje otázka související s hádaným slovem. Vaším úkolem je uhádnout toto slovo po jednotlivých písmenkách. Pokud zadáte správné písmeno, zobrazí se nahoře a zezelená. Pokud zvolíte špatné písmeno, zčervená a ztrácíte život. Máte celkem osm životů, a pokud vám dojdou, prohráváte. Pokud máte více slov v seznamu, přejdete na další a pokračujete v hádání. Na konci se zobrazí vaše výsledky a získáte známku podle toho, jak dobře jste si vedli.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Dveře hra</div>
+                    <div class="card-content">
+                        <p>Zde podle zadaných odpovědí na otázky se zobrazí počet dveří, ale maximální počet odpovědí je omezen na pět. Pokud by bylo odpovědí více, hra by se mohla zpomalit nebo přestat fungovat. Vaším cílem je jako kulička (nebo hráč) vejít do správných dveří na základě zadané otázky. Jakmile všechny otázky vyplníte, zobrazí se vaše výsledky.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Snake</div>
+                    <div class="card-content">
+                        <p>Zde hrajete klasickou hru Snake, kde jako had musíte přežít a vyhnout se tomu, abyste se nepozorovaně nenarazili do sebe nebo do stěn kolem vás. Během hry budete odpovídat na otázky – nezáleží na tom, jestli odpovíte správně nebo špatně, protože v každém případě se vaše hadí postava zvětší. Jak hra pokračuje, prostor se zúží, a hra se tím stává čím dál náročnější. Cílem je přežít co nejdéle, aniž byste se srazili s vlastním tělem nebo s okolními zdmi.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Kámen, nůžky, papír</div>
+                    <div class="card-content">
+                        <p>Zde po vložení otázek a odpovědí můžete tento test vyplnit jako běžný test. Jedinou změnou je, že máte možnost zahrát si Kámen, nůžky, papír proti programu. Tuto možnost můžete využít, nebo ji ignorovat, ale pokud si nebudete jisti odpovědí na nějakou otázku, můžete si zahrát tři hry proti programu. Pokud vyhrajete, můžete získat body navíc za tu otázku.
+
+Co je ale háček? Háček je v tom, že musíte být první, kdo získá 3 body. Remízy se nepočítají. Pokud proti programu prohrajete třikrát, dostanete záporné body, které se odečítají od celkového skóre. Na druhou stranu, pokud vyhrajete a program vyhraje dvakrát, body se zprůměrují. Nakonec se vaše výsledky sečtou s ostatními body z testu. Možná si řeknete, že je to zbytečné, ale možnost získat bod navíc a zlepšit své skóre je pro každého lákavá.
+
+Počet her proti programu si můžete nastavit podle potřeby.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Maraton</div>
+                    <div class="card-content">
+                        <p>Zde po vložení otázek bude test probíhat v cyklu, kde se seznam otázek neustále opakuje až do té doby, než dosáhnete cíle. Pokud na otázku odpovíte špatně, budete vráceni na předchozí otázku a budete muset zkusit odpovědět znovu. Pokud odpovíte správně, postoupíte na další otázku.
+
+Po zodpovězení všech otázek se vám zobrazí výsledky, které se automaticky spočítají na základě správnosti odpovědí a vyjádří se v procentech. Kromě procenta se zobrazí také počet správných a špatných odpovědí. Počet správných odpovědí, které musíte zodpovědět, závisí na celkovém počtu otázek a ve hře si můžete vybrat, jakým způsobem budete hádat. </p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+                
+            <h1>Herní testy procvičovací</h1>
+                <p>	Zde po vložení otázek a odpovědí můžete tento test vyplnit jako normální jiný klasický test. Jedinou změnou je, že můžete si zahrát kámen nůžky papír. Tuto možnost můžete i nemusíte využít, ale pokud by jste nebyl si rady s nějakou otázkou, tak si můžete zahrát tři hry proti programu a pokud vyhrajete, tak můžete dostat i body navíc za tu otázku. V čem je háček? Háček je v tom, že musíte jako první získat tři body. Remízí se nepočítají, ale pokud byste proti programu prohráli třikrát, tak máte mínusové body, které se vám započítávají. Nebo pokud vyhrajete a program vyhraje dvakrát, tak se body zprůměrujou a nakonci se berou společně s ostatními body. Možná si řeknete, že je to vůbec blbost to zkoušet, ale ta možnost, že můžete být na tom o mnohem lépe a vyzkoušet své štěstí ej pro člověka neodolatelná touha. Počet her proti programu se dají nastavit.</p>
+            <div class="container">
+                <!-- Karty pro Herní testy procvičovací (6 karet) -->
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Lov pokladů</div>
+                    <div class="card-content">
+                        <p>Zde po vložení otázek a odpovědí budete posláni na mapu, kde jsou rozmístěny poklady. Některé poklady jsou falešné, jiné jsou pravé. Počet pravých pokladů závisí na počtu vložených otázek. Falešnými poklady se můžete procházet, ale pouze pravé poklady vám poskytnou otázky, na které musíte odpovědět.
+Cílem je najít všechny pravé poklady.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Labyrint</div>
+                    <div class="card-content">
+<p>	V tomto testu se budete pohybovat v labyrintu, ve kterém musíte najít všechny otázky. Bludiště bude plné cest, které vás zavedou k různým místům. Jakmile najdete všechny otázky, budete je muset odpovědět, a po dokončení celého labyrintu se vám zobrazí vaše skóre.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Flappy bird</div>
+                    <div class="card-content">
+<p>V tomto testu si zahrajete klasickou hru Flappy Bird, kde budete ovládat ptáčka, který se snaží přeskakovat mezi trubkami. Když úspěšně projdete trubkami, objeví se otázka. Pokud na ni odpovíte správně, získáte body. Pokud odpověď bude špatná, body nedostanete. Hráč pokračuje v hraní, dokud se nedotkne trubek, čímž hra končí a zobrazí se skóre.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Klikačka</div>
+                    <div class="card-content">
+<p>Ve hře budete odpovídat na otázky a na mapě se budou náhodně objevovat různé odpovědi. Na začátku to může znít jednoduše, ale pokud přidáte více odpovědí, začne pořádný chaos! Hráči mají možnost vložit až deset odpovědí, což znamená, že čím více odpovědí přidáte, tím více se mapa zkomplikuje. Vaším úkolem je správně vybrat odpovědi v záplavě možností, které se na mapě pohybují.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Miny</div>
+                    <div class="card-content">
+<p>Ve hře budete klikat po minovém poli, kde každé kliknutí vám ukáže číslo, které naznačuje, jak blízko se nachází otázka. Pokud na poli najdete číslo 0, znamená to, že v okolí nejsou žádné otázky. Pokud se vám objeví číslo 1 nebo vyšší, znamená to, že v blízkosti se nachází otázky, a vy je musíte hledat. Po nalezení otázky ji musíte správně zodpovědět.
+
+Pokud odpovíte správně, získáte body a políčko se označí zeleně. Pokud odpovědíte špatně, neobdržíte žádné body a políčko se označí červeně. Hra vám také umožní nastavit počet kliknutí, která máte k dispozici, což přidává další úroveň strategického plánování do hry.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    </div>
+                </div>
+
+                <div class="card" onclick="toggleContent(this)">
+                    <div class="card-title">Tetris</div>
+                    <div class="card-content">
+<p>V této hře budete mít možnost nastavit pouze tři odpovědi a jednu otázku. Po spuštění ukázky si zahrajete klasickou hru Tetris. Cílem je spojit spodní část obrazovky s bloky tak, aby došlo k odstranění celé řady. Po odstranění řady se vám objeví otázka. Pokud na ni odpovíte správně, získáte body, pokud odpovíte špatně, body nezískáte. Bez ohledu na to, zda odpovíte správně nebo špatně, odstraněná řada zmizí.
+        Hra končí, pokud se bloky dotknou stropu obrazovky.</p>
+                        <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+                        <p>- Poté můžete vyzkoušet v ukázce</p> 
+                        <p>- Vyzkoušet vyhodnocení</p>
+<p>- Uložit do počítače</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Skript pro zajištění, že všechny karty jsou zavřené při načtení -->
-            <script>
-                function toggleContent(card) {
-                    const content = card.querySelector('.card-content');
-                    const isVisible = content.style.display === 'block';
-
-                    // Zavřít všechny karty
-                    document.querySelectorAll('.card-content').forEach((el) => {
-                        el.style.display = 'none';
-                    });
-
-                    // Otevřít pouze aktuální kartu (pokud nebyla otevřená)
-                    if (!isVisible) {
-                        content.style.display = 'block';
-                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
-
-                // Ujistíme se, že všechny karty jsou při načtení skryté
-                document.querySelectorAll('.card-content').forEach((el) => {
-                    el.style.display = 'none';
-                });
-            </script>
-
-            <!-- Stylování pro větší písmo -->
-            <style>
-                .card-title {
-                    font-size: 1.5em; /* Zvětšení písma nadpisu */
-                    font-weight: bold;
-                }
-
-                .card-content {
-                    font-size: 1.2em; /* Zvětšení písma obsahu */
-                    margin-top: 10px;
-                }
-
-                .card {
-                    margin-bottom: 15px;
-                }
-
-                .container {
-                    margin-top: 20px;
-                }
-            </style>
         </div>
     </div>
 </div>
+</div>
+
 {% endblock %}
+
+
 
 

@@ -1,0 +1,155 @@
+{% extends "struktura/basetests.html" %}
+
+{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
+
+{% block content %}
+  {% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="{% static 'js/flappybird.js' %}"></script>
+    <title>Flappy Quiz Bird</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #gameCanvas {
+            display: block;
+            margin: 20px auto;
+            background-color: #70C5CE;
+            border: 2px solid black;
+            width: 600px;
+            height: 400px;
+        }
+
+        .button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #questionPopup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #questionText {
+            margin-bottom: 20px;
+        }
+
+        #answerOptions button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #questionManager {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #questionManager input[type="text"] {
+            width: calc(100% - 10px);
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        #answersContainer .answer {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+<h1>Flappy Quiz Bird</h1>
+    <div class="test-name">
+            <label for="testName">Název testu:</label>
+            <input type="text" id="testName" placeholder="Zadejte název testu" required>
+        </div>
+     
+        <label for="testDescription">Popis testu:</label>
+        <textarea id="testDescription" placeholder="Zadejte popis testu"></textarea>
+    
+
+
+<div id="questionManager">
+    <h2>Správa otázek</h2>
+    <div>
+        <label for="newQuestion">Otázka:</label>
+        <input type="text" id="newQuestion">
+    </div>
+    <div id="answersContainer">
+        <div class="answer">
+            <input type="text" placeholder="Odpověď">
+            <input type="checkbox"> Správná odpověď
+            <button onclick="removeAnswer(this)">Odebrat</button>
+        </div>
+    </div>
+    <button onclick="addAnswer()">Přidat odpověď</button>
+    <button onclick="addQuestion()">Přidat otázku</button>
+    <button onclick="exportToHTML()">Export to HTML</button>
+<button onclick="exportToJSON()">Export to JSON</button>
+<button onclick="exportToXML()">Export to XML</button>
+
+    <hr>
+</div>
+
+<div id="questionList">
+    <h2>Seznam otázek</h2>
+    <ul id="savedQuestionsList">
+        <!-- Dynamicky generované otázky -->
+    </ul>
+</div>
+
+<button class="button" onclick="startGame()">Začít hru</button>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<div id="questionPopup">
+    <h2 id="questionText">Otázka se zobrazí zde</h2>
+    <div id="answerOptions"></div>
+    <button onclick="closeQuestion()">Zavřít otázku</button>
+</div>
+
+<script>
+ 
+</script>
+
+</body>
+</html>
+
+{% endblock %}
+

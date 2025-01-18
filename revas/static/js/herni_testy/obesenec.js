@@ -1,0 +1,443 @@
+ let words = [];
+        let currentWord;
+        let currentQuestion;
+        let currentPoints;
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+        const maxWrongGuesses = 8;
+        let timer;
+        let timeLeft = 60; // default 60 seconds
+        let gameStarted = false;
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const timerCheckbox = document.getElementById("enableTimer");
+            const timeLimitInput = document.getElementById("timeLimit");
+
+            // Při načtení stránky zkontrolovat, zda je checkbox zaškrtnut
+            timeLimitInput.disabled = !timerCheckbox.checked;
+
+            // Dynamické povolování/zákaz pole pro čas
+            timerCheckbox.addEventListener("change", () => {
+                timeLimitInput.disabled = !timerCheckbox.checked;
+            });
+        });
+        
+        
+        // Funkce pro editaci otázky
+function editWord(index) {
+    const wordToEdit = words[index];
+    
+    // Vyplnění formuláře pro úpravu s aktuálními hodnotami
+    document.getElementById("questionInput").value = wordToEdit.question;
+    document.getElementById("wordInput").value = wordToEdit.word;
+    document.getElementById("pointsInput").value = wordToEdit.points;
+    
+    // Změna tlačítka pro přidání na tlačítko pro úpravu
+    const addButton = document.getElementById("addWordBtn");
+    addButton.innerText = "Upravit otázku";
+    addButton.onclick = function() {
+        updateWord(index);
+    };
+}
+
+// Funkce pro aktualizaci otázky
+function updateWord(index) {
+    const updatedQuestion = document.getElementById("questionInput").value;
+    const updatedWord = document.getElementById("wordInput").value;
+    const updatedPoints = parseInt(document.getElementById("pointsInput").value);
+
+    // Aktualizace slova a otázky v seznamu
+    if (updatedQuestion && updatedWord && updatedPoints) {
+        words[index] = { question: updatedQuestion, word: updatedWord, points: updatedPoints };
+        displayQuestions();  // Zobrazíme aktualizovaný seznam otázek
+
+        // Reset formuláře
+        document.getElementById("questionInput").value = '';
+        document.getElementById("wordInput").value = '';
+        document.getElementById("pointsInput").value = '';
+        
+        // Změna tlačítka zpět na "Přidat"
+        const addButton = document.getElementById("addWordBtn");
+        addButton.innerText = "Přidat otázku";
+        addButton.onclick = addWord;  // Při kliknutí zpět přidáme novou otázku
+    } else {
+        alert("Vyplňte všechna pole.");
+    }
+}
+
+
+// Přidání více otázek
+function addWord() {
+    const question = document.getElementById("questionInput").value;
+    const word = document.getElementById("wordInput").value;
+    const points = parseInt(document.getElementById("pointsInput").value);
+
+    if (question && word && points) {
+        // Uložíme otázku do pole
+        words.push({ question, word, points });
+        displayQuestions();  // Zobrazíme seznam otázek
+        document.getElementById("questionInput").value = '';
+        document.getElementById("wordInput").value = '';
+        document.getElementById("pointsInput").value = '';
+    } else {
+        alert("Vyplňte všechna pole.");
+    }
+}
+
+// Zobrazování otázek v seznamu
+function displayQuestions() {
+    const questionsList = document.getElementById("questionsList");
+    questionsList.innerHTML = ''; // Vyčistit seznam
+
+    words.forEach((item, index) => {
+        const questionItem = document.createElement("div");
+        questionItem.classList.add("questionItem");
+        
+        questionItem.innerHTML = `
+            <strong>Otázka:</strong> ${item.question}<br>
+            <strong>Slovo:</strong> ${item.word}<br>
+            <strong>Bodů:</strong> ${item.points}<br>
+            <button class="removeBtn" onclick="removeWord(${index})">Odstranit</button>
+            <button class="editBtn" onclick="editWord(${index})">Upravit</button> <!-- Tlačítko pro úpravu -->
+        `;
+        questionsList.appendChild(questionItem);
+    });
+}
+        
+
+// Odstranění otázky
+function removeWord(index) {
+    words.splice(index, 1);  // Odstraní otázku z pole
+    displayQuestions();  // Zobrazí aktuální seznam
+}
+
+
+    // Start hry s výběrem náhodné otázky
+function startGame() {
+    if (words.length === 0) {
+        alert("Nejprve přidejte otázky a slova.");
+        return;
+    }
+
+    clearInterval(timer);  // Zastavit předchozí časovač
+
+    const randomIndex = Math.floor(Math.random() * words.length);
+    const selectedWord = words[randomIndex];  // Vybereme náhodně otázku
+
+    currentWord = selectedWord.word.toLowerCase();
+    currentQuestion = selectedWord.question;
+    currentPoints = selectedWord.points;
+
+    guessedLetters = [];  // Resetujeme stav hry
+    wrongGuesses = 0;
+
+    // Zobrazení otázky nad hádaným slovem
+    const wordDisplay = document.getElementById("wordDisplay");
+    const questionDisplay = document.createElement("div");
+    questionDisplay.innerHTML = `<strong>Otázka: </strong>${currentQuestion}`;
+    wordDisplay.appendChild(questionDisplay);
+
+    displayWord();  // Zobrazíme písmena slova
+    displayLetters();  // Zobrazíme tlačítka pro písmena
+    updateAttemptsDisplay();  // Zobrazení počtu pokusů
+
+    // Nastavení časovače, pokud je povolen
+    const enableTimer = document.getElementById("enableTimer").checked;
+    if (enableTimer) {
+        timeLeft = parseInt(document.getElementById("timeLimit").value) || 60;
+        startTimer();  // Startujeme časovač
+    }
+
+    document.getElementById("restartGameBtn").style.display = 'inline-block';
+}
+
+
+
+
+function resetGame() {
+    guessedLetters = [];
+    wrongGuesses = 0;
+    document.getElementById("letters").innerHTML = '';
+    document.getElementById("wordDisplay").innerHTML = '';
+    document.getElementById("hangmanImage").innerHTML = '';
+    document.getElementById("scoreDisplay").style.display = 'none';
+    document.getElementById("timerDisplay").innerHTML = '';
+    clearInterval(timer); // Zastavit časovač
+}
+
+function startTimer() {
+    clearInterval(timer); // Zajistí, že předchozí časovač nebude běžet souběžně.
+    timer = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            document.getElementById("timerDisplay").innerHTML = `Čas: ${timeLeft}s`;
+        } else {
+            clearInterval(timer);
+            alert("Čas vypršel!");
+            displayResult(0); // Ukončit hru a zobrazit výsledky (skóre 0 pro aktuální otázku).
+        }
+    }, 1000);
+}
+
+
+
+        function displayWord() {
+    const wordDisplay = document.getElementById("wordDisplay");
+    wordDisplay.innerHTML = ''; 
+    
+    // Přidání otázky nad hádaným slovem
+    const questionDisplay = document.createElement("h3");
+    questionDisplay.innerHTML = `Otázka: ${currentQuestion}`;
+    wordDisplay.appendChild(questionDisplay);
+    
+    // Zobrazení hádaného slova
+    for (let i = 0; i < currentWord.length; i++) {
+        const letterBox = document.createElement("div");
+        letterBox.classList.add("letter");
+        letterBox.id = `letter-${i}`;
+        letterBox.innerHTML = guessedLetters.includes(currentWord[i]) ? currentWord[i].toUpperCase() : '_';
+        wordDisplay.appendChild(letterBox);
+    }
+}
+
+
+        function displayLetters() {
+            const lettersDiv = document.getElementById("letters");
+            lettersDiv.innerHTML = '';
+            const alphabet = 'aábcčdeéfghiíjklmnoópqrřstúüvyzž'.split('');
+            alphabet.forEach(letter => {
+                const letterButton = document.createElement("button");
+                letterButton.classList.add("letter-button");
+                letterButton.innerHTML = letter.toUpperCase();
+                letterButton.onclick = () => guessLetter(letter);
+                lettersDiv.appendChild(letterButton);
+            });
+        }
+
+        function guessLetter(letter) {
+            if (guessedLetters.includes(letter)) return;
+            guessedLetters.push(letter);
+
+            if (currentWord.includes(letter)) {
+                updateLetterButtons(letter, true);
+                displayWord();
+                checkWin();
+            } else {
+                updateLetterButtons(letter, false);
+                wrongGuesses++;
+                updateHangmanImage();
+                updateAttemptsDisplay();
+                checkGameOver();
+            }
+        }
+
+        function updateLetterButtons(letter, isCorrect) {
+            const letterButtons = document.getElementsByClassName("letter-button");
+            for (const button of letterButtons) {
+                if (button.innerHTML.toLowerCase() === letter) {
+                    button.style.backgroundColor = isCorrect ? 'green' : 'red';
+                    button.disabled = true;
+                }
+            }
+        }
+
+        function updateHangmanImage() {
+            const hangmanImage = document.getElementById("hangmanImage");
+            const parts = ['line1', 'line2', 'line3', 'head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+            hangmanImage.innerHTML = '';
+            hangmanImage.innerHTML += parts.slice(0, wrongGuesses).map(part =>
+                `<div style="height:20px; width:200px; background-color:black;"></div>`
+            ).join('');
+        }
+
+        function updateAttemptsDisplay() {
+            const attemptsDisplay = document.getElementById("attemptsDisplay");
+            attemptsDisplay.innerHTML = `Pokusy: ${wrongGuesses}/${maxWrongGuesses}`;
+        }
+
+       
+
+        function toggleTimerInput() {
+            const timeLimitInput = document.getElementById("timeLimitInput");
+            if (document.getElementById("timerCheckbox").checked) {
+                timeLimitInput.disabled = false;
+            } else {
+                timeLimitInput.disabled = true;
+                timeLimitInput.value = ''; // Resetovat hodnotu, když je checkbox nezaškrtnutý
+            }
+        }
+
+// Funkce pro kontrolu výhry
+function checkWin() {
+    const revealed = [...document.getElementsByClassName("letter")].every(letterBox => letterBox.innerHTML !== '_');
+    if (revealed) {
+        const finalScore = Math.max(currentPoints - wrongGuesses, 0);
+        alert("Výborně! Slovo bylo uhodnuto.");
+        displayResult(finalScore);
+
+        // Možnost pokračovat na další otázku nebo hru ukončit
+        const continueGame = confirm("Chcete pokračovat na další otázku?");
+        if (continueGame) {
+            resetGame();  // Resetujeme hru
+            startGame();  // Startujeme další otázku
+        } else {
+            alert("Hra ukončena.");
+        }
+    }
+}
+
+// Funkce pro kontrolu, zda hráč prohrál
+function checkGameOver() {
+    if (wrongGuesses >= maxWrongGuesses) {
+        alert("Špatně, hra končí.");
+        displayResult(0);  // Zobrazení výsledku, pokud dojde k prohře
+    }
+}
+
+
+
+
+     function checkWin() {
+        const revealed = [...document.getElementsByClassName("letter")].every(letterBox => letterBox.innerHTML !== '_');
+        if (revealed) {
+            const finalScore = Math.max(currentPoints - wrongGuesses, 0);
+            alert("Výborně! Slovo bylo uhodnuto.");
+            displayResult(finalScore);
+        }
+    }
+
+  
+
+
+function displayResult(score) {
+    clearInterval(timer); // Zastaví časovač, pokud běží
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const scoreText = document.getElementById("scoreText");
+    const gradeText = document.getElementById("gradeText");
+
+    // Zobrazit skóre
+    scoreText.innerHTML = `Skóre: ${score}`;
+
+    // Zobrazit správné slovo
+    const correctWordText = document.createElement("p");
+    correctWordText.innerHTML = `Správné slovo: ${currentWord.toUpperCase()}`;
+    scoreDisplay.appendChild(correctWordText);
+
+    // Známka podle skóre
+    const gradeInputs = [1, 2, 3, 4, 5].map(num => ({
+        min: parseInt(document.getElementById(`grade${num}`).value) || 0,
+        grade: num
+    }));
+
+    gradeInputs.sort((a, b) => b.min - a.min); // Seřadit od nejvyšší známky k nejnižší
+    const grade = gradeInputs.find(input => score >= input.min)?.grade || 5;
+    gradeText.innerHTML = `Známka: ${grade}`;
+
+    // Zobrazit výsledky
+    scoreDisplay.style.display = "block";
+
+    // Nabídnout možnosti pokračovat / ukončit
+    const continueBtn = document.createElement("button");
+    continueBtn.innerText = "Pokračovat";
+    continueBtn.onclick = () => {
+        resetGame();
+        startGame();
+    };
+
+    const quitBtn = document.createElement("button");
+    quitBtn.innerText = "Ukončit";
+    quitBtn.onclick = () => {
+        alert("Hra ukončena!");
+        resetGame();
+    };
+
+    scoreDisplay.appendChild(continueBtn);
+    scoreDisplay.appendChild(quitBtn);
+}
+
+
+// Ukládací funkce pro Moodle s využitím save.js
+function saveAsHtml(testName, data) {
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${testName}</title>
+</head>
+<body>
+    <h1>${testName}</h1>
+    <div id="content">${data}</div>
+</body>
+</html>`;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    saveAs(blob, `${testName}.html`);
+}
+
+function saveAsJson(testName, data) {
+    const jsonContent = JSON.stringify(data, null, 2); // Pretty-printed JSON
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    saveAs(blob, `${testName}.json`);
+}
+
+function saveAsMoodleXML() {
+    const testName = document.getElementById("testName").value;
+    const testDescription = document.getElementById("testDescription").value;
+    const grade1 = document.getElementById("grade1").value;
+    const grade2 = document.getElementById("grade2").value;
+    const grade3 = document.getElementById("grade3").value;
+    const grade4 = document.getElementById("grade4").value;
+    const grade5 = document.getElementById("grade5").value;
+    const enableTimer = document.getElementById("enableTimer").checked;
+    const timeLimit = document.getElementById("timeLimit").value;
+
+    if (!testName) {
+        alert("Zadejte název testu.");
+        return;
+    }
+
+    // Vytvoření Moodle XML formátu
+    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n';
+    xmlContent += `  <name>\n    <text>${testName}</text>\n  </name>\n`;
+    xmlContent += `  <description>\n    <text>${testDescription}</text>\n  </description>\n`;
+
+    // Přidání informací o časovém limitu, pokud je zaškrtnuto
+    if (enableTimer) {
+        xmlContent += `  <timelimit>${timeLimit}</timelimit>\n`;
+    }
+
+    // Přidání bodování pro různé známky
+    xmlContent += `  <grade>\n    <grade1>${grade1}</grade1>\n    <grade2>${grade2}</grade2>\n    <grade3>${grade3}</grade3>\n    <grade4>${grade4}</grade4>\n    <grade5>${grade5}</grade5>\n  </grade>\n`;
+
+    words.forEach((item, index) => {
+        xmlContent += `  <question type="shortanswer">\n`;
+        xmlContent += `    <name>\n      <text>${testName} - Question ${index + 1}</text>\n    </name>\n`;
+        xmlContent += `    <questiontext format="html">\n      <text><![CDATA[${item.question}]]></text>\n    </questiontext>\n`;
+        xmlContent += `    <answer fraction="100">\n      <text><![CDATA[${item.word}]]></text>\n`;
+        xmlContent += `      <feedback><text>Correct!</text></feedback>\n    </answer>\n`;
+        xmlContent += `    <defaultgrade>${item.points}</defaultgrade>\n`; // Bodování pro každou otázku
+        xmlContent += `  </question>\n`;
+    });
+
+    xmlContent += `</quiz>`;
+    const blob = new Blob([xmlContent], { type: 'application/xml' });
+    saveAs(blob, `${testName}.xml`);
+}
+
+
+// Načítání hry z JSON
+function loadGame() {
+    const fileInput = document.getElementById("loadJSON");
+    const file = fileInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const data = JSON.parse(event.target.result);
+            words = data.words;  // Načteme slova a otázky
+            displayQuestions();  // Zobrazíme seznam
+            alert("Hra byla úspěšně načtena.");
+        };
+        reader.readAsText(file);
+    }
+}

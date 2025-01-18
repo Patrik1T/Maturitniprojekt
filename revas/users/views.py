@@ -1,37 +1,21 @@
-from .models import Game, Player, UserStatistics, TestType
-
+from .models import UserStatistics, TestType
 from django.contrib.auth import authenticate, login
-
 from django.contrib import messages
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from .models import Test
 from .models import Message
-
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
-
-
+from .models import TestDownloadStats
+from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render
 from .forms import *
+from django.contrib.auth.decorators import login_required
+
 
 def main_page(request):
     return render(request, 'main_page.html')
 
-def github_log(request):
-    return render(request, 'github_log.html')
-
-def moodlelog(request):
-    return render(request, 'moodlelog.html')
-
-def google_log(request):
-    return render(request, 'google_log.html')
-
 def hlavni_stranka(request):
     return render(request, 'hlavni_stranka.html')
-
-def kosik(request):
-    return render(request, 'kosik.html')
 
 def testy(request):
     return render(request, 'testy.html')
@@ -56,79 +40,78 @@ def spravy(request):
 
 
 #testy
-def kosiky(request):
-    return render(request, 'kosiky.html')
 
-def psaci_testy(request):
-    return render(request, 'psaci_testy.html')
+def textresponse(request):
+    return render(request, 'testy/textresponse.html')
 
+@login_required
 def spojovacka(request):
-    return render(request, 'spojovacka.html')
+    return render(request, 'testy/spojovacka.html')
 
 def tabulka(request):
-    return render(request, 'tabulka.html')
+    return render(request, 'testy/tabulka.html')
 
-def vytvor_test(request):
-    return render(request, 'vytvor_test.html')
+def vyber_testy(request):
+    return render(request, 'testy/vyber_testy.html')
 
 def programovaci_test(request):
-    return render(request, 'programovaci_test.html')
+    return render(request, 'testy/programovaci_test.html')
 
-def maraton(request):
-    return render(request, 'maraton.html')
-
-def Multi_test(request):
-    return render(request, 'Multi_test.html')
 
 def ano_ne(request):
-    return render(request, 'ano_ne.html')
+    return render(request, 'testy/ano_ne.html')
 
 
 #herní testy
+@login_required
 def pexeso(request):
-    return render(request, 'pexeso.html')
+    return render(request, 'herni_testy/pexeso.html')
+
+def maraton(request):
+    return render(request, 'herni_testy/maraton.html')
 
 def Labyrint(request):
-    return render(request, 'Labyrint.html')
+    return render(request, 'herni_testy_procvicovaci/Labyrint.html')
 
 def lov_pokladu(request):
-    return render(request, 'lov_pokladu.html')
+    return render(request, 'herni_testy_procvicovaci/lov_pokladu.html')
 
+@login_required
 def flappy_bird(request):
-    return render(request, 'flappy_bird.html')
+    return render(request, 'herni_testy_procvicovaci/flappy_bird.html')
 
+@login_required
 def obesenec(request):
-    return render(request, 'obesenec.html')
+    return render(request, 'herni_testy/obesenec.html')
 
 def klikaci(request):
-    return render(request, 'klikaci.html')
+    return render(request, 'herni_testy_procvicovaci/klikaci.html')
+
+def vytvor_test(request):
+    return render(request, 'herni_testy/vytvor_test.html')
 
 def snake(request):
-    return render(request, 'snake.html')
+    return render(request, 'herni_testy/snake.html')
 
 def chytacka(request):
-    return render(request, 'chytacka.html')
+    return render(request, 'herni_testy/chytacka.html')
 
-def labyrint(request):
-    return render(request, 'labyrint.html')
-
+@login_required
 def tetris(request):
-    return render(request, 'tetris.html')
-
-def vyber_testy(request):
-    return render(request, 'vyber_testy.html')
+    return render(request, 'herni_testy_procvicovaci/tetris.html')
 
 def kamen_nuzky_papir(request):
-    return render(request, 'kamen_nuzky_papir')
+    return render(request, 'herni_testy/kamen_nuzky_papir')
 
+@login_required
 def dvere_hra(request):
-    return render(request, 'dvere_hra.html')
+    return render(request, 'herni_testy/dvere_hra.html')
 
 def klikaci_hra(request):
-    return render(request, 'klikaci_hra.html')
+    return render(request, 'herni_testy_procvicovaci/klikaci_hra.html')
 
 def spravna_odpoved(request):
-    return render(request, 'spravna_odpoved.html')
+    return render(request, 'testy/spravna_odpoved.html')
 
 def zapisnik(request):
     return render(request, 'zapisnik.html')
@@ -136,14 +119,21 @@ def zapisnik(request):
 def otazky(request):
     return render(request, 'otazky.html')
 
+@login_required
 def herni_testy(request):
     return render(request, 'herni_testy.html')
 
+@login_required
 def herni_testy_procvicovaci(request):
     return render(request, 'herni_testy_procvicovaci.html')
 
+@login_required
 def miny(request):
-    return render(request, 'miny.html')
+    return render(request, 'herni_testy_procvicovaci/miny.html')
+
+def logout(request):
+    return render(request, 'logout.html')
+
 
 
 def register(request):
@@ -242,39 +232,6 @@ def profile_view(request):
         'test_types': test_types,
     })
 
-
-@login_required
-def save_test(request):
-    if request.method == 'POST':
-        name = request.POST['name']
-        description = request.POST['description']
-        questions = request.POST['questions']
-        answers = request.POST['answers']
-        image = request.FILES.get('image', None)
-        is_public = 'save_public' in request.POST
-
-        Test.objects.create(
-            name=name,
-            description=description,
-            questions=questions,
-            answers=answers,
-            image=image,
-            is_public=is_public,
-            creator=request.user
-        )
-
-        if is_public:
-            return redirect('verejne_testy')
-        else:
-            return redirect('ulozene_testy')
-
-    return render(request, 'psaci_testy.html')
-
-
-from django.shortcuts import render, redirect
-from .models import Note
-from .forms import NoteForm
-
 @login_required
 def notes_list(request):
     # Získání zápisků aktuálního uživatele
@@ -294,3 +251,74 @@ def notes_list(request):
     return render(request, 'zapisnik.html', {'form': form, 'zapisnik': notes})
 
 
+def edit_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if request.method == 'POST':
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            return redirect('zapisnik')  # Název URL pro váš hlavní zápisník
+    else:
+        form = NoteForm(instance=note)
+    return render(request, 'edit_note.html', {'form': form})
+
+# Pohled pro smazání poznámky
+def delete_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if request.method == 'POST':
+        note.delete()
+    return redirect('zapisnik')
+
+@login_required
+def zapisnik(request):
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            note = form.save(commit=False)  # Vytvoří instanci, ale ještě neuloží
+            note.user = request.user        # Nastaví aktuálního uživatele
+            note.save()                     # Uloží poznámku do databáze
+            return redirect('zapisnik')     # Přesměruje uživatele zpět na stránku zápisníku
+    else:
+        form = NoteForm()
+
+    notes = Note.objects.filter(user=request.user)  # Pouze poznámky aktuálního uživatele
+    return render(request, 'zapisnik.html', {'form': form, 'notes': notes})
+
+
+def save_test(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        questions = request.POST.get('questions')
+        destination = request.POST.get('destination')
+
+        test = Test(name=name, description=description, image=image, questions=questions)
+        test.save()
+
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+
+def update_click_count(request, file_type):
+    # Získání nebo vytvoření instance statistiky pro uživatele
+    user_stats, created = TestDownloadStats.objects.get_or_create(user=request.user)
+
+    # Aktualizace počtu kliknutí podle typu souboru
+    if file_type == 'html':
+        user_stats.html_count += 1
+    elif file_type == 'xml':
+        user_stats.xml_count += 1
+    elif file_type == 'json':
+        user_stats.json_count += 1
+
+    # Uložení změn
+    user_stats.save()
+
+    # Vrácení počtu kliknutí jako JSON odpověď
+    return JsonResponse({
+        'html_count': user_stats.html_count,
+        'xml_count': user_stats.xml_count,
+        'json_count': user_stats.json_count
+    })

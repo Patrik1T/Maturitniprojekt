@@ -1,0 +1,77 @@
+  body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            border: 2px solid #000;
+            padding: 10px;
+            width: 400px;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        textarea {
+            width: 100%;
+            height: 50px;
+            box-sizing: border-box;
+        }
+
+        .notes {
+            width: 100%;
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid #000;
+            margin-top: 10px;
+        }
+
+        .note {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .note:last-child {
+            border-bottom: none;
+        }
+
+        .note-text {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        button {
+            margin-left: 5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .controls button {
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .edit-area {
+            display: none;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .edit-area textarea {
+            height: 50px;
+        }

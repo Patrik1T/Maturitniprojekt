@@ -7,8 +7,7 @@
     <title>Zápisník</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style/styles.css' %}">
-    <script src="{% static 'js/kalendar.js' %}"></script>
-    <script src="{% static 'js/zapisnik.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'style/cudliky.css' %}">
 </head>
 <div class="container-fluid flex-grow-1">
     <div class="row">
@@ -25,72 +24,111 @@
                     <!-- Jednotlivé testy -->
       
   <h1>Procvičovací herní testy</h1>
+                    <p>  		Zde po vložení otázek a odpovědí můžete tento test vyplnit jako normální jiný klasický test. 
+                        Jedinou změnou je, že můžete si zahrát kámen nůžky papír. Tuto možnost můžete i nemusíte využít, ale 
+                        pokud by jste nebyl si rady s nějakou otázkou, tak si můžete zahrát tři hry proti programu a pokud vyhrajete, 
+                        tak můžete dostat i body navíc za tu otázku. V čem je háček? Háček je v tom, že musíte jako první získat tři body. 
+                        Remízí se nepočítají, ale pokud byste proti programu prohráli třikrát, tak máte mínusové body, které se vám 
+                        započítávají. Nebo pokud vyhrajete a program vyhraje dvakrát, tak se body zprůměrujou a nakonci se berou společně s 
+                        ostatními body. Možná si řeknete, že je to vůbec blbost to zkoušet, ale ta možnost, že můžete být na tom o mnohem lépe 
+                        a vyzkoušet své štěstí ej pro člověka neodolatelná touha. Počet her proti programu se dají nastavit.</p>
                 <h1>Lov pokladů</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
+                    
+                    <h2>Části výroby</h2>
             <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
             <p>- Přidat otázku a odpovědi</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/iti7.png' %}" alt="Test Rozhodovačka">
+            <p>- Uložit do počítače</p>
+                    
+            <h2>Co test nabízí</h2>
+            <p>Zde po vložení otázek a odpovědí jste poslání na mapu, kde jsou poklady, 
+                ale nějaké jsou falešné a nějaké jsou pravé. Počet pravých je podle počtu vložených otázek. 
+                Přes falešné se dá procházet a ty pravé vám dávají otázky. Nakonci se vám ukáže skóre po najití všech otázek.</p>
+            
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/iti7.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+         
             <a class="button" href="/lov_pokladu">Vytvořit</a>
                 
                 <h1>Labyrint</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/28K4.png' %}" alt="Test Rozhodovačka">
+            <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> V tomto testu se budete pohybovat v labyrintu, ve kterém musíte najít všechny otázky. Bludiště bude plné cest, které vás zavedou k různým místům. Jakmile najdete všechny otázky, budete je muset odpovědět, a po dokončení celého labyrintu se vám zobrazí vaše skóre.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/28K4.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+           
             <a class="button" href="/Labyrint">Vytvořit</a>
 
             <h1>Flappy bird</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/6o89.png' %}" alt="Test Rozhodovačka">
+             <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> V tomto testu si zahrajete klasickou hru Flappy Bird, kde budete ovládat ptáčka, který se snaží přeskakovat mezi trubkami. Když úspěšně projdete trubkami, objeví se otázka. Pokud na ni odpovíte správně, získáte body. Pokud odpověď bude špatná, body nedostanete. Hráč pokračuje v hraní, dokud se nedotkne trubek, čímž hra končí a zobrazí se skóre.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/6o89.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+           
             <a class="button" href="/flappy_bird">Vytvořit</a>
                 
 
             <h1>Klikačka</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/4UWz.png' %}" alt="Test Rozhodovačka">
+             <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Ve hře budete odpovídat na otázky a na mapě se budou náhodně objevovat různé odpovědi. Na začátku to může znít jednoduše, ale pokud přidáte více odpovědí, začne pořádný chaos! Hráči mají možnost vložit až deset odpovědí, což znamená, že čím více odpovědí přidáte, tím více se mapa zkomplikuje. Vaším úkolem je správně vybrat odpovědi v záplavě možností, které se na mapě pohybují.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/4UWz.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+         
             <a class="button" href="/klikaci_hra/">Vytvořit</a>
                 
                 <h1>Miny</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/CGt6.png' %}" alt="Test Rozhodovačka">
+             <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Ve hře budete klikat po minovém poli, kde každé kliknutí vám ukáže číslo, které naznačuje, jak blízko se nachází otázka. Pokud na poli najdete číslo 0, znamená to, že v okolí nejsou žádné otázky. Pokud se vám objeví číslo 1 nebo vyšší, znamená to, že v blízkosti se nachází otázky, a vy je musíte hledat. Po nalezení otázky ji musíte správně zodpovědět.
+
+Pokud odpovíte správně, získáte body a políčko se označí zeleně. Pokud odpovědíte špatně, neobdržíte žádné body a políčko se označí červeně. Hra vám také umožní nastavit počet kliknutí, která máte k dispozici, což přidává další úroveň strategického plánování do hry.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/CGt6.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+           
             <a class="button" href="/miny">Vytvořit</a>
         </div>
 
         <h1>Tetris</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/kizE.png' %}" alt="Test Rozhodovačka">
+           <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> 	V této hře budete mít možnost nastavit pouze tři odpovědi a jednu otázku. Po spuštění ukázky si zahrajete klasickou hru Tetris. Cílem je spojit spodní část obrazovky s bloky tak, aby došlo k odstranění celé řady. Po odstranění řady se vám objeví otázka. Pokud na ni odpovíte správně, získáte body, pokud odpovíte špatně, body nezískáte. Bez ohledu na to, zda odpovíte správně nebo špatně, odstraněná řada zmizí.
+        Hra končí, pokud se bloky dotknou stropu obrazovky.</p>
+                <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/kizE.png' %}" alt="Test Rozhodovačka" style="width: 100%; height: auto;">
+</div>
+      
             <a class="button" href="/tetris">Vytvořit</a>
         </div>
                 
@@ -99,6 +137,7 @@
         </div>
     </div>
 </div>
+
 
 
 {% endblock %}

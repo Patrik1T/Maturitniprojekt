@@ -1,0 +1,56 @@
+ body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .button-container {
+            margin: 20px;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            user-select: none;
+        }
+        .card.flipped {
+            background-color: #fff;
+        }
+        .card.matched {
+            background-color: #7cfc00;
+        }
+        .hidden {
+            display: none;
+        }
+        .score {
+            font-size: 24px;
+        }
+        input[type="text"] {
+            margin: 5px;
+            padding: 5px;
+        }
+        .pairs-list {
+            margin-top: 20px;
+        }
+        .pair-item {
+            margin-bottom: 10px;
+        }
+        .pair-item button {
+            margin-left: 10px;
+        }

@@ -1,0 +1,30 @@
+  /* Styly pro tlačítka */
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 8px;
+        border: 2px solid #007bff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .button:focus {
+        outline: none;
+    }
+
+    .button:active {
+        background-color: #004085;
+        border-color: #004085;
+    }

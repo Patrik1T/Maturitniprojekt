@@ -1,15 +1,27 @@
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
-from django.contrib import messages
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from users.models import Message  # Import modelu Message z aplikace chat
-from users.forms import MessageForm  # Import formuláře MessageForm z aplikace chat
-from django.shortcuts import render, redirect
+from users.models import Message
+from users.forms import MessageForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from users.forms import UserProfileForm
+from django.contrib.auth import logout
+from django.shortcuts import get_object_or_404
+from users.models import Question, Comment
+from users.forms import QuestionForm, CommentForm
+from django.shortcuts import redirect
+from users.models import Note
+from users.forms import NoteForm
+from django.shortcuts import render
+from django.http import JsonResponse
+from users.models import TestDownloadStats
+from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
+
+def edit_profile(request):
+    if request.method == 'POST':
+        # Provádějte úpravy profilu
+        return redirect('profile')  # Tento řádek zajišťuje přesměrování na profil
 
 
 def user_login(request):  # Původní login_user přejmenován
@@ -73,11 +85,6 @@ def profil(request):
     })
 
 
-
-from django.shortcuts import render, get_object_or_404, redirect
-from users.models import Question, Comment
-from users.forms import QuestionForm, CommentForm
-
 # Zobrazení seznamu otázek
 def question_list(request):
     search_query = request.GET.get('q', '')
@@ -123,10 +130,6 @@ def create_question(request):
 
     return render(request, 'testy/create_question.html', {'form': form})
 
-from django.shortcuts import render, redirect
-from users.models import Note
-from users.forms import NoteForm
-
 @login_required
 def notes_list(request):
     # Získání zápisků aktuálního uživatele
@@ -144,3 +147,64 @@ def notes_list(request):
         form = NoteForm()
 
     return render(request, 'zapisnik.html', {'form': form, 'zapisnik': notes})
+
+
+
+# Pohled pro úpravu poznámky
+def edit_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if request.method == 'POST':
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            return redirect('zapisnik')  # Název URL pro váš zápisník
+    else:
+        form = NoteForm(instance=note)
+    return render(request, 'edit_note.html', {'form': form})
+
+# Pohled pro smazání poznámky
+def delete_note(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    if request.method == 'POST':
+        note.delete()
+    return redirect('zapisnik')
+
+
+def update_click_count(request, file_type):
+    # Získání nebo vytvoření instance statistiky pro uživatele
+    user_stats, created = TestDownloadStats.objects.get_or_create(user=request.user)
+
+    # Aktualizace počtu kliknutí podle typu souboru
+    if file_type == 'html':
+        user_stats.html_count += 1
+    elif file_type == 'xml':
+        user_stats.xml_count += 1
+    elif file_type == 'json':
+        user_stats.json_count += 1
+
+    # Uložení změn
+    user_stats.save()
+
+    # Vrácení počtu kliknutí jako JSON odpověď
+    return JsonResponse({
+        'html_count': user_stats.html_count,
+        'xml_count': user_stats.xml_count,
+        'json_count': user_stats.json_count
+    })
+
+def custom_logout(request):
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect('main_page')  # Přesměrování na domovskou stránku nebo jinou URL
+
+def custom_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('hlavni_stranka')  # Přesměrování
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'registration/login.html', {'form': form})

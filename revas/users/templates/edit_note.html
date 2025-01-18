@@ -1,0 +1,111 @@
+{% extends 'struktura/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Levý panel -->
+    <div class="sidebar">
+        {% include 'struktura/tabulky.html' %} <!-- Levý panel s navigací -->
+    </div>
+
+    <!-- Hlavní obsah -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <main class="col-lg-8 col-md-10 col-sm-12">
+                <h2 class="text-center">Upravit poznámku</h2>
+
+                <!-- Formulář pro úpravu poznámky -->
+                <form method="POST" class="mb-4">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Uložit změny</button>
+                </form>
+
+                <!-- Tlačítko zpět -->
+                <a href="{% url 'zapisnik' %}" class="btn btn-secondary">Zpět</a>
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Globální styl pro celou stránku */
+    body, html {
+        height: 100%;
+        margin: 0;
+    }
+
+    .container-fluid {
+        min-height: 100%;
+        display: flex;
+        flex-direction: row; /* Nastavení pro rozdělení na dva panely */
+    }
+
+    .container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+    }
+
+    main {
+        flex: 1; /* Hlavní obsah zabere zbývající prostor */
+    }
+
+    footer {
+        position: relative;
+        bottom: 0;
+        width: 100%;
+    }
+
+    /* Levý panel */
+    .sidebar {
+        background-color: #f8f9fa;
+        width: 250px;
+        padding: 15px;
+        border-right: 1px solid #ddd;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        margin-bottom: 10px;
+    }
+
+    .sidebar a:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    /* Hlavní obsah formuláře */
+    .container {
+        background-color: #f8f9fa; /* Světlé pozadí */
+        border-radius: 10px; /* Zaoblené rohy */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Jemný stín */
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #343a40; /* Tmavý text */
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    form .btn {
+        width: 100%; /* Tlačítka zabírají plnou šířku */
+    }
+
+    a.btn-secondary {
+        margin-top: 20px;
+        display: inline-block;
+        text-align: center;
+    }
+</style>
+
+{% endblock %}

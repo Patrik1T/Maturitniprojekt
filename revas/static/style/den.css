@@ -1,0 +1,18 @@
+/* Zvýraznění dnešního dne v kalendáři */
+.current-day {
+    background-color: #007bff !important; /* Modrá barva pozadí */
+    color: white !important; /* Bílé písmo pro kontrast */
+    font-weight: bold; /* Tučné písmo pro zvýraznění */
+    padding: 15px; /* Mírně zvětšený padding pro lepší vzhled */
+    text-align: center; /* Text na střed */
+}
+
+
+td.current-day {
+    background-color: #007bff !important; /* Modrá barva pozadí */
+    color: white !important; /* Bílé písmo */
+    font-weight: bold; /* Tučné písmo */
+    border-radius: 50%; /* Kulaté rohy */
+    padding: 10px;
+    text-align: center; /* Zarovnání textu na střed, pro lepší vzhled */
+}

@@ -1,18 +1,17 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="cs">
-   <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zápisník</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'style/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'style/den.css' %}">
     <script src="{% static 'js/kalendar.js' %}"></script>
-    <script src="{% static 'js/zapisnik.js' %}"></script>
-       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-</head> 
+</head>
 <body class="d-flex flex-column min-vh-100">
     {% include 'struktura/nav.html' %}
 
@@ -25,6 +24,7 @@
 
             <!-- Hlavní obsah -->
             <div class="col-lg-10 col-md-8 col-sm-12 p-3">
+                <!-- Kalendář -->
                 <div class="calendar bg-white shadow-sm p-3 mb-3 rounded">
                     <div class="calendar-controls d-flex justify-content-between align-items-center">
                         <button class="btn btn-primary btn-sm" onclick="changeMonth(-1)">Předchozí</button>
@@ -47,89 +47,156 @@
                     </table>
                 </div>
 
-     <div id="revasCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000"> <!-- interval v milisekundách -->
-    <div class="carousel-inner">
-        <!-- První stránka -->
-        <div class="carousel-item active">
-            <div class="card-body text-center">
-                <h2>Vítejte v aplikaci Revas!</h2>
-                <p>Tato aplikace vám nabízí širokou škálu testů a možností pro zábavu i vzdělávání.</p>
-                <img src="{% static 'obrazky/general_knowledge.jpg' %}" alt="Revas hlavní stránka" class="img-fluid" width="300">
-            </div>
-        </div>
-        <!-- Druhá stránka -->
-        <div class="carousel-item">
-            <div class="card-body text-center">
-                <h2>Populární testy v aplikaci:</h2>
-                <ul>
-                    <li><strong>Rozhodovačka:</strong> Jednoduchý test pro odškrtávání odpovědí.</li>
-                    <li><strong>Multi test:</strong> Obsahuje všechny klasické testy aplikace.</li>
-                </ul>
-                <img src="{% static 'obrazky/math_tests.jpg' %}" alt="Multi test" class="img-fluid" width="300">
-            </div>
-        </div>
-        <!-- Třetí stránka -->
-        <div class="carousel-item">
-            <div class="card-body text-center">
-                <h2>Populární herní testy:</h2>
-                <ul>
-                    <li><strong>Tetris:</strong> Odpovězte správně na otázky a získejte body.</li>
-                    <li><strong>Pexeso:</strong> Zapamatujte si páry otázka-odpověď.</li>
-                </ul>
-                <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" class="img-fluid" width="300">
+                <!-- Carousel -->
+                <div id="revasCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="card-body text-center">
+                                <h2>Vítejte v aplikaci Revas!</h2>
+                                <p>Tato aplikace vám nabízí širokou škálu testů a možností pro zábavu i vzdělávání.</p>
+                                <img src="{% static 'obrazky/logoRevas.png' %}" alt="Revas hlavní stránka" class="img-fluid" width="300">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="card-body text-center">
+                                <h2>Testy</h2>
+                                <ul>
+                                    <li>Zde se nacházejí klasické testy, které se běžně vyskytují ve škole, na maturitní zkoušce 
+                                        nebo v kvízech. Uživatel si může nastavit název testu, popis, časovač, známky a především 
+                                        otázky a odpovědi. Po vytvoření testu si ho může vyzkoušet, ale dávejte pozor, protože každý 
+                                        test má své náležitosti, které pokud nesplníte, tak ho nemůžete spustit, v náhledu, kde se zobrazí 
+                                        i výsledky, a nakonec si ho může stáhnout do počítače ve formátech HTML, JSON a XML pro Moodle. Každý 
+                                        test má vlatní náležitosti, proto aby byl spuštěn nebo stáhnut v daném formátu.
+
+                                    </li>
+                                  
+                                </ul>
+                                <img src="{% static 'obrazky/ekMM.png' %}" alt="Text response" class="img-fluid" width="300">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="card-body text-center">
+                                <h2>Herní testy</h2>
+                                <ul>
+                                    <li>Zde se nacházejí herní testy v podobě klasických a známých her. 
+                                        Uživatel si může nastavit jméno testu, popisek, časovač, známky a 
+                                        hlavně otázky a odpovědi. Poté je může vyzkoušet v náhledu, kde se ukážou 
+                                        aji výsledky testu a jde se nakonec stáhnout do počítače ve formátu HTML, 
+                                        JSON a XML pro Moodle. Každý herní test je jedinečný a zábavný. U některých testů 
+                                        se známky vypočítávají automaticky a nemusí se používat bodování. Zde se otázky a 
+                                        odpovědi vkládají do seznamu, kde se můžou zeditovat či mazat. jaká měla být zaškrtnutá 
+                                        odpověď a jak měli být napsané odpovědi pokud jsou špatně.</li>
+                             
+                                </ul>
+                                <img src="{% static 'obrazky/m61g.png' %}" alt="Pexeso test" class="img-fluid" width="300">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="card-body text-center">
+                                <h2>Herní testy k procvičování</h2>
+                                <ul>
+                                    <li>Zde po vložení otázek a odpovědí můžete tento test vyplnit jako normální 
+                                        jiný klasický test. Jedinou změnou je, že můžete si zahrát kámen nůžky papír. 
+                                        Tuto možnost můžete i nemusíte využít, ale pokud by jste nebyl si rady s nějakou 
+                                        otázkou, tak si můžete zahrát tři hry proti programu a pokud vyhrajete, tak můžete 
+                                        dostat i body navíc za tu otázku. V čem je háček? Háček je v tom, že musíte jako první 
+                                        získat tři body. Remízí se nepočítají, ale pokud byste proti programu prohráli třikrát, 
+                                        tak máte mínusové body, které se vám započítávají. Nebo pokud vyhrajete a program vyhraje 
+                                        dvakrát, tak se body zprůměrujou a nakonci se berou společně s ostatními body. Možná si 
+                                        řeknete, že je to vůbec blbost to zkoušet, ale ta možnost, že můžete být na tom o mnohem 
+                                        lépe a vyzkoušet své štěstí ej pro člověka neodolatelná touha. Počet her proti programu se dají nastavit.</li>
+                             
+                                </ul>
+                                <img src="{% static 'obrazky/iti7.png' %}" alt="Lov pokladů test" class="img-fluid" width="300">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#revasCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Předchozí</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#revasCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Další</span>
+                    </button>
+                </div>
+    <h1 class="centered-title">Vyzkoušení testů pro nepřihlášené:</h1>
+
+                <!-- Testy -->
+<div class="row">
+   
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Choose and place text test</h2>
+                <img src="{% static 'obrazky/rWRT.png' %}" alt="Pexeso test" width="100" class="img-fluid">
+                <p><strong>Popis:</strong> Tento test je jedinečný v tom, že cílem je nejen napsat správné odpovědi, ale i je zaškrtnout. Chcete si vyrobit tento test?</p>
+                <a href="{% url 'spravna_odpoved' %}" class="footer-button">Vyzkoušet</a>
             </div>
         </div>
     </div>
-    <!-- Ovládací tlačítka -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#revasCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Předchozí</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#revasCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Další</span>
-    </button>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Snake</h2>
+                <img src="{% static 'obrazky/LmCb.png' %}" alt="Pexeso test" width="100" class="img-fluid">
+                <p><strong>Popis:</strong> Tento herní test je jedinečný v tom, že hrajete Snaka a při tom musíte odpovídat na otázky. Chcete si vyrobit tento test?</p>
+                 <a href="{% url 'snake' %}" class="footer-button">Vyzkoušet</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Lov pokladů</h2>
+                <img src="{% static 'obrazky/iti7.png' %}" alt="Lov pokladů" width="100" class="img-fluid">
+                <p><strong>Popis:</strong> Tento herní test k procvičení je zajímavý v tom, že cílem je najít pravé poklady mezi falešnými. Chcete si vyzkoušet vyrobit si tento test?</p>
+                 <a href="{% url 'lov_pokladu' %}" class="footer-button">Vyzkoušet</a>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Nové tři karty -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Table tests</h2>
+                <img src="{% static 'obrazky/NfQX.png' %}" alt="Nový test 1" width="100" class="img-fluid">
+                <p><strong>Popis:</strong> V tomto testu musíte dát všechny odpovědi do správných tabulek. Chcete si vyzkoušet si vyrobit tento test?</p>
+                 <a href="{% url 'tabulka' %}" class="footer-button">Vyzkoušet</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Maraton</h2>
+                <img src="{% static 'obrazky/Bs03.png' %}" alt="Nový test 2" width="100" class="img-fluid">
+                <p><strong>Popis:</strong> V tomto testu si budete muset zodpovědět na všechny otázky a dostat se do cíle. Chete si vyzkoušet tento test?</p>
+                 <a href="{% url 'maraton' %}" class="footer-button">Vyzkoušet</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>Klikačka</h2>
+                <img src="{% static 'obrazky/4UWz.png' %}" alt="Nový test 3" width="100" class="img-fluid">
+                <p><strong>Popis:</strong> V tomto herním testu budete muset chytit všechny odpovědi. Chcete vyzkoušet si tento test?</p>
+                <a href="{% url 'klikaci_hra' %}" class="footer-button">Vyzkoušet</a>
+            </div>
+        </div>
+    </div>
+</div>
 
- 
-
-                    <div class="card">
-                        <div class="card-header">Nově sveřejněné testy.</div>
-                        <div class="card-body">
-                            <div class="card">
-                    
-                    <div class="content">
-                        <h2>Název testu</h2>
-                        <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
-                        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
-                        <button class="try-button">Vyzkoušet</button>
-                    </div>
-                </div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">Vaše vyrobené testy.</div>
-                        <div class="card-body">
-                            <div class="card">
-                    
-                    <div class="content">
-                        <h2>Název testu</h2>
-                        <img src="{% static 'obrazky/dsuS.png.' %}" alt="Pexeso test" width="100" class="img-fluid">
-                        <p><strong>Popis:</strong> Tento test je určen k testování znalostí v oblasti programování a algoritmů.</p>
-                        <button class="try-button">Vyzkoušet</button>
-                    </div>
-                </div>
-                        </div>
-                    </div>
-                  
-                </div>
             </div>
         </div>
     </div>
 
-{% include 'struktura/footer.html' %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+    {% include 'struktura/footer.html' %}
+ 
 </body>
 </html>
+

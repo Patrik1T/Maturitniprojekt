@@ -1,23 +1,72 @@
-{% extends "base.html" %}
+{% extends 'struktura/base.html' %}
+
+{% load static %}
+
 {% block content %}
-<div class="container">
-    <h2>Zápisník</h2>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zápisník</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'style/zapisnik.css' %}">
+</head>
 
-    <!-- Formulář pro přidání nového zápisku -->
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Uložit</button>
-    </form>
+<body>
+<div class="container-fluid">
+    <!-- Levý panel -->
+    <div class="sidebar">
+        {% include 'struktura/tabulky.html' %}  <!-- Levý panel s navigací -->
+    </div>
 
-    <h3>Vaše zápisky:</h3>
-    <div class="notes">
-        {% for note in notes %}
-            <div class="note">
-                <p>{{ note.content }}</p>
-                <small>Vytvořeno: {{ note.created_at }}</small>
-            </div>
-        {% endfor %}
+    <!-- Hlavní obsah -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <main class="col-lg-8 col-md-10 col-sm-12"> <!-- Hlavní obsah zápisníku -->
+                <h2 class="text-center">Zápisník</h2>
+                <!-- Formulář pro přidání nového zápisku -->
+                <form method="POST" class="mb-4">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Uložit</button>
+                </form>
+
+                <h3 class="text-center">Vaše zápisky:</h3>
+                <div class="notes">
+                    {% for note in notes %}
+                        <div class="note card my-3 shadow-sm">
+                            <div class="card-body">
+                                <p>{{ note.content }}</p> <!-- Zobrazuje text zápisku -->
+                                <small class="text-muted">Vytvořeno: {{ note.created_at }}</small>
+                                <div class="mt-2">
+                                    <!-- Tlačítko pro úpravu -->
+                                    <a href="{% url 'edit_note' note.id %}" class="btn btn-secondary btn-sm">Upravit</a>
+                                    <!-- Tlačítko pro smazání -->
+                                    <form method="POST" action="{% url 'delete_note' note.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">Smazat</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">Žádné zápisky k zobrazení.</p>
+                    {% endfor %}
+                </div>
+            </main>
+        </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 {% endblock %}
+
+
+
+
+
+

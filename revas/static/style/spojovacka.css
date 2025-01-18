@@ -1,0 +1,94 @@
+body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .add-btn {
+            margin: 10px 0;
+        }
+        .pair {
+            margin: 5px 0;
+        }
+        .test-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: nowrap;
+        }
+
+        .test-item {
+            width: 45%;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .draggable {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .connection-line {
+            font-size: 14px;
+            color: blue;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .remove-btn {
+            margin-left: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .remove-btn:hover {
+            background-color: darkred;
+        }
+
+        .grade-settings {
+            margin-top: 20px;
+        }
+
+        .grade-settings label {
+            margin-right: 10px;
+        }
+
+        .grade-settings input {
+            margin-bottom: 10px;
+        }

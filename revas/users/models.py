@@ -1,10 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.models import User
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
-
 
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
@@ -56,63 +54,6 @@ class Profile(models.Model):
             return self.displayname
         return self.user.username
 
-    @property
-    def avatar(self):
-        if self.image:
-            return self.image.url
-        return f'{settings.STATIC_URL}images/avatar.svg'
-
-
-
-
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.IntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=1, choices=[('M', 'Muži'), ('F', 'Ženy')], null=True, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
-
-    def __str__(self):
-        return self.user.username
-
-
-
-# Model pro hráče
-class Player(models.Model):
-    username = models.CharField(max_length=100)
-    score = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.username
-
-
-
-
-# Model pro hru
-class Game(models.Model):
-    name = models.CharField(max_length=100)
-    time_limit = models.IntegerField()  # časový limit v sekundách
-    points_per_pair = models.IntegerField()  # body za správný pár
-    num_players = models.IntegerField()  # počet hráčů
-    players = models.ManyToManyField(Player, related_name="games")
-
-    def __str__(self):
-        return self.name
-
-
-# Model pro herní sezení (uchovává výsledky pro jednotlivé hry)
-class GameSession(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    score = models.IntegerField(default=0)
-    time_spent = models.IntegerField()  # čas, který hráč strávil při hře v sekundách
-    date_played = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Game: {self.game.name}, Player: {self.player.username}, Score: {self.score}"
-
-
-
 class CustomUser(AbstractUser):
     groups = models.ManyToManyField(
         'auth.Group',
@@ -134,14 +75,15 @@ class CustomUser(AbstractUser):
         verbose_name_plural = "Users"
 
 
-
-from django.db import models
-
-class Test(models.Model):  # Zkontroluj, že třída má tento název
-    title = models.CharField(max_length=100)
+class Test(models.Model):
+    name = models.CharField(max_length=255)
     description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True, null=True)  # Přidáno pole created_at
 
-from django.db import models
+    def __str__(self):
+        return self.name
+
+
 
 class TestModel(models.Model):
     title = models.CharField(max_length=100)
@@ -166,3 +108,15 @@ class Note(models.Model):
 
     def __str__(self):
         return self.content[:50]  # Zobrazí první část zápisku pro přehled
+
+content = models.TextField(default="Výchozí text")
+
+
+class TestDownloadStats(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    html_count = models.IntegerField(default=0)
+    xml_count = models.IntegerField(default=0)
+    json_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username}'s Test Download Stats"

@@ -1,0 +1,152 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vytvořit test</title>
+    <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+    <script src="{% static 'js/testy/tabulka.js.js' %}"></script>
+    <title>Test: Přiřazování odpovědí</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .table-container {
+            margin-bottom: 20px;
+        }
+        .add-btn {
+            margin: 10px 0;
+        }
+        .draggable-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .draggable {
+            padding: 5px;
+            margin: 5px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            min-height: 100px;
+            margin-top: 20px;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .answer-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .answer-item {
+            margin: 5px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .remove-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            margin-left: 10px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .timer {
+            margin-top: 20px;
+        }
+        .timer span {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<!-- Tlačítko zpět -->
+<div style="margin: 10px 0;">
+    <a href="{% url 'testy' %}" class="btn btn-secondary" style="text-decoration: none; color: white; padding: 10px; background-color: gray; border-radius: 5px;">
+        &larr; Zpět
+    </a>
+    <div class="container">
+        <h1>Table test</h1>
+         <input type="text" id="testName" placeholder="Název testu" />
+    <textarea id="testDescription" placeholder="Popis testu" rows="4"></textarea>
+
+        <!-- Nastavení časomíry -->
+        <div class="timer">
+            <label for="timer">Nastavit časovač (v minutách):</label>
+            <input type="number" id="timer" placeholder="Nastavit časovač" min="1">
+            <label for="enableTimer">Povolit časovač</label>
+            <input type="checkbox" id="enableTimer">
+        </div>
+
+        <!-- Formulář pro nastavení bodování -->
+        <h2>Bodování</h2>
+        <label for="grade1">Známka 1 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade1" name="grades[1]" min="1" value="90">
+        <br>
+        <label for="grade2">Známka 2 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade2" name="grades[2]" min="1" value="70">
+        <br>
+        <label for="grade3">Známka 3 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade3" name="grades[3]" min="1" value="50">
+        <br>
+        <label for="grade4">Známka 4 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade4" name="grades[4]" min="1" value="30">
+        <br>
+        <label for="grade5">Známka 5 (minimální počet správně přiřazených odpovědí):</label>
+        <input type="number" id="grade5" name="grades[5]" min="1" value="0">
+        <br>
+
+       
+
+        <div id="tablesContainer"></div>
+        <button class="add-btn" onclick="addTable()">Přidat tabulku</button>
+        <button class="add-btn" onclick="previewTest()">Náhled testu</button>
+        <button onclick="exportToJson()">Export do JSON</button>
+<button onclick="exportToHtml()">Export do HTML</button>
+<button onclick="exportToXml()">Export do XML</button>
+
+        <div id="testPreview" style="display: none;">
+            <h2>Náhled testu</h2>
+            <div id="answersList" class="answer-container"></div>
+            <div id="tablesForDrag"></div>
+
+            <button class="add-btn" onclick="submitTest()">Odeslat odpovědi</button>
+        </div>
+
+        <div id="results" class="result-container" style="display: none;">
+            <h3>Výsledky testu:</h3>
+            <div id="resultContent"></div>
+        </div>
+
+        <!-- Časomíra -->
+        <div id="countdown" class="timer">
+            <span id="timerDisplay">00:00</span>
+        </div>
+    </div>
+    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+</body>
+</html>
+
+
+
+

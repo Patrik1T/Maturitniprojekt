@@ -7,8 +7,7 @@
     <title>Zápisník</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style/styles.css' %}">
-    <script src="{% static 'js/kalendar.js' %}"></script>
-    <script src="{% static 'js/zapisnik.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'style/cudliky.css' %}">
 </head> 
 <div class="container-fluid flex-grow-1">
     <div class="row">
@@ -25,74 +24,110 @@
                     <!-- Jednotlivé testy -->
       
                 <h1>Herní testy</h1>
+                    <p>   Zde se nacházejí herní testy v podobě klasických a známých her. Uživatel si 
+                        může nastavit jméno testu, popisek, časovač, známky a hlavně otázky a odpovědi. Poté je může vyzkoušet 
+                        v náhledu, kde se ukážou aji výsledky testu a jde se nakonec stáhnout do počítače ve formátu HTML, JSON a 
+                        XML pro Moodle. Každý herní test je jedinečný a zábavný. U některých testů se známky vypočítávají automaticky a 
+                        nemusí se používat bodování. Zde se otázky a odpovědi vkládají do seznamu, kde se můžou zeditovat či mazat.</p>
                <h1>Pexeso</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
+                    <h2>Části výroby</h2>
             <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
+            <p>- Přidat otázku a odpovědi, kde správnou odpověď budete muset zaškrtnout</p>
             <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka">
+            <p>- Uložit do počítače</p>
+                   
+            <h2>Co test nabízí</h2>
+            <p>
+		Zde musíte mít aspoň vložené dva páry jinak vám to ukázku neukáže. Zde musíte najít dva páry a to otázku a odpověď, který jste vložili, pokud je najdete tak zezelenají a vy můžete pokračovat pokud pár nenajdete, tak zase se schová.</p>
+            
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/dsuS.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+            
             <a class="button" href="/pexeso">Vytvořit</a>
 
 
             <h1>Oběšenec</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/SIUh.png' %}" alt="Test Rozhodovačka">
+             <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> 			Zde vkládáte otázky a odpovědi, kde se nahoře zobrazuje otázka související s hádaným slovem. Vaším úkolem je uhádnout toto slovo po jednotlivých písmenkách. Pokud zadáte správné písmeno, zobrazí se nahoře a zezelená. Pokud zvolíte špatné písmeno, zčervená a ztrácíte život. Máte celkem osm životů, a pokud vám dojdou, prohráváte. Pokud máte více slov v seznamu, přejdete na další a pokračujete v hádání. Na konci se zobrazí vaše výsledky a získáte známku podle toho, jak dobře jste si vedli.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/SIUh.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+           
             <a class="button" href="/obesenec">Vytvořit</a>
                 
-                <h1>Dveře hra</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/m61g.png' %}" alt="Test Rozhodovačka">
+                <h1>Hra s dveřmi</h1>
+             <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Zde podle zadaných odpovědí na otázky se zobrazí počet dveří, ale maximální počet odpovědí je omezen na pět. Pokud by bylo odpovědí více, hra by se mohla zpomalit nebo přestat fungovat. Vaším cílem je jako kulička (nebo hráč) vejít do správných dveří na základě zadané otázky. Jakmile všechny otázky vyplníte, zobrazí se vaše výsledky.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/m61g.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+         
             <a class="button" href="/dvere_hra">Vytvořit</a>
                 
                 
                 
                 
                  <h1>Snake</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/LmCb.png' %}" alt="Test Rozhodovačka">
-            <a class="button" href="/snake">Vytvořit</a>
+            <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Zde hrajete klasickou hru Snake, kde jako had musíte přežít a vyhnout se tomu, abyste se nepozorovaně nenarazili do sebe nebo do stěn kolem vás. Během hry budete odpovídat na otázky – nezáleží na tom, jestli odpovíte správně nebo špatně, protože v každém případě se vaše hadí postava zvětší. Jak hra pokračuje, prostor se zúží, a hra se tím stává čím dál náročnější. Cílem je přežít co nejdéle, aniž byste se srazili s vlastním tělem nebo s okolními zdmi.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/LmCb.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+           <a class="button" href="/snake">Vytvořit</a>
                 
                  <h1>Kámen, nůžky, papír</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/f0eA.png' %}" alt="Test Rozhodovačka">
+            <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Zde po vložení otázek a odpovědí můžete tento test vyplnit jako běžný test. Jedinou změnou je, že máte možnost zahrát si Kámen, nůžky, papír proti programu. Tuto možnost můžete využít, nebo ji ignorovat, ale pokud si nebudete jisti odpovědí na nějakou otázku, můžete si zahrát tři hry proti programu. Pokud vyhrajete, můžete získat body navíc za tu otázku.
+
+Co je ale háček? Háček je v tom, že musíte být první, kdo získá 3 body. Remízy se nepočítají. Pokud proti programu prohrajete třikrát, dostanete záporné body, které se odečítají od celkového skóre. Na druhou stranu, pokud vyhrajete a program vyhraje dvakrát, body se zprůměrují. Nakonec se vaše výsledky sečtou s ostatními body z testu. Možná si řeknete, že je to zbytečné, ale možnost získat bod navíc a zlepšit své skóre je pro každého lákavá.
+
+Počet her proti programu si můžete nastavit podle potřeby.</p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/f0eA.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+      
             <a class="button" href="/vytvor_test">Vytvořit</a>
 
                 <h1>Maraton</h1>
-            <h2>Účel</h2>
-            <p>Tvorba testu za pomocí zadání otázky a odpovědi.</p>
-            <h2>Možnosti</h2>
-            <p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
-            <p>- Přidat otázku a odpovědi</p>
-            <p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
-            <p>- Uložit do počítače, aplikace nebo zveřejnit</p>
-            <img src="{% static 'obrazky/Bs03.png' %}" alt="Test Rozhodovačka">
+             <h2>Části výroby</h2>
+<p>Jednoduché přidání otázka a odpovědí, kde bude muset dělající testu odpovědět.</p>
+<p>- Přidat otázku a odpovědi</p>
+<p>- Nastavit počet bodů, časovač, typ formátu a vyhodnocení</p>
+<p>- Uložit do počítače</p>
+                    
+<h2>Co test nabízí</h2>
+<p> Zde po vložení otázek bude test probíhat v cyklu, kde se seznam otázek neustále opakuje až do té doby, než dosáhnete cíle. Pokud na otázku odpovíte špatně, budete vráceni na předchozí otázku a budete muset zkusit odpovědět znovu. Pokud odpovíte správně, postoupíte na další otázku.
+
+Po zodpovězení všech otázek se vám zobrazí výsledky, které se automaticky spočítají na základě správnosti odpovědí a vyjádří se v procentech. Kromě procenta se zobrazí také počet správných a špatných odpovědí. Počet správných odpovědí, které musíte zodpovědět, závisí na celkovém počtu otázek a ve hře si můžete vybrat, jakým způsobem budete hádat. </p>
+                    <div style="resize: both; overflow: auto; display: inline-block;">
+    <img src="{% static 'obrazky/Bs03.png' %}" alt="Test Rozhodovačka" style="width: 50%; height: auto;">
+</div>
+          
             <a class="button" href="/maraton">Vytvořit</a>
             </div>
         </div>
