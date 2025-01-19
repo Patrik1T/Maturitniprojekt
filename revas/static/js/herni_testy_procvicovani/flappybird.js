@@ -319,7 +319,7 @@ function exportToJSON() {
 function exportToXML() {
     const testName = document.getElementById("testName").value.trim();
     if (!testName) {
-        alert("Please enter a test name.");
+
         return;
     }
 

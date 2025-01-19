@@ -1,7 +1,5 @@
 {% extends "struktura/basetests.html" %}
 
-{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
-
 {% block content %}
   {% load static %}
 <!DOCTYPE html>
@@ -9,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <script src="{% static 'js/flappybird.js' %}"></script>
+     <script src="{% static 'js/herni_testy_procvicovani/flappybird.js' %}"></script>
     <title>Flappy Quiz Bird</title>
     <style>
         body {
@@ -143,10 +141,7 @@
     <div id="answerOptions"></div>
     <button onclick="closeQuestion()">Zavřít otázku</button>
 </div>
-
-<script>
- 
-</script>
+</div>
 
 </body>
 </html>

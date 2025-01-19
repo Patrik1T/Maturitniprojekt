@@ -19,7 +19,7 @@
 
     // Kontrola, jestli jsou všechna pole vyplněná
     if (!questionText || !answer1 || !answer2 || !answer3 || !answer4 || !correctAnswer || !points) {
-        alert('Vyplňte všechny údaje!');
+
         return;
     }
 
@@ -94,7 +94,7 @@ function deleteQuestion(index) {
     // Funkce pro spuštění testu
     function startTest() {
         if (questions.length === 0) {
-            alert('Přidejte alespoň jednu otázku!');
+
             return;
         }
 
@@ -147,7 +147,7 @@ function deleteQuestion(index) {
         if (selectedAnswerIndex === currentQuestion.correctAnswer) {
             correctAnswers += currentQuestion.points;
         } else {
-            alert('Odpověděli jste špatně!');
+
         }
 
         // Pokračovat na další otázku
@@ -253,7 +253,7 @@ function showResult() {
                 document.getElementById('timeLeft').textContent = timeLeft;
             } else {
                 clearInterval(interval);
-                alert('Čas vypršel!');
+
                 showResult();
             }
         }, 1000);

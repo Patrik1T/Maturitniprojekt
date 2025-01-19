@@ -1,4 +1,4 @@
-   let tables = [];
+    let tables = [];
         let allAnswers = [];
         let timerInterval;
         let timeLeft = 0;
@@ -152,43 +152,43 @@
         }
 
         // Funkce pro odeslání testu a zobrazení výsledků
-        function submitTest() {
-            let correctAnswers = 0;
-            let incorrectAnswers = 0;
-            let totalAnswers = 0;
+      function submitTest() {
+    let correctAnswers = 0;
+    let totalAnswers = 0;
 
-            tables.forEach((table, index) => {
-                const dropArea = document.getElementById(`dropArea-${index}`);
-                const assignedAnswers = Array.from(dropArea.children).map(child => child.textContent);
+    tables.forEach((table, index) => {
+        const dropArea = document.getElementById(`dropArea-${index}`);
+        const assignedAnswers = Array.from(dropArea.children)
+            .map(child => child.textContent.replace('Smazat', '').trim());
 
-                table.answers.forEach(answer => {
-                    totalAnswers++;
-                    if (assignedAnswers.includes(answer.text)) {
-                        correctAnswers++;
-                    } else {
-                        incorrectAnswers++;
-                    }
-                });
-            });
-
-            // Výpočet známky
-            const grade = calculateGrade(correctAnswers);
-
-            // Zobrazení výsledků
-            const resultContent = document.getElementById('resultContent');
-            resultContent.innerHTML = `
-                <p>Celkem: ${totalAnswers} odpovědí</p>
-                <p>Správně: ${correctAnswers} odpovědí</p>
-                <p>Špatně: ${incorrectAnswers} odpovědí</p>
-                <p>Vaše známka: ${grade}</p>
-            `;
-            document.getElementById('results').style.display = 'block';
-
-            // Zastavení časomíry po odeslání
-            if (timerInterval) {
-                clearInterval(timerInterval);
+        table.answers.forEach(answer => {
+            totalAnswers++;
+            if (assignedAnswers.includes(answer.text)) {
+                correctAnswers++;
             }
-        }
+        });
+    });
+
+    const incorrectAnswers = totalAnswers - correctAnswers;
+
+    // Výpočet známky
+    const grade = calculateGrade(correctAnswers);
+
+    // Zobrazení výsledků
+    const resultContent = document.getElementById('resultContent');
+    resultContent.innerHTML = `
+        <p>Celkem: ${totalAnswers} odpovědí</p>
+        <p>Správně: ${correctAnswers} odpovědí</p>
+        <p>Špatně: ${incorrectAnswers} odpovědí</p>
+        <p>Vaše známka: ${grade}</p>
+    `;
+    document.getElementById('results').style.display = 'block';
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+}
+
 
         // Funkce pro výpočet známky na základě počtu správných odpovědí
         function calculateGrade(correctAnswers) {
@@ -225,7 +225,7 @@
             return time < 10 ? `0${time}` : time;
         }
 
-        function exportToJson() {
+ function exportToJson() {
     const testData = {
         tables: tables.map(table => ({
             name: table.name,
@@ -237,25 +237,41 @@
 }
 
 function exportToHtml() {
-    let htmlContent = `<html><body><h1>Test s přiřazováním odpovědí</h1>`;
+    let htmlContent = `
+    <!DOCTYPE html>
+    <html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <title>Test s přiřazováním odpovědí</title>
+    </head>
+    <body>
+        <h1>Test s přiřazováním odpovědí</h1>`;
+
     tables.forEach(table => {
-        htmlContent += `<h2>${table.name}</h2><ul>`;
+        htmlContent += `
+        <h2>${table.name}</h2>
+        <ul>`;
         table.answers.forEach(answer => {
             htmlContent += `<li>${answer.text}</li>`;
         });
         htmlContent += `</ul>`;
     });
-    htmlContent += `</body></html>`;
+
+    htmlContent += `
+    </body>
+    </html>`;
+
     saveAs(new Blob([htmlContent], { type: 'text/html' }), 'test.html');
 }
-
 function exportToXml() {
     let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
 
-    tables.forEach((table, index) => {
+    tables.forEach(table => {
         xmlContent += `
         <question type="matching">
-            <name><text>${table.name}</text></name>
+            <name>
+                <text>${table.name}</text>
+            </name>
             <questiontext format="html">
                 <text><![CDATA[<p>${table.name}</p>]]></text>
             </questiontext>
@@ -265,8 +281,8 @@ function exportToXml() {
         table.answers.forEach(answer => {
             xmlContent += `
                 <subquestion>
-                    <text>${answer.text}</text>
-                    <answer><text>${answer.text}</text></answer>
+                    <text><![CDATA[${answer.text}]]></text>
+                    <answer><![CDATA[${answer.text}]]></answer>
                 </subquestion>`;
         });
 

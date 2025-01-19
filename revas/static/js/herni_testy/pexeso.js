@@ -341,7 +341,7 @@ function exportToJSON() {
 // Uložit jako Moodle XML
 function exportToMoodleXML() {
     if (pairs.length === 0) {
-        alert("Nemáte žádné vytvořené otázky pro export!");
+
         return;
     }
 

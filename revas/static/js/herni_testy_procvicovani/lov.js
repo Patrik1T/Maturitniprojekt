@@ -22,7 +22,7 @@
                 correct: div.querySelector('input[type="checkbox"]').checked
             }));
             if (!questionText || answers.length < 2 || !answers.some(a => a.correct)) {
-                alert('Zadejte platnou otázku a odpovědi!');
+
                 return;
             }
             questions.push({ text: questionText, answers });

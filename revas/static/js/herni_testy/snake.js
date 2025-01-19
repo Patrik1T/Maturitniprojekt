@@ -13,34 +13,63 @@
     let timerEnabled = false;
 
     // Funkce pro přidání nové otázky a odpovědí
-    function addQuestion() {
-        const questionText = document.getElementById('question').value;
-        const answer1 = document.getElementById('answer1').value;
-        const answer2 = document.getElementById('answer2').value;
-        const answer3 = document.getElementById('answer3').value;
-        const correctAnswer = parseInt(document.getElementById('correctAnswer').value) - 1;
+   function addQuestion() {
+    const questionText = document.getElementById('question').value;
+    const answer1 = document.getElementById('answer1').value;
+    const answer2 = document.getElementById('answer2').value;
+    const answer3 = document.getElementById('answer3').value;
+    const correctAnswer = parseInt(document.getElementById('correctAnswer').value) - 1;
 
-        if (questionText && answer1 && answer2 && answer3 && correctAnswer >= 0 && correctAnswer <= 2) {
-            // Přidání otázky a odpovědí do pole
-            questions.push({
-                question: questionText,
-                answers: [answer1, answer2, answer3],
-                correct: correctAnswer
-            });
+    if (questionText && answer1 && answer2 && answer3 && correctAnswer >= 0 && correctAnswer <= 2) {
+        // Přidání otázky a odpovědí do pole
+        questions.push({
+            question: questionText,
+            answers: [answer1, answer2, answer3],
+            correct: correctAnswer
+        });
 
-            alert('Otázka byla přidána!');
-            document.getElementById('question').value = '';
-            document.getElementById('answer1').value = '';
-            document.getElementById('answer2').value = '';
-            document.getElementById('answer3').value = '';
-            document.getElementById('correctAnswer').value = '';
+        showModal('Otázka byla přidána!'); // Nahrazení alertu
+        document.getElementById('question').value = '';
+        document.getElementById('answer1').value = '';
+        document.getElementById('answer2').value = '';
+        document.getElementById('answer3').value = '';
+        document.getElementById('correctAnswer').value = '';
 
-            // Aktualizace seznamu otázek
-            updateQuestionList();
-        } else {
-            alert('Vyplňte všechna pole správně.');
-        }
+        // Aktualizace seznamu otázek
+        updateQuestionList();
+    } else {
+        showModal('Vyplňte všechna pole správně.'); // Nahrazení alertu
     }
+}
+
+
+    // Funkce pro zobrazení modální zprávy
+function showModal(message) {
+    const modal = document.getElementById('messageModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalButton = document.getElementById('modalButton');
+
+    modalMessage.textContent = message;
+    modal.style.display = 'block';
+}
+
+// Funkce pro zavření modálního okna
+function closeModal() {
+    const modal = document.getElementById('messageModal');
+    modal.style.display = 'none';
+}
+
+// Zavřít modal okno při kliknutí na "X"
+document.getElementById('closeModalButton').addEventListener('click', closeModal);
+
+// Zavřít modal okno při kliknutí mimo něj
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('messageModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+});
+
 
     // Aktualizace seznamu otázek
     function updateQuestionList() {
@@ -125,15 +154,16 @@ function checkAnswer(event) {
     if (selectedAnswer === correctAnswerIndex) {
         score += 1;
         // Zobrazení výsledku na obrazovce
-        document.getElementById('gameResults').innerHTML = `<h3>Správně! Získal jsi bod. Tvoje skóre: ${score}</h3>`;
+        showModal(`Správně! Získal jsi bod. Tvoje skóre: ${score}`);
     } else {
         // Špatná odpověď
-        document.getElementById('gameResults').innerHTML = `<h3>Špatně! Zkus to znovu. Tvoje skóre: ${score}</h3>`;
+        showModal(`Špatně! Zkus to znovu. Tvoje skóre: ${score}`);
     }
     snakeSize++; // Zvětšení hada po každé odpovědi
     answeredQuestions++;
     nextQuestion();
 }
+
 
 
     // Přejít na další otázku
@@ -170,19 +200,20 @@ function displayResults() {
     }
 
     // Funkce pro spuštění časomíry
-    function startTimer() {
-        timerValue = 60; // Reset času na 60 sekund
-        timerInterval = setInterval(() => {
-            if (timerValue <= 0) {
-                clearInterval(timerInterval);
-                alert("Čas vypršel! Hra skončila.");
-                displayResults();
-            } else {
-                timerValue--;
-                document.getElementById('timer').textContent = `Čas: ${timerValue} sek.`;
-            }
-        }, 1000);
-    }
+   function startTimer() {
+    timerValue = 60; // Reset času na 60 sekund
+    timerInterval = setInterval(() => {
+        if (timerValue <= 0) {
+            clearInterval(timerInterval);
+            showModal("Čas vypršel! Hra skončila."); // Nahrazení alertu
+            displayResults();
+        } else {
+            timerValue--;
+            document.getElementById('timer').textContent = `Čas: ${timerValue} sek.`;
+        }
+    }, 1000);
+}
+
 
     // Přepnutí viditelnosti časomíry
     function toggleTimer() {

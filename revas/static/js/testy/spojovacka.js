@@ -230,7 +230,6 @@ function saveTestToJson() {
     const blob = new Blob([jsonString], { type: 'application/json' });
     saveAs(blob, `${testName || 'test'}.json`);
 }
-
 function saveTestToHtml() {
     const testName = document.getElementById('testName').value.trim();
     const testDescription = document.getElementById('testDescription').value.trim();
@@ -272,18 +271,27 @@ function saveTestToXml() {
     questions.forEach((q, index) => {
         xmlContent += `
         <question type="matching">
-            <name><text>${q.text}</text></name>
+            <name>
+                <text>${q.text}</text>
+            </name>
             <questiontext format="html">
                 <text><![CDATA[${q.text}]]></text>
             </questiontext>
-            <shuffleanswers>true</shuffleanswers>
-            <subquestions>
-                ${q.answers.map(a => `
-                    <subquestion>
-                        <text><![CDATA[${a.text}]]></text>
-                        <answer><text><![CDATA[${a.correct ? a.text : ''}]]></answer>
-                    </subquestion>`).join('')}
-            </subquestions>
+            <shuffleanswers>true</shuffleanswers>`;
+
+        q.answers.forEach(a => {
+            if (a.correct) {
+                xmlContent += `
+            <subquestion>
+                <text><![CDATA[${a.text}]]></text>
+                <answer>
+                    <text><![CDATA[${a.text}]]></text>
+                </answer>
+            </subquestion>`;
+            }
+        });
+
+        xmlContent += `
         </question>\n`;
     });
 
@@ -291,4 +299,7 @@ function saveTestToXml() {
     const blob = new Blob([xmlContent], { type: 'application/xml' });
     saveAs(blob, `${testName || 'test'}.xml`);
 }
+
+
+
 

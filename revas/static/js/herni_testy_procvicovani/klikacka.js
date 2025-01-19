@@ -37,7 +37,7 @@
         const pointsInputs = document.querySelectorAll(".pointsInput");
 
         if (!questionText) {
-            alert("Zadejte otázku.");
+
             return;
         }
 
@@ -48,7 +48,7 @@
         }));
 
         if (answers.length < 2 || !answers.some(a => a.correct)) {
-            alert("Otázka musí mít alespoň dvě odpovědi a jednu správnou.");
+
             return;
         }
 
@@ -184,7 +184,7 @@ function closeGameOverModal() {
 
 function startGame() {
     if (customQuestions.length === 0) {
-        alert("Před spuštěním hry vytvořte alespoň jednu otázku.");
+
         return;
     }
 
@@ -216,7 +216,7 @@ function resetQuestion() {
     // Funkce pro export do JSON
     function exportToJSON() {
         if (customQuestions.length === 0) {
-            alert("Nemáte žádné otázky pro export!");
+
             return;
         }
 
@@ -237,7 +237,7 @@ function resetQuestion() {
     // Funkce pro export do Moodle XML
     function exportToMoodleXML() {
         if (customQuestions.length === 0) {
-            alert("Nemáte žádné otázky pro export!");
+
             return;
         }
 
@@ -276,7 +276,7 @@ function resetQuestion() {
     // Funkce pro export do HTML
 function exportToHTML() {
     if (customQuestions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
+
         return;
     }
 

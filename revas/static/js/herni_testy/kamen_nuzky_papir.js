@@ -19,7 +19,7 @@
                 displayAnswers();
                 document.getElementById("answerInput").value = '';
             } else {
-                alert("Vyplňte odpověď.");
+
             }
         }
 
@@ -57,7 +57,7 @@
                 currentAnswers = [];
                 displayAnswers();
             } else {
-                alert("Vyplňte otázku a označte správnou odpověď.");
+
             }
         }
 
@@ -94,7 +94,7 @@
 function startGame() {
     remainingAttempts = parseInt(document.getElementById("attemptsInput").value, 10);
     if (isNaN(remainingAttempts) || remainingAttempts < 1) {
-        alert("Zadejte platný počet pokusů.");
+
         return;
     }
     document.getElementById("gameArea").style.display = "none";

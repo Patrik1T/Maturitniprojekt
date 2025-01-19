@@ -6,14 +6,14 @@ let score = 0;
 function addQuestion() {
     const questionText = prompt("Zadejte text otázky:");
     if (!questionText) {
-        alert("Otázka nemůže být prázdná!");
+
         return;
     }
     const answers = [];
     for (let i = 1; i <= 4; i++) {
         const answer = prompt(`Zadejte odpověď ${i}:`);
         if (!answer) {
-            alert("Odpověď nemůže být prázdná!");
+
             return;
         }
         answers.push(answer);
@@ -23,13 +23,13 @@ function addQuestion() {
         answers: answers,
         correctAnswer: answers[0] // první odpověď je správná
     });
-    alert("Otázka byla přidána!");
+
 }
 
 // Funkce pro spuštění hry
 function startGame() {
     if (questions.length === 0) {
-        alert('Přidejte nějaké otázky a odpovědi.');
+
         return;
     }
 

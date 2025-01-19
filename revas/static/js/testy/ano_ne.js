@@ -29,25 +29,29 @@
         document.getElementById('questionsContainer').insertAdjacentHTML('beforeend', questionHTML);
     }
 
-  // Funkce pro sběr otázek a bodů
-    function gatherQuestions() {
-        const questions = [];
-        const questionElements = document.querySelectorAll('.question-wrapper');
+function gatherQuestions() {
+    const questions = [];
+    const questionElements = document.querySelectorAll('.question-wrapper');
 
-        questionElements.forEach((questionElement, index) => {
-            const questionText = questionElement.querySelector(`input[name="question${index + 1}_text"]`).value;
-            const correctAnswer = questionElement.querySelector(`select[name="question${index + 1}_correct_answer"]`).value;
-            const points = parseInt(questionElement.querySelector(`input[name="question${index + 1}_points"]`).value);
+    questionElements.forEach((questionElement, index) => {
+        const questionText = questionElement.querySelector(`input[name="question${index + 1}_text"]`)?.value.trim();
+        const correctAnswer = questionElement.querySelector(`select[name="question${index + 1}_correct_answer"]`)?.value;
+        const points = parseInt(questionElement.querySelector(`input[name="question${index + 1}_points"]`)?.value);
 
-            questions.push({
-                text: questionText,
-                correctAnswer: correctAnswer,
-                points: points
-            });
+        if (!questionText || isNaN(points) || (correctAnswer !== "ano" && correctAnswer !== "ne")) {
+            return;
+        }
+
+        questions.push({
+            text: questionText,
+            correctAnswer: correctAnswer,
+            points: points
         });
+    });
 
-        return questions;
-    }
+    return questions;
+}
+
       // Funkce pro zobrazení testu a přidání odpovědí
 function previewTest() {
     // Validace formuláře před zobrazením preview
@@ -351,7 +355,7 @@ function exportToHTML() {
     const testName = document.getElementById('testName').value;
 
     if (questions.length === 0 || !testName) {
-        alert("Musíte přidat název testu a alespoň jednu otázku.");
+
         return;
     }
 
@@ -387,26 +391,32 @@ function exportToMoodleXML() {
     xmlContent += '<quiz>\n';
 
     questions.forEach((q, index) => {
-        // Otázka je typu "truefalse" (Ano/Ne)
+        // Začátek otázky
         xmlContent += '  <question type="truefalse">\n';
         xmlContent += '    <name>\n';
-        xmlContent += '      <text>' + q.text + '</text>\n';
+        xmlContent += `      <text>Otázka ${index + 1}</text>\n`; // Unikátní název otázky
         xmlContent += '    </name>\n';
         xmlContent += '    <questiontext format="html">\n';
-        xmlContent += '      <text><![CDATA[' + q.text + ']]></text>\n';
+        xmlContent += `      <text><![CDATA[${q.text}]]></text>\n`; // Text otázky
         xmlContent += '    </questiontext>\n';
 
-        // Odpovědi
-        // Pokud je odpověď "Ano", nastavíme hodnotu fraction=100 (správná odpověď)
-        xmlContent += '    <answer fraction="' + (q.correctAnswer === "ano" ? 100 : 0) + '">\n';
-        xmlContent += '      <text>Ano</text>\n';
+        // Odpověď "Ano" (True)
+        xmlContent += `    <answer fraction="${q.correctAnswer === 'ano' ? 100 : 0}">\n`;
+        xmlContent += '      <text>true</text>\n'; // Moodle očekává "true" místo "Ano"
+        xmlContent += '      <feedback>\n';
+        xmlContent += '        <text><![CDATA[Správná odpověď: Ano]]></text>\n'; // Zpětná vazba
+        xmlContent += '      </feedback>\n';
         xmlContent += '    </answer>\n';
 
-        // Pokud je odpověď "Ne", nastavíme hodnotu fraction=0 (nesprávná odpověď)
-        xmlContent += '    <answer fraction="' + (q.correctAnswer === "ne" ? 100 : 0) + '">\n';
-        xmlContent += '      <text>Ne</text>\n';
+        // Odpověď "Ne" (False)
+        xmlContent += `    <answer fraction="${q.correctAnswer === 'ne' ? 100 : 0}">\n`;
+        xmlContent += '      <text>false</text>\n'; // Moodle očekává "false" místo "Ne"
+        xmlContent += '      <feedback>\n';
+        xmlContent += '        <text><![CDATA[Správná odpověď: Ne]]></text>\n'; // Zpětná vazba
+        xmlContent += '      </feedback>\n';
         xmlContent += '    </answer>\n';
 
+        // Konec otázky
         xmlContent += '  </question>\n';
     });
 
@@ -416,9 +426,10 @@ function exportToMoodleXML() {
     const blob = new Blob([xmlContent], { type: 'application/xml' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `${testName}_test.xml`;
+    link.download = `${testName}_test.xml`; // Název souboru s testem
     link.click();
 }
+
 
 
 
@@ -428,7 +439,7 @@ function exportToJSON() {
     const testName = document.getElementById('testName').value;
 
     if (questions.length === 0 || !testName) {
-        alert("Musíte přidat název testu a alespoň jednu otázku.");
+
         return;
     }
 

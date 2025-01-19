@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vytvořit test</title>
     <link rel="stylesheet" href="{% static 'style/style_test.css' %}?v=1.0">
+   
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -167,7 +168,7 @@
     }).filter(a => a.text);
 
     if (!questionText || answers.length === 0 || !answers.some(a => a.correct)) {
-        alert('Please enter a question, at least one answer, and mark a correct answer.');
+       
         return;
     }
 
@@ -321,7 +322,7 @@ function handleCellClick(index, cells) {
             const cell = document.querySelectorAll('.cell')[cellIndex];
 
             if (!selected) {
-                alert('Please select an answer!');
+               
                 return;
             }
 

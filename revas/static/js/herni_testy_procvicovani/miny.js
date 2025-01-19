@@ -32,7 +32,7 @@
     }).filter(a => a.text);
 
     if (!questionText || answers.length === 0 || !answers.some(a => a.correct)) {
-        alert('Please enter a question, at least one answer, and mark a correct answer.');
+
         return;
     }
 
@@ -186,7 +186,7 @@ function handleCellClick(index, cells) {
             const cell = document.querySelectorAll('.cell')[cellIndex];
 
             if (!selected) {
-                alert('Please select an answer!');
+
                 return;
             }
 

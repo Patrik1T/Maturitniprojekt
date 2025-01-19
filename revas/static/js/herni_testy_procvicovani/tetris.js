@@ -214,7 +214,7 @@ document.getElementById("saveQuestionBtn").addEventListener("click", function() 
 
     // Kontrola, zda je otázka vyplněná a obsahuje alespoň jednu odpověď
     if (!questionText || (!answer1Text && !answer2Text && !answer3Text && !answer4Text)) {
-        alert("Musíte vyplnit otázku a alespoň jednu odpověď!");
+
         return; // Neprovádí uložení, pokud není vše správně vyplněno
     }
 
@@ -231,7 +231,7 @@ document.getElementById("saveQuestionBtn").addEventListener("click", function() 
 
     // Pokud není žádná správná odpověď, zobrazíme varování
     if (!filteredAnswers.some(a => a.correct)) {
-        alert("Musíte označit alespoň jednu odpověď jako správnou!");
+
         return;
     }
 
@@ -542,7 +542,7 @@ function restartGame() {
 
 function exportToMoodleXML() {
     if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
+
         return;
     }
 

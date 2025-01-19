@@ -1,6 +1,5 @@
   {% extends "struktura/basetests.html" %}
 
-{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
 
 {% block content %}
 
@@ -9,6 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
     <title>Tetris s otázkami</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; display: flex; justify-content: center; align-items: flex-start; }
@@ -81,6 +81,7 @@
     </div>
 
     <button id="startGameBtn">Spustit hru</button>
+     <button onclick="exportToHTML()">Exportuj do HTML</button>
     <button onclick="exportToJSON()">Exportuj do JSON</button>
 <button onclick="exportToMoodleXML()">Exportuj do XML</button>
      
@@ -369,28 +370,82 @@ questions.push({
         
  function exportToJSON() {
     if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
         return;
     }
 
     const jsonData = {
-        questions: questions,  // Export otázek, odpovědí a bodů
-        score: score,  // Export aktuálních bodů
-        timeLeft: timeLeft,  // Export zbývajícího času
-        playerPosition: playerPosition,  // Export pozice hráče
+        questions: questions.map(item => ({
+            question: item.question,
+            answers: item.answers.map(answer => ({
+                text: answer.text,
+                correct: answer.correct
+            })),
+            points: item.points || 1
+        })),
+        score: score,  // Aktuální bodové skóre
+        timeLeft: timeLeft,  // Zbývající čas
+        playerPosition: playerPosition,  // Pozice hráče
         isTimerEnabled: isTimerEnabled  // Stav časovače
     };
 
-    const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = 'test_data.json';
     link.click();
 }
 
+function exportToHTML() {
+    if (questions.length === 0) {
+        return;
+    }
+
+    let htmlContent = `
+    <html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test</title>
+    </head>
+    <body>
+        <h1>Test</h1>
+        <h2>Otázky</h2>
+    `;
+
+    questions.forEach((item, index) => {
+        htmlContent += `
+        <div class="question">
+            <p><strong>Otázka ${index + 1}:</strong> ${item.question}</p>
+            <ul>
+                ${item.answers.map((answer, i) => `
+                <li>${i + 1}. ${answer.text} ${answer.correct ? '(Správná odpověď)' : ''}</li>
+                `).join('')}
+            </ul>
+            <p><em>Bodování: ${item.points || 1} bodů</em></p>
+            <hr>
+        </div>
+        `;
+    });
+
+    htmlContent += `
+        <h2>Výsledek</h2>
+        <p><strong>Bodování</strong>: ${score}</p>
+        <p><strong>Zbývající čas</strong>: ${timeLeft} sekund</p>
+        <p><strong>Stav časovače</strong>: ${isTimerEnabled ? 'Zapnuto' : 'Vypnuto'}</p>
+    </body>
+    </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "test_data.html";
+    a.click();
+}
+
 function exportToMoodleXML() {
     if (questions.length === 0) {
-        alert("Nemáte žádné otázky pro export!");
+      
         return;
     }
 

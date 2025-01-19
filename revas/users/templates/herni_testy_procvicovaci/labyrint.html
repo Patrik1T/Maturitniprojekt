@@ -1,6 +1,6 @@
 {% extends "struktura/basetests.html" %}
 
-{% block title %}Labyrint: Otázky a Odpovědi{% endblock %}
+
 
 {% block content %}
   {% load static %}
@@ -9,6 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/herni_testy_procvicovani/labyrint.js' %}"></script>
     <title>Labyrint: Otázky a Odpovědi</title>
     <style>
         body {
@@ -154,10 +155,7 @@
 
     <div id="score">Body: 0</div>
 
-    <script>
-
-
-    </script>
+  </div>
 </body>
 </html>
 

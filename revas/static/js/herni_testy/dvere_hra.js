@@ -18,7 +18,7 @@
         const answerCount = answersContainer.children.length;
 
         if (answerCount >= 5) {
-            alert('Můžete přidat maximálně 5 odpovědí.');
+
             return;
         }
 
@@ -53,7 +53,7 @@
         });
 
         if (!questionText || answers.length < 2 || !correctAnswer || points <= 0) {
-            alert('Zadejte otázku a alespoň dvě odpovědi, přičemž jedna musí být správná a body musí být kladné.');
+
             return;
         }
 
@@ -88,7 +88,7 @@
 
     function startGame() {
         if (questions.length === 0) {
-            alert('Přidejte alespoň jednu otázku.');
+
             return;
         }
 
@@ -173,9 +173,9 @@
         const { correctAnswer, points } = questions[currentQuestionIndex];
         if (selectedAnswer === correctAnswer) {
             score += points;
-            alert('Správně!');
+
         } else {
-            alert('Špatně!');
+
         }
 
         currentQuestionIndex++;
@@ -288,9 +288,9 @@ function evaluateAnswer(selectedAnswer) {
 
     if (selectedAnswer === correctAnswer) {
         score += points;
-        alert('Správně!');
+
     } else {
-        alert('Špatně!');
+
     }
 
     currentQuestionIndex++;

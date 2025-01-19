@@ -61,7 +61,7 @@ function updateWord(index) {
         addButton.innerText = "Přidat otázku";
         addButton.onclick = addWord;  // Při kliknutí zpět přidáme novou otázku
     } else {
-        alert("Vyplňte všechna pole.");
+
     }
 }
 
@@ -80,7 +80,7 @@ function addWord() {
         document.getElementById("wordInput").value = '';
         document.getElementById("pointsInput").value = '';
     } else {
-        alert("Vyplňte všechna pole.");
+
     }
 }
 
@@ -115,7 +115,7 @@ function removeWord(index) {
     // Start hry s výběrem náhodné otázky
 function startGame() {
     if (words.length === 0) {
-        alert("Nejprve přidejte otázky a slova.");
+
         return;
     }
 
@@ -165,19 +165,7 @@ function resetGame() {
     clearInterval(timer); // Zastavit časovač
 }
 
-function startTimer() {
-    clearInterval(timer); // Zajistí, že předchozí časovač nebude běžet souběžně.
-    timer = setInterval(() => {
-        if (timeLeft > 0) {
-            timeLeft--;
-            document.getElementById("timerDisplay").innerHTML = `Čas: ${timeLeft}s`;
-        } else {
-            clearInterval(timer);
-            alert("Čas vypršel!");
-            displayResult(0); // Ukončit hru a zobrazit výsledky (skóre 0 pro aktuální otázku).
-        }
-    }, 1000);
-}
+
 
 
 
@@ -267,33 +255,52 @@ function startTimer() {
             }
         }
 
-// Funkce pro kontrolu výhry
-function checkWin() {
-    const revealed = [...document.getElementsByClassName("letter")].every(letterBox => letterBox.innerHTML !== '_');
-    if (revealed) {
-        const finalScore = Math.max(currentPoints - wrongGuesses, 0);
-        alert("Výborně! Slovo bylo uhodnuto.");
-        displayResult(finalScore);
 
-        // Možnost pokračovat na další otázku nebo hru ukončit
-        const continueGame = confirm("Chcete pokračovat na další otázku?");
-        if (continueGame) {
-            resetGame();  // Resetujeme hru
-            startGame();  // Startujeme další otázku
+function startTimer() {
+    clearInterval(timer); // Zajistí, že předchozí časovač nebude běžet souběžně.
+    timer = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            document.getElementById("timerDisplay").innerHTML = `Čas: ${timeLeft}s`;
         } else {
-            alert("Hra ukončena.");
+            clearInterval(timer);
+            showModal("Čas vypršel!", "Hra skončila.");
         }
-    }
+    }, 1000);
 }
 
-// Funkce pro kontrolu, zda hráč prohrál
 function checkGameOver() {
     if (wrongGuesses >= maxWrongGuesses) {
-        alert("Špatně, hra končí.");
-        displayResult(0);  // Zobrazení výsledku, pokud dojde k prohře
+        showModal("Špatně, hra končí.", "Zkuste to znovu.");
     }
 }
 
+function showModal(title, message) {
+    const modal = document.getElementById("endGameModal");
+    modal.style.display = "block";
+    const modalTitle = document.getElementById("modalEndTitle");
+    const modalMessage = document.getElementById("modalEndMessage");
+    modalTitle.innerHTML = title;
+    modalMessage.innerHTML = message;
+}
+
+function closeModal() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.style.display = "none";
+    });
+}
+
+function continueGame() {
+    closeModal();
+    resetGame();
+    startGame();
+}
+
+function quitGame() {
+    closeModal();
+    resetGame();
+}
 
 
 
@@ -301,7 +308,7 @@ function checkGameOver() {
         const revealed = [...document.getElementsByClassName("letter")].every(letterBox => letterBox.innerHTML !== '_');
         if (revealed) {
             const finalScore = Math.max(currentPoints - wrongGuesses, 0);
-            alert("Výborně! Slovo bylo uhodnuto.");
+            showModal("Výborně! Slovo bylo uhodnuto.");
             displayResult(finalScore);
         }
     }
@@ -333,27 +340,19 @@ function displayResult(score) {
     const grade = gradeInputs.find(input => score >= input.min)?.grade || 5;
     gradeText.innerHTML = `Známka: ${grade}`;
 
-    // Zobrazit výsledky
+    // Zobrazit výsledky v modálním okně
     scoreDisplay.style.display = "block";
 
-    // Nabídnout možnosti pokračovat / ukončit
-    const continueBtn = document.createElement("button");
-    continueBtn.innerText = "Pokračovat";
-    continueBtn.onclick = () => {
-        resetGame();
-        startGame();
-    };
-
-    const quitBtn = document.createElement("button");
-    quitBtn.innerText = "Ukončit";
-    quitBtn.onclick = () => {
-        alert("Hra ukončena!");
-        resetGame();
-    };
-
-    scoreDisplay.appendChild(continueBtn);
-    scoreDisplay.appendChild(quitBtn);
+    // Ukázání modálního okna
+    const modal = document.getElementById("resultModal");
+    modal.style.display = "block"; // Zobrazí modalní okno
+    const modalScoreText = document.getElementById("modalScoreText");
+    const modalGradeText = document.getElementById("modalGradeText");
+    modalScoreText.innerHTML = `Skóre: ${score}`;
+    modalGradeText.innerHTML = `Známka: ${grade}`;
 }
+
+
 
 
 // Ukládací funkce pro Moodle s využitím save.js
@@ -393,7 +392,7 @@ function saveAsMoodleXML() {
     const timeLimit = document.getElementById("timeLimit").value;
 
     if (!testName) {
-        alert("Zadejte název testu.");
+
         return;
     }
 
@@ -436,7 +435,7 @@ function loadGame() {
             const data = JSON.parse(event.target.result);
             words = data.words;  // Načteme slova a otázky
             displayQuestions();  // Zobrazíme seznam
-            alert("Hra byla úspěšně načtena.");
+
         };
         reader.readAsText(file);
     }

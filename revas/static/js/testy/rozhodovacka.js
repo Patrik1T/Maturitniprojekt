@@ -478,10 +478,11 @@ document.querySelector('.preview-btn').addEventListener('click', showTestResults
     }
 
 
+// Ukládání testu do Moodle XML
 function saveTestToXml() {
     const testName = document.getElementById('testName').value.trim() || "Test";
     const testDescription = document.getElementById('testDescription').value.trim();
-    const questions = gatherQuestions();
+    const questions = gatherQuestions(); // Funkce pro získání otázek
 
     if (questions.length === 0) {
         alert("Žádné validní otázky nebyly nalezeny.");
@@ -489,10 +490,7 @@ function saveTestToXml() {
     }
 
     // Generování XML obsahu
-    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<quiz>
-    <name>${testName}</name>
-    <description>${testDescription}</description>`;
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<quiz>\n`;
 
     questions.forEach((question, index) => {
         xmlContent += `
@@ -503,10 +501,10 @@ function saveTestToXml() {
         <questiontext format="html">
             <text><![CDATA[${question.text}]]></text>
         </questiontext>
-        <defaultgrade>${question.points}</defaultgrade>
-        <single>false</single>
+        <defaultgrade>${question.points || 1}</defaultgrade>
+        <single>${question.correctAnswers.length === 1 ? 'true' : 'false'}</single>
         <shuffleanswers>true</shuffleanswers>
-        <answernumbering>none</answernumbering>`;
+        <answernumbering>abc</answernumbering>`;
 
         question.options.forEach((option, idx) => {
             const isCorrect = question.correctAnswers.includes(String(idx));
@@ -523,20 +521,15 @@ function saveTestToXml() {
     </question>`;
     });
 
-    xmlContent += `
-</quiz>`;
+    xmlContent += `\n</quiz>`;
 
-    // Vytvoření Blob objektu a nabídnutí ke stažení
+    // Vytvoření souboru pro stažení
     const blob = new Blob([xmlContent], { type: 'application/xml' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `${testName}.xml`;
     link.click();
 }
-
-
-
-
 
 function saveTestToJson() {
     const testName = document.getElementById('testName').value.trim() || "Test";
@@ -546,42 +539,26 @@ function saveTestToJson() {
     const testData = {
         name: testName,
         description: testDescription,
-        questions: questions
+        questions: questions,
     };
 
-    // Vytvoření souboru a nabídnutí ke stažení
     const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${testName}.json`;
-    link.click();
+    saveAs(blob, `${testName}.json`); // Použití FileSaver.js
 }
-
-
-
 
 function saveTestToHtml() {
     const testName = document.getElementById('testName').value.trim() || "Test";
     const testDescription = document.getElementById('testDescription').value.trim();
-    const questions = gatherQuestions(); // Funkce pro získání všech otázek
+    const questions = gatherQuestions();
 
     let htmlContent = `
         <html>
             <head>
                 <title>${testName}</title>
                 <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                    }
-                    .question {
-                        margin-bottom: 20px;
-                    }
-                    .question label {
-                        font-weight: bold;
-                    }
-                    .result {
-                        margin-top: 20px;
-                    }
+                    body { font-family: Arial, sans-serif; }
+                    .question { margin-bottom: 20px; }
+                    .answers label { display: block; }
                 </style>
             </head>
             <body>
@@ -589,26 +566,32 @@ function saveTestToHtml() {
                 <p>${testDescription}</p>
                 <form id="testForm">`;
 
-    // Generování otázek
     questions.forEach((question, index) => {
         htmlContent += `
             <div class="question">
                 <p><strong>Otázka ${index + 1}:</strong> ${question.text}</p>
-                <label for="answer_${index}">Odpověď:</label>
-                <input type="text" name="answer_${index}" placeholder="Zadejte odpověď">
+                <div class="answers">`;
+
+        question.options.forEach((option, idx) => {
+            htmlContent += `
+                    <label>
+                        <input type="checkbox" name="question_${index}" value="${idx}">
+                        ${option}
+                    </label>`;
+        });
+
+        htmlContent += `
+                </div>
             </div>`;
     });
 
     htmlContent += `
-            <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
-            <div id="resultsContainer"></div> <!-- Kontejner pro výsledky -->
-        </form>
+                <button type="button" onclick="evaluateTest()">Vyhodnotit test</button>
+            </form>
+            <div id="resultsContainer"></div>
         </body>
     </html>`;
 
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${testName}.html`;
-    link.click();
+    saveAs(blob, `${testName}.html`); // Použití FileSaver.js
 }

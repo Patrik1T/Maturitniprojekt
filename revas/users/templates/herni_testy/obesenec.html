@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oběšenec - Hra</title>
-    <script src="{% static 'js/obesenec.js' %}"></script>
+    <script src="{% static 'js/herni_testy/obesenec.js' %}"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -101,6 +101,44 @@
             margin-top: 20px;
             font-size: 20px;
         }
+        /* Modalní okno */
+.modal {
+    display: none; /* Skryté ve výchozím stavu */
+    position: fixed; /* Zůstane na místě, i když se stránka posouvá */
+    z-index: 1; /* Na vrchu */
+    padding-top: 60px; /* Umístí modalní okno o něco níže */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Částečně průhledná černá */
+}
+
+/* Modalní obsah */
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* Tlačítko pro zavření */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
@@ -167,6 +205,25 @@
         <div id="questionsList"></div>
     </div>
 
+    <div id="resultModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p id="modalScoreText"></p>
+        <p id="modalGradeText"></p>
+        <button onclick="continueGame()">Pokračovat</button>
+        <button onclick="quitGame()">Ukončit</button>
+    </div>
+</div>
+
+    <div id="endGameModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalEndTitle"></h2>
+        <p id="modalEndMessage"></p>
+        <button onclick="resetGame()">Zkuste to znovu</button>
+    </div>
+</div>
+
     <div id="wordDisplay"></div>
     <div id="hangmanImage"></div>
     <div id="letters"></div>
@@ -178,7 +235,7 @@
         <p id="scoreText"></p>
         <p id="gradeText"></p>
     </div>
-
+  </div>
 
     <script>
        

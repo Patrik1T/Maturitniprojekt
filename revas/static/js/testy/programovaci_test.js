@@ -351,7 +351,6 @@ function gatherQuestions() {
     document.getElementById('resultsSection').style.display = 'block';
 }
 
-// Funkce pro uložení testu jako Moodle XML
 function saveTestToXml() {
     const testName = document.getElementById('testName').value;
     const testDescription = document.getElementById('testDescription').value;
@@ -359,39 +358,52 @@ function saveTestToXml() {
 
     let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-    <name>${testName}</name>
-    <description>${testDescription}</description>`;
+    <!-- Název testu -->
+    <name>
+        <text>${testName}</text>
+    </name>
+    <!-- Popis testu -->
+    <description>
+        <text>${testDescription}</text>
+    </description>`;
 
+    // Generování otázek
     questions.forEach((question, index) => {
         xmlContent += `
-    <question type="multichoice">
+    <question type="essay">
         <name>
             <text>Otázka ${index + 1}</text>
         </name>
         <questiontext format="html">
-            <text>${question.text}</text>
-        </questiontext>`;
-
-        question.answers.forEach(answer => {
-            xmlContent += `
-        <answer>
-            <text>${answer}</text>
-            <feedback>
-                <text>Správná odpověď!</text>
-            </feedback>
-        </answer>`;
-        });
-
-        xmlContent += `
+            <text><![CDATA[${question.text}]]></text>
+        </questiontext>
+        <defaultgrade>1.0000000</defaultgrade>
+        <penalty>0.0000000</penalty>
+        <hidden>0</hidden>
+        <responseformat>editor</responseformat>
+        <responserequired>1</responserequired>
+        <attachments>0</attachments>
+        <graderinfo format="html">
+            <text></text>
+        </graderinfo>
+        <responsetemplate format="html">
+            <text></text>
+        </responsetemplate>
     </question>`;
     });
 
+    // Uzavření tagu quiz
     xmlContent += `
 </quiz>`;
 
+    // Uložení souboru
     const blob = new Blob([xmlContent], { type: 'application/xml' });
-    saveAs(blob, `${testName}.xml`);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${testName}_moodle.xml`;
+    link.click();
 }
+
 
 // Funkce pro uložení testu jako JSON
 function saveTestToJson() {

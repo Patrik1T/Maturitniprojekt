@@ -1,6 +1,5 @@
 {% extends "struktura/basetests.html" %}
 
-{% block title %}Pexeso: Otázky a Odpovědi{% endblock %}
 
 {% block content %}
     
@@ -10,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     
+     <script src="{% static 'js/herni_testy/kamen_nuzky_papir.js' %}"></script>
     <title>Kámen, Nůžky, Papír s otázkami</title>
     <style>
         body {
@@ -133,7 +132,7 @@
                 displayAnswers();
                 document.getElementById("answerInput").value = '';
             } else {
-                alert("Vyplňte odpověď.");
+              
             }
         }
 
@@ -171,7 +170,7 @@
                 currentAnswers = [];
                 displayAnswers();
             } else {
-                alert("Vyplňte otázku a označte správnou odpověď.");
+               
             }
         }
 
@@ -208,7 +207,7 @@
 function startGame() {
     remainingAttempts = parseInt(document.getElementById("attemptsInput").value, 10);
     if (isNaN(remainingAttempts) || remainingAttempts < 1) {
-        alert("Zadejte platný počet pokusů.");
+       
         return;
     }
     document.getElementById("gameArea").style.display = "none";
@@ -380,10 +379,6 @@ function exportToHTML() {
     const totalTime = 60; // Příklad časovače v sekundách (dynamický dle potřeby)
     const totalAttempts = 5; // Počet pokusů ve hře
     const totalCorrectAnswers = 8; // Počet správných odpovědí na otázky
-    const questions = [
-        { question: "Co je JavaScript?", answer: "Programovací jazyk" },
-        { question: "Co je HTML?", answer: "Mark-up jazyk" }
-    ];
 
     // Generujeme HTML obsah
     let htmlContent = `
@@ -424,10 +419,7 @@ function exportToJSON() {
     const totalTime = 60; // Časovač
     const totalAttempts = 5; // Počet pokusů ve hře
     const totalCorrectAnswers = 8; // Počet správných odpovědí
-    const questions = [
-        { question: "Co je JavaScript?", answer: "Programovací jazyk" },
-        { question: "Co je HTML?", answer: "Mark-up jazyk" }
-    ];
+       
 
     // Vytvoříme objekt pro export
     const testData = {
@@ -449,10 +441,6 @@ function exportToXML() {
     const totalTime = 60; // Časovač
     const totalAttempts = 5; // Počet pokusů ve hře
     const totalCorrectAnswers = 8; // Počet správných odpovědí
-    const questions = [
-        { question: "Co je JavaScript?", answer: "Programovací jazyk" },
-        { question: "Co je HTML?", answer: "Mark-up jazyk" }
-    ];
 
     // Vytvoření XML struktury
     let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>

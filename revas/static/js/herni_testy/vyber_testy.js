@@ -484,7 +484,7 @@ function saveTestToXml() {
     const questions = gatherQuestions();
 
     if (questions.length === 0) {
-        alert("Žádné validní otázky nebyly nalezeny.");
+        showError("Žádné validní otázky nebyly nalezeny.");
         return;
     }
 
